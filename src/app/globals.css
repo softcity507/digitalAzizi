@@ -1,0 +1,99 @@
+@import "tailwindcss";
+@config "../../tailwind.config.js";
+
+:root {
+  /* ==========================================================================
+     Light Mode Color Tokens
+     ========================================================================== */
+  --canvas: #f8fafc;
+  --canvas-subtle: #f1f5f9;
+  --surface: #ffffff;
+  --surface-subtle: #f8fafc;
+  --surface-input: #f1f5f9;
+  --surface-hover: #e2e8f0;
+  --surface-active: #cbd5e1;
+  --surface-border: #e2e8f0;
+  --surface-border-subtle: #f1f5f9;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #ffffff;
+
+  --brand: #0284c7;
+  --brand-hover: #0369a1;
+  --brand-active: #075985;
+  --brand-subtle: #e0f2fe;
+  --brand-foreground: #ffffff;
+
+  --credit: #10b981;
+  --credit-text: #059669;
+  --credit-btn: #10b981;
+  --credit-hover: #047857;
+  --credit-subtle: #ecfdf5;
+  --credit-foreground: #ffffff;
+
+  --debit: #ef4444;
+  --debit-text: #dc2626;
+  --debit-btn: #ef4444;
+  --debit-hover: #b91c1c;
+  --debit-subtle: #fef2f2;
+  --debit-foreground: #ffffff;
+
+  /* Explicit #000 & #fff definitions */
+  --color-black: #000000;
+  --color-white: #ffffff;
+}
+
+.dark,
+[data-theme="dark"] {
+  /* ==========================================================================
+     Dark Mode Color Tokens (Exact 1:1 match with Design Folder Mockups)
+     ========================================================================== */
+  --canvas: #051424;
+  --canvas-subtle: #07182c;
+  --surface: #0b1e33;
+  --surface-subtle: #0f2742;
+  --surface-input: #081a2d;
+  --surface-hover: #132f4c;
+  --surface-active: #163758;
+  --surface-border: #1e3a5f;
+  --surface-border-subtle: #142d48;
+
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --text-muted: #475569;
+  --text-inverse: #000000;
+
+  --brand: #38bdf8;
+  --brand-hover: #0ea5e9;
+  --brand-active: #0284c7;
+  --brand-subtle: rgba(56, 189, 248, 0.15);
+  --brand-foreground: #000000;
+
+  --credit: #34d399;
+  --credit-text: #34d399;
+  --credit-btn: #34d399;
+  --credit-hover: #10b981;
+  --credit-subtle: rgba(52, 211, 153, 0.15);
+  --credit-foreground: #000000;
+
+  --debit: #f87171;
+  --debit-text: #f87171;
+  --debit-btn: #fda4af;
+  --debit-hover: #f87171;
+  --debit-subtle: rgba(248, 113, 113, 0.15);
+  --debit-foreground: #000000;
+
+  /* Explicit #000 & #fff definitions */
+  --color-black: #000000;
+  --color-white: #ffffff;
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}

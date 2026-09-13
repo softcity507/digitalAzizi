@@ -1,0 +1,21 @@
+{
+  "Header": {
+    "subtitle": "হাওয়ালা ও বহু-মুদ্রা",
+    "notifications": "বিজ্ঞপ্তি",
+    "noNotifications": "কোন নতুন বিজ্ঞপ্তি নেই",
+    "darkMode": "ডার্ক মোড",
+    "lightMode": "লাইট মোড"
+  },
+  "Navigation": {
+    "customers": "গ্রাহক",
+    "details": "বিবরণ",
+    "cashBook": "ক্যাশ বুক",
+    "exchange": "বিনিময়",
+    "settings": "সেটিংস"
+  },
+  "HomePage": {
+    "title": "হ্যালো বিশ্ব!",
+    "description": "বর্তমান কাউন্টার মান: {count}",
+    "selectLanguage": "ভাষা নির্বাচন করুন"
+  }
+}

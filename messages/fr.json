@@ -1,0 +1,21 @@
+{
+  "Header": {
+    "subtitle": "HAWALA & MULTI-DEVISES",
+    "notifications": "Notifications",
+    "noNotifications": "Aucune nouvelle notification",
+    "darkMode": "Mode Sombre",
+    "lightMode": "Mode Clair"
+  },
+  "Navigation": {
+    "customers": "Clients",
+    "details": "Détails",
+    "cashBook": "Livre de Caisse",
+    "exchange": "Change",
+    "settings": "Paramètres"
+  },
+  "HomePage": {
+    "title": "Bonjour le monde!",
+    "description": "Valeur actuelle du compteur : {count}",
+    "selectLanguage": "Choisir la langue"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "Header": {
+    "subtitle": "حوالہ ءُ باز کرنسیاں",
+    "notifications": "سرپدی",
+    "noNotifications": "ہچ نوکیں سرپدی نیست",
+    "darkMode": "تہاریں موڈ",
+    "lightMode": "روکیں موڈ"
+  },
+  "Navigation": {
+    "customers": "گاہک",
+    "details": "باروءَ",
+    "cashBook": "کیش بُک",
+    "exchange": "تبادلہ",
+    "settings": "سِٹنگ"
+  },
+  "HomePage": {
+    "title": "سلام جھان!",
+    "description": "ھنوگیں کائونٹرءِ قدر: {count}",
+    "selectLanguage": "زبان گچین بکن ات"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "Header": {
+    "subtitle": "حوالہ تے ملٹی کرنسی",
+    "notifications": "اطلاعات",
+    "noNotifications": "کوئی نوی اطلاع نہیں",
+    "darkMode": "ڈارک موڈ",
+    "lightMode": "لائٹ موڈ"
+  },
+  "Navigation": {
+    "customers": "گاہک",
+    "details": "ویروے",
+    "cashBook": "کیش بک",
+    "exchange": "وٹاندرا",
+    "settings": "سیٹنگز"
+  },
+  "HomePage": {
+    "title": "ست شری اکال / سلام دنیا!",
+    "description": "موجودہ کاؤنٹر ویلیو: {count}",
+    "selectLanguage": "بولی چنو / زبان منتخب کرو"
+  }
+}

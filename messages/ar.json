@@ -1,0 +1,21 @@
+{
+  "Header": {
+    "subtitle": "حوالة ومتعدد العملات",
+    "notifications": "الإشعارات",
+    "noNotifications": "لا توجد إشعارات جديدة",
+    "darkMode": "الوضع الداكن",
+    "lightMode": "الوضع الفاتح"
+  },
+  "Navigation": {
+    "customers": "العملاء",
+    "details": "التفاصيل",
+    "cashBook": "دفتر النقدية",
+    "exchange": "الصرافة",
+    "settings": "الإعدادات"
+  },
+  "HomePage": {
+    "title": "مرحباً بالعالم!",
+    "description": "قيمة العداد الحالية: {count}",
+    "selectLanguage": "اختر اللغة"
+  }
+}

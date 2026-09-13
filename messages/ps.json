@@ -1,0 +1,21 @@
+{
+  "Header": {
+    "subtitle": "حواله او ملټي کرنسی",
+    "notifications": "خبرتیاوې",
+    "noNotifications": "هیڅ نوی خبرتیا نشته",
+    "darkMode": "تور موډ",
+    "lightMode": "روښانه موډ"
+  },
+  "Navigation": {
+    "customers": "پیرودونکي",
+    "details": "تفصیلات",
+    "cashBook": "کیش بک",
+    "exchange": "تبادله",
+    "settings": "ترتیبات"
+  },
+  "HomePage": {
+    "title": "سلام نړۍ!",
+    "description": "د اوسني کاونټر ارزښت: {count}",
+    "selectLanguage": "ژبه غوره کړئ"
+  }
+}

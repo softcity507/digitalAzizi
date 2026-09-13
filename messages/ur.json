@@ -1,0 +1,21 @@
+{
+  "Header": {
+    "subtitle": "حوالہ اور ملٹی کرنسی",
+    "notifications": "اطلاعات",
+    "noNotifications": "کوئی نئی اطلاع نہیں",
+    "darkMode": "ڈارک موڈ",
+    "lightMode": "لائٹ موڈ"
+  },
+  "Navigation": {
+    "customers": "کسٹمرز",
+    "details": "تفصیلات",
+    "cashBook": "کیش بک",
+    "exchange": "ایکسچینج",
+    "settings": "سیٹنگز"
+  },
+  "HomePage": {
+    "title": "ہیلو ورلڈ!",
+    "description": "موجودہ کاؤنٹر ویلیو: {count}",
+    "selectLanguage": "زبان منتخب کریں"
+  }
+}

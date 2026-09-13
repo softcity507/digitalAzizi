@@ -1,0 +1,21 @@
+{
+  "Header": {
+    "subtitle": "حواله و چند ارزی",
+    "notifications": "اعلانات",
+    "noNotifications": "هیچ اعلان جدیدی وجود ندارد",
+    "darkMode": "حالت تاریک",
+    "lightMode": "حالت روشن"
+  },
+  "Navigation": {
+    "customers": "مشتریان",
+    "details": "جزئیات",
+    "cashBook": "کتاب نقد",
+    "exchange": "صرافی و تبادله",
+    "settings": "تنظیمات"
+  },
+  "HomePage": {
+    "title": "سلام دنیا!",
+    "description": "مقدار فعلی شمارنده: {count}",
+    "selectLanguage": "انتخاب زبان"
+  }
+}

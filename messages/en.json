@@ -1,0 +1,21 @@
+{
+  "Header": {
+    "subtitle": "HAWALA & MULTI-CURRENCY",
+    "notifications": "Notifications",
+    "noNotifications": "No new notifications",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode"
+  },
+  "Navigation": {
+    "customers": "Customers",
+    "details": "Details",
+    "cashBook": "Cash Book",
+    "exchange": "Exchange",
+    "settings": "Settings"
+  },
+  "HomePage": {
+    "title": "Hello world!",
+    "description": "Current counter value: {count}",
+    "selectLanguage": "Select Language"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "Header": {
+    "subtitle": "حوالو ۽ گھڻي ڪرنسي",
+    "notifications": "نوٽيفڪيشن",
+    "noNotifications": "ڪو نئون نوٽيفڪيشن ناهي",
+    "darkMode": "ڊارڪ موڊ",
+    "lightMode": "لائيٽ موڊ"
+  },
+  "Navigation": {
+    "customers": "گراهڪ",
+    "details": "تفصيل",
+    "cashBook": "ڪيش بڪ",
+    "exchange": "مٽاسٽا",
+    "settings": "سيٽنگون"
+  },
+  "HomePage": {
+    "title": "هيلو دنيا!",
+    "description": "موجوده ڳڻپيندڙ قدر: {count}",
+    "selectLanguage": "ٻولي چونڊيو"
+  }
+}

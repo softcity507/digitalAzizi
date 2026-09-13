@@ -1,0 +1,21 @@
+{
+  "Header": {
+    "subtitle": "HAVALE VE ÇOKLU PARA BİRİMİ",
+    "notifications": "Bildirimler",
+    "noNotifications": "Yeni bildirim yok",
+    "darkMode": "Karanlık Mod",
+    "lightMode": "Aydınlık Mod"
+  },
+  "Navigation": {
+    "customers": "Müşteriler",
+    "details": "Detaylar",
+    "cashBook": "Kasa Defteri",
+    "exchange": "Döviz",
+    "settings": "Ayarlar"
+  },
+  "HomePage": {
+    "title": "Merhaba Dünya!",
+    "description": "Mevcut sayaç değeri: {count}",
+    "selectLanguage": "Dil Seçin"
+  }
+}
