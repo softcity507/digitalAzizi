@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import Logo from '@/components/mini/Logo';
 import Links from '@/components/mini/Links';
 import Notification from '@/components/mini/Notification';
@@ -12,6 +13,13 @@ interface HeaderProps {
 }
 
 export default function Header({ className = '', activeHref }: HeaderProps) {
+  const pathname = usePathname();
+  const isLandingPage = pathname === '/';
+
+  if (isLandingPage) {
+    return null;
+  }
+
   return (
     <>
       {/* Top Header Bar for Desktop & Mobile */}
@@ -19,9 +27,9 @@ export default function Header({ className = '', activeHref }: HeaderProps) {
         className={`sticky top-0 z-40 w-full bg-surface/95 backdrop-blur-md border-b border-surface-border transition-colors duration-200 ${className}`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 md:h-20 flex items-center justify-between gap-4">
-          {/* 1. Left: Pure Text Logo */}
+          {/* 1. Left: Shield Logo */}
           <div className="flex-shrink-0">
-            <Logo />
+            <Logo variant="shield" />
           </div>
 
           {/* 2. Center: Desktop Pill Navigation (Hidden on Mobile) */}

@@ -17,5 +17,27 @@
     "title": "Hello world!",
     "description": "Current counter value: {count}",
     "selectLanguage": "Select Language"
+  },
+  "Landing": {
+    "subtitle": "AL-RAHMAN LEDGER",
+    "cloudSyncActive": "Cloud Sync Active",
+    "heroTitle": "Multi-Currency Hawala Ledger",
+    "heroDescription": "Record multi-currency transactions (AFN, USD, PKR), balance customer credit & debit balances, and manage exchange cash flow securely.",
+    "encryptedStorage": "End-to-End Encrypted Cloud Storage",
+    "signInTitle": "Sign In to Exchange Portal",
+    "signInSubtitle": "Single Sign-On enabled via Google Workspace",
+    "signInGoogle": "Sign In with Google (Gmail)",
+    "legacyNoticeTitle": "Legacy password logins retired",
+    "legacyNoticeDesc": "Authorized hawala dealers authenticate strictly via 2-Factor Google Enterprise Auth to prevent unauthorized balance tampering.",
+    "selectAppLanguage": "Select App Language",
+    "currenciesTitle": "AFN · USD · PKR",
+    "currenciesSubtitle": "Live Cash Desk",
+    "balancedLedgerTitle": "Debit & Credit",
+    "balancedLedgerSubtitle": "Balanced Ledger",
+    "instantPdfTitle": "Instant PDF",
+    "instantPdfSubtitle": "Daily Roznamcha",
+    "exploreDemo": "Explore Demo Ledger without Sign-In",
+    "copyright": "DigitalAzizi Exchange Cloud System © 2025. All Rights Reserved.",
+    "compliance": "Compliant with Saraf Hawala Bookkeeping Protocols"
   }
 }

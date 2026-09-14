@@ -17,5 +17,27 @@
     "title": "ہیلو ورلڈ!",
     "description": "موجودہ کاؤنٹر ویلیو: {count}",
     "selectLanguage": "زبان منتخب کریں"
+  },
+  "Landing": {
+    "subtitle": "الرحمن لیجر",
+    "cloudSyncActive": "کلاؤڈ سنک فعال ہے",
+    "heroTitle": "ملٹی کرنسی حوالہ لیجر",
+    "heroDescription": "ملٹی کرنسی ٹرانزیکشنز (AFN, USD, PKR) ریکارڈ کریں، کسٹمر ڈیبٹ اور کریڈٹ بیلنس سنبھالیں، اور کیش فلو محفوظ رکھیں۔",
+    "encryptedStorage": "اینڈ ٹو اینڈ انکرپٹڈ کلاؤڈ اسٹوریج",
+    "signInTitle": "ایکسچینج پورٹل میں لاگ ان کریں",
+    "signInSubtitle": "گوگل ورک اسپیس کے ذریعے سنگل سائن آن فعال ہے",
+    "signInGoogle": "گوگل (Gmail) کے ساتھ لاگ ان کریں",
+    "legacyNoticeTitle": "پرانے پاس ورڈ لاگ ان بند کر دیے گئے ہیں",
+    "legacyNoticeDesc": "حوالہ ڈیلرز غیر مجاز تبدیلیوں سے بچاؤ کے لیے صرف 2 فیکٹر گوگل انٹرپرائز اتھینٹیکیشن کے ذریعے لاگ ان ہوتے ہیں۔",
+    "selectAppLanguage": "ایپ کی زبان منتخب کریں",
+    "currenciesTitle": "AFN · USD · PKR",
+    "currenciesSubtitle": "لائیو کیش ڈیسک",
+    "balancedLedgerTitle": "ڈیبٹ اور کریڈٹ",
+    "balancedLedgerSubtitle": "بیلنسڈ لیجر",
+    "instantPdfTitle": "فوری PDF",
+    "instantPdfSubtitle": "روزانہ روزنامچہ",
+    "exploreDemo": "لاگ ان کے بغیر ڈیمو لیجر دیکھیں",
+    "copyright": "ڈیجیٹل عزیزی ایکسچینج کلاؤڈ سسٹم © ۲۰۲۵۔ جملہ حقوق محفوظ ہیں۔",
+    "compliance": "صراف حوالہ بک کیپنگ پروٹوکولز کے مطابق"
   }
 }

@@ -17,5 +17,27 @@
     "title": "سلام نړۍ!",
     "description": "د اوسني کاونټر ارزښت: {count}",
     "selectLanguage": "ژبه غوره کړئ"
+  },
+  "Landing": {
+    "subtitle": "الرحمن لیجر",
+    "cloudSyncActive": "کلاوډ همغږي فعاله ده",
+    "heroTitle": "ملټي کرنسی حواله لیجر",
+    "heroDescription": "د څو اسعارو معاملې (افغانۍ، ډالر، کلدارې) ثبت کړئ، حسابونه متوازن کړئ، او د صرافۍ کیش فلو خوندي وساتئ.",
+    "encryptedStorage": "پای څخه تر پایه خوندي کلاوډ ذخیره",
+    "signInTitle": "صرافي پورټل ته ننوتل",
+    "signInSubtitle": "د ګوګل ورک سپیس له لارې سنگل ساین آن فعال دی",
+    "signInGoogle": "د ګوګل (Gmail) له لارې ننوتل",
+    "legacyNoticeTitle": "پخواني پټنوم ننوتل لغوه شوي",
+    "legacyNoticeDesc": "صرافان یوازې د ۲-پړاویزه تصدیق (Google Enterprise Auth) له لارې ننوځي ترڅو د غیر مجاز لاسوهنو مخه ونیول شي.",
+    "selectAppLanguage": "د پروګرام ژبه غوره کړئ",
+    "currenciesTitle": "AFN · USD · PKR",
+    "currenciesSubtitle": "ژوندی کیش ډیسک",
+    "balancedLedgerTitle": "جمع او مصرف",
+    "balancedLedgerSubtitle": "متوازن لیجر",
+    "instantPdfTitle": "سمدستي PDF",
+    "instantPdfSubtitle": "ورځنی روزنامچه",
+    "exploreDemo": "پرته له ننوتلو ډیمو لیجر وګورئ",
+    "copyright": "د ډیجیټل عزیزي اکسچینج کلاوډ سیسټم © ۲۰۲۵. ټول حقونه خوندي دي.",
+    "compliance": "د صرافۍ او حوالې د کتاب ساتنې د اصولو سره سم"
   }
 }

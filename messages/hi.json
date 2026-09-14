@@ -17,5 +17,27 @@
     "title": "नमस्ते दुनिया!",
     "description": "वर्तमान काउंटर मान: {count}",
     "selectLanguage": "भाषा चुनें"
+  },
+  "Landing": {
+    "subtitle": "अल-रहमान लेजर",
+    "cloudSyncActive": "क्लाउड सिंक सक्रिय",
+    "heroTitle": "बहु-मुद्रा हवाला लेजर",
+    "heroDescription": "बहु-मुद्रा लेनदेन (AFN, USD, PKR) रिकॉर्ड करें, ग्राहक डेबिट और क्रेडिट शेष प्रबंधित करें, और सुरक्षित कैश फ्लो रखें।",
+    "encryptedStorage": "एंड-टू-एंड एन्क्रिप्टेड क्लाउड स्टोरेज",
+    "signInTitle": "एक्सचेंज पोर्टल में साइन इन करें",
+    "signInSubtitle": "Google Workspace के माध्यम से सिंगल साइन-ऑन सक्षम",
+    "signInGoogle": "Google (Gmail) से साइन इन करें",
+    "legacyNoticeTitle": "पुराने पासवर्ड लॉगिन बंद कर दिए गए हैं",
+    "legacyNoticeDesc": "अनधिकृत छेड़छाड़ को रोकने के लिए हवाला डीलर केवल 2-फ़ैक्टर Google एंटरप्राइज़ ऑथ के माध्यम से प्रमाणित होते हैं।",
+    "selectAppLanguage": "ऐप भाषा चुनें",
+    "currenciesTitle": "AFN · USD · PKR",
+    "currenciesSubtitle": "लाइव कैश डेस्क",
+    "balancedLedgerTitle": "डेबिट और क्रेडिट",
+    "balancedLedgerSubtitle": "संतुलित लेजर",
+    "instantPdfTitle": "त्वरित PDF",
+    "instantPdfSubtitle": "दैनिक रोजनामचा",
+    "exploreDemo": "साइन-इन के बिना डेमो लेजर देखें",
+    "copyright": "डिजिटल अज़ीज़ी एक्सचेंज क्लाउड सिस्टम © 2025. सर्वाधिकार सुरक्षित।",
+    "compliance": "सर्राफ हवाला बहीखाता प्रोटोकॉल के अनुरूप"
   }
 }

@@ -17,5 +17,27 @@
     "title": "مرحباً بالعالم!",
     "description": "قيمة العداد الحالية: {count}",
     "selectLanguage": "اختر اللغة"
+  },
+  "Landing": {
+    "subtitle": "دفتر الرحمن للحوالات",
+    "cloudSyncActive": "المزامنة السحابية نشطة",
+    "heroTitle": "دفتر الحوالات ومتعدد العملات",
+    "heroDescription": "تسجيل المعاملات متعددة العملات (AFN, USD, PKR)، موازنة أرصدة الدائن والمدين، وإدارة التدفق النقدي للصرافة بأمان.",
+    "encryptedStorage": "تخزين سحابي مشفر من طرف إلى طرف",
+    "signInTitle": "تسجيل الدخول إلى بوابة الصرافة",
+    "signInSubtitle": "تم تمكين تسجيل الدخول الموحد عبر Google Workspace",
+    "signInGoogle": "تسجيل الدخول بواسطة Google (Gmail)",
+    "legacyNoticeTitle": "تم إيقاف تسجيل الدخول بكلمات المرور القديمة",
+    "legacyNoticeDesc": "يسجل وكلاء الحوالة المعتمدون الدخول حصرياً عبر المصادقة الثنائية من Google لمنع أي تلاعب غير مصرح به بالأرصدة.",
+    "selectAppLanguage": "اختر لغة التطبيق",
+    "currenciesTitle": "AFN · USD · PKR",
+    "currenciesSubtitle": "مكتب النقدية المباشر",
+    "balancedLedgerTitle": "مدين ودائن",
+    "balancedLedgerSubtitle": "دفتر أستاذ متوازن",
+    "instantPdfTitle": "PDF فوري",
+    "instantPdfSubtitle": "الروزنامجة اليومية",
+    "exploreDemo": "استكشف النسخة التجريبية بدون تسجيل دخول",
+    "copyright": "نظام ديجيتال عزيزي السحابي للصرافة © ۲۰۲۵. جميع الحقوق محفوظة.",
+    "compliance": "متوافق مع بروتوكولات دفاتر الصرافة والحوالة"
   }
 }

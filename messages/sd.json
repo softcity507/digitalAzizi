@@ -1,8 +1,8 @@
 {
   "Header": {
-    "subtitle": "حوالو ۽ گھڻي ڪرنسي",
-    "notifications": "نوٽيفڪيشن",
-    "noNotifications": "ڪو نئون نوٽيفڪيشن ناهي",
+    "subtitle": "حوالو ۽ ملٽي ڪرنسي",
+    "notifications": "اطلاعون",
+    "noNotifications": "ڪا نئين اطلاع ناهي",
     "darkMode": "ڊارڪ موڊ",
     "lightMode": "لائيٽ موڊ"
   },
@@ -10,12 +10,34 @@
     "customers": "گراهڪ",
     "details": "تفصيل",
     "cashBook": "ڪيش بڪ",
-    "exchange": "مٽاسٽا",
+    "exchange": "ايڪسچينج",
     "settings": "سيٽنگون"
   },
   "HomePage": {
-    "title": "هيلو دنيا!",
-    "description": "موجوده ڳڻپيندڙ قدر: {count}",
+    "title": "هيلو ورلڊ!",
+    "description": "موجوده ڳڻپيوڪر قدر: {count}",
     "selectLanguage": "ٻولي چونڊيو"
+  },
+  "Landing": {
+    "subtitle": "الرحمان ليجر",
+    "cloudSyncActive": "ڪلائوڊ سنڪ فعال آهي",
+    "heroTitle": "ملٽي ڪرنسي حوالو ليجر",
+    "heroDescription": "گهڻين ڪرنسين جو حساب ڪتاب (AFN, USD, PKR) رکو، ڪسٽمر بيلنس سنڀاليو ۽ ڪيش فلو محفوظ رکو.",
+    "encryptedStorage": "اينڊ ٽو اينڊ انڪرپٽ ٿيل ڪلائوڊ اسٽوريج",
+    "signInTitle": "ايڪسچينج پورٽل ۾ سائن ان ڪريو",
+    "signInSubtitle": "گوگل ورڪ اسپيس ذريعي سنگل سائن آن فعال آهي",
+    "signInGoogle": "گوگل (Gmail) سان سائن ان ڪريو",
+    "legacyNoticeTitle": "پراڻا پاسورڊ بند ڪيا ويا آهن",
+    "legacyNoticeDesc": "ڊيلر غير مجاز تبديلين کان بچاءَ لاءِ رڳو ۲ فيڪٽر گوگل اٿينٽيڪيشن سان لاگ ان ٿيندا آهن.",
+    "selectAppLanguage": "ايپ جي ٻولي چونڊيو",
+    "currenciesTitle": "AFN · USD · PKR",
+    "currenciesSubtitle": "لائيو ڪيش ڊيسڪ",
+    "balancedLedgerTitle": "ڊيبٽ ۽ ڪريڊٽ",
+    "balancedLedgerSubtitle": "بيلنسڊ ليجر",
+    "instantPdfTitle": "فوري PDF",
+    "instantPdfSubtitle": "روزانو روزنامچو",
+    "exploreDemo": "سائن ان کان سواءِ ڊيمو ليجر ڏسو",
+    "copyright": "ڊجيٽل عزيزي ايڪسچينج ڪلائوڊ سسٽم © ۲۰۲۵. سڀ حق محفوظ آهن.",
+    "compliance": "صراف حوالا بڪ ڪيپنگ اصولن موجب"
   }
 }

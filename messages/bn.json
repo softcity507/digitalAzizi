@@ -17,5 +17,27 @@
     "title": "হ্যালো বিশ্ব!",
     "description": "বর্তমান কাউন্টার মান: {count}",
     "selectLanguage": "ভাষা নির্বাচন করুন"
+  },
+  "Landing": {
+    "subtitle": "আল-রহমান লেজার",
+    "cloudSyncActive": "ক্লাউড সিঙ্ক সক্রিয়",
+    "heroTitle": "বহু-মুদ্রা হাওয়ালা লেজার",
+    "heroDescription": "বহু-মুদ্রা লেনদেন (AFN, USD, PKR) রেকর্ড করুন, ডেবিট ও ক্রেডিট ব্যালেন্স পরিচালনা করুন এবং ক্যাশ ফ্লো সুরক্ষিত রাখুন।",
+    "encryptedStorage": "এন্ড-টু-এন্ড এনক্রিপ্ট করা ক্লাউড স্টোরেজ",
+    "signInTitle": "এক্সচেঞ্জ পোর্টালে সাইন ইন করুন",
+    "signInSubtitle": "Google Workspace এর মাধ্যমে সিঙ্গেল সাইন-অন সক্ষম",
+    "signInGoogle": "Google (Gmail) দিয়ে সাইন ইন করুন",
+    "legacyNoticeTitle": "পুরোনো পাসওয়ার্ড লগইন বন্ধ করা হয়েছে",
+    "legacyNoticeDesc": "অননুমোদিত পরিবর্তন রোধে অনুমোদিত ডিলাররা কেবল 2-ফ্যাক্টর Google এন্টারপ্রাইজ প্রমাণীকরণের মাধ্যমে সাইন ইন করেন।",
+    "selectAppLanguage": "অ্যাপের ভাষা নির্বাচন করুন",
+    "currenciesTitle": "AFN · USD · PKR",
+    "currenciesSubtitle": "লাইভ ক্যাশ ডেস্ক",
+    "balancedLedgerTitle": "ডেবিট ও ক্রেডিট",
+    "balancedLedgerSubtitle": "ভারসাম্যপূর্ণ লেজার",
+    "instantPdfTitle": "তাৎক্ষণিক PDF",
+    "instantPdfSubtitle": "দৈনিক রোজনামচা",
+    "exploreDemo": "লগইন ছাড়াই ডেমো লেজার দেখুন",
+    "copyright": "ডিজিটাল আজিজি এক্সচেঞ্জ ক্লাউড সিস্টেম © ২০২৫। সর্বস্বত্ব সংরক্ষিত।",
+    "compliance": "সরাফ হাওয়ালা হিসাবরক্ষণ প্রোটোকল মেনে প্রস্তুত"
   }
 }

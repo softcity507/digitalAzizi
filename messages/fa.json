@@ -17,5 +17,27 @@
     "title": "سلام دنیا!",
     "description": "مقدار فعلی شمارنده: {count}",
     "selectLanguage": "انتخاب زبان"
+  },
+  "Landing": {
+    "subtitle": "دفتر کل الرحمن",
+    "cloudSyncActive": "همگام‌سازی ابری فعال است",
+    "heroTitle": "دفتر کل حواله و چند ارزی",
+    "heroDescription": "ثبت معاملات چند ارزی (AFN, USD, PKR)، تسویه مانده حساب‌های بدهکار و بستانکار، و مدیریت امن جریان نقدینگی صرافی.",
+    "encryptedStorage": "ذخیره‌سازی ابری با رمزگذاری سرتاسری",
+    "signInTitle": "ورود به پرتال صرافی",
+    "signInSubtitle": "ورود یکپارچه از طریق گوگل ورک‌اسپیس فعال است",
+    "signInGoogle": "ورود با حساب گوگل (جیمیل)",
+    "legacyNoticeTitle": "ورود با رمز عبور قدیمی متوقف شد",
+    "legacyNoticeDesc": "صرافان مجاز صرفاً از طریق احراز هویت دو مرحله‌ای سازمانی گوگل وارد می‌شوند تا از هرگونه دستکاری حساب‌ها جلوگیری شود.",
+    "selectAppLanguage": "انتخاب زبان برنامه",
+    "currenciesTitle": "AFN · USD · PKR",
+    "currenciesSubtitle": "میز نقدی لحظه‌ای",
+    "balancedLedgerTitle": "بدهکار و بستانکار",
+    "balancedLedgerSubtitle": "دفتر کل تراز",
+    "instantPdfTitle": "پی‌دی‌اف فوری",
+    "instantPdfSubtitle": "روزنامچه روزانه",
+    "exploreDemo": "مشاهده دموی دفتر کل بدون ورود",
+    "copyright": "سیستم ابری صرافی دیجیتال عزیزی © ۲۰۲۵. کلیه حقوق محفوظ است.",
+    "compliance": "مطابق با پروتکل‌های حسابداری صرافی و حواله"
   }
 }

@@ -4,18 +4,40 @@
     "notifications": "سرپدی",
     "noNotifications": "ہچ نوکیں سرپدی نیست",
     "darkMode": "تہاریں موڈ",
-    "lightMode": "روکیں موڈ"
+    "lightMode": "روژنائیں موڈ"
   },
   "Navigation": {
-    "customers": "گاہک",
-    "details": "باروءَ",
-    "cashBook": "کیش بُک",
-    "exchange": "تبادلہ",
-    "settings": "سِٹنگ"
+    "customers": "گاہگ",
+    "details": "سسّا",
+    "cashBook": "کیش بک",
+    "exchange": "ایکسچینج",
+    "settings": "ترتیب"
   },
   "HomePage": {
-    "title": "سلام جھان!",
-    "description": "ھنوگیں کائونٹرءِ قدر: {count}",
-    "selectLanguage": "زبان گچین بکن ات"
+    "title": "درود دنیا!",
+    "description": "کاؤنٹر ءِ کساس: {count}",
+    "selectLanguage": "زبان گچین کن"
+  },
+  "Landing": {
+    "subtitle": "الرحمن لیجر",
+    "cloudSyncActive": "کلاؤڈ ہمگرنچی فعال انت",
+    "heroTitle": "باز کرنسیاں حوالہ لیجر",
+    "heroDescription": "بازیں زرّانی (AFN, USD, PKR) حساب ءُ کتاب، گاہگانی ڈیبٹ کریڈٹ ءُ کیش فلو ایمنی ءَ سنبھالو.",
+    "encryptedStorage": "اینڈ ٹو اینڈ انکرپٹڈ کلاؤڈ اسٹوریج",
+    "signInTitle": "ایکسچینج پورٹل ءَ پُتر اِت",
+    "signInSubtitle": "گوگل ورک اسپیس ءِ وسیلہ ءَ سنگل سائن آن چالو انت",
+    "signInGoogle": "گوگل (Gmail) ءِ گوں پُتر اِت",
+    "legacyNoticeTitle": "پراھیں پاسورڈ بند کنگ بوتگ انت",
+    "legacyNoticeDesc": "صرافانی دزرس بس ۲-فیکٹر گوگل انٹرپرائز اتھینٹیکیشن ءِ سر ءَ انت دانکہ ہچ کَس ہیرا پھیری مہ کنت.",
+    "selectAppLanguage": "پروگرام ءِ زبان گچین کن",
+    "currenciesTitle": "AFN · USD · PKR",
+    "currenciesSubtitle": "لائیو کیش ڈیسک",
+    "balancedLedgerTitle": "ڈیبٹ ءُ کریڈٹ",
+    "balancedLedgerSubtitle": "بیلنسڈ لیجر",
+    "instantPdfTitle": "فوری PDF",
+    "instantPdfSubtitle": "روچپتی روزنامچہ",
+    "exploreDemo": "بے پُترگ ءَ ڈیمو لیجر بچار اِت",
+    "copyright": "ڈیجیٹل عزیزی ایکسچینج کلاؤڈ سسٹم © ۲۰۲۵۔ کلیں ھک پھریزگ بوتگ انت۔",
+    "compliance": "صراف حوالہ بک کیپنگ رہبند ءِ ردا"
   }
 }

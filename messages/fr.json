@@ -15,7 +15,29 @@
   },
   "HomePage": {
     "title": "Bonjour le monde!",
-    "description": "Valeur actuelle du compteur : {count}",
+    "description": "Valeur actuelle du compteur: {count}",
     "selectLanguage": "Choisir la langue"
+  },
+  "Landing": {
+    "subtitle": "GRAND LIVRE AL-RAHMAN",
+    "cloudSyncActive": "Synchronisation Cloud Active",
+    "heroTitle": "Grand Livre Hawala Multi-Devises",
+    "heroDescription": "Enregistrez les transactions multi-devises (AFN, USD, PKR), équilibrez les soldes clients débit et crédit et gérez les flux de trésorerie en toute sécurité.",
+    "encryptedStorage": "Stockage Cloud Chiffré de Bout en Bout",
+    "signInTitle": "Connexion au Portail de Change",
+    "signInSubtitle": "Authentification unique via Google Workspace",
+    "signInGoogle": "Se connecter avec Google (Gmail)",
+    "legacyNoticeTitle": "Anciens mots de passe obsolètes",
+    "legacyNoticeDesc": "Les agents hawala autorisés s'authentifient strictement via l'authentification Google Enterprise à 2 facteurs.",
+    "selectAppLanguage": "Sélectionner la langue de l'application",
+    "currenciesTitle": "AFN · USD · PKR",
+    "currenciesSubtitle": "Guichet de Caisse en Direct",
+    "balancedLedgerTitle": "Débit & Crédit",
+    "balancedLedgerSubtitle": "Grand Livre Équilibré",
+    "instantPdfTitle": "PDF Instantané",
+    "instantPdfSubtitle": "Roznamcha Quotidien",
+    "exploreDemo": "Explorer la Démo sans Connexion",
+    "copyright": "Système Cloud DigitalAzizi Exchange © 2025. Tous droits réservés.",
+    "compliance": "Conforme aux Protocoles de Tenue de Livres Hawala Saraf"
   }
 }

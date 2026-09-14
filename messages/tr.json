@@ -17,5 +17,27 @@
     "title": "Merhaba Dünya!",
     "description": "Mevcut sayaç değeri: {count}",
     "selectLanguage": "Dil Seçin"
+  },
+  "Landing": {
+    "subtitle": "ER-RAHMAN DEFTERİ",
+    "cloudSyncActive": "Bulut Senkronizasyonu Aktif",
+    "heroTitle": "Çoklu Para Birimli Havale Defteri",
+    "heroDescription": "Çoklu para birimli işlemleri kaydedin (AFN, USD, PKR), müşteri borç ve alacak bakiyelerini dengeleyin ve kasa akışını güvenle yönetin.",
+    "encryptedStorage": "Uçtan Uca Şifreli Bulut Depolama",
+    "signInTitle": "Döviz Portalı Girişi",
+    "signInSubtitle": "Google Workspace ile Tek Oturum Açma",
+    "signInGoogle": "Google (Gmail) ile Giriş Yap",
+    "legacyNoticeTitle": "Eski şifre girişleri kaldırıldı",
+    "legacyNoticeDesc": "Yetkili havale acenteleri, bakiye manipülasyonunu önlemek için yalnızca 2 Faktörlü Google Enterprise Doğrulaması ile giriş yapabilir.",
+    "selectAppLanguage": "Uygulama Dilini Seçin",
+    "currenciesTitle": "AFN · USD · PKR",
+    "currenciesSubtitle": "Canlı Kasa Masası",
+    "balancedLedgerTitle": "Borç ve Alacak",
+    "balancedLedgerSubtitle": "Dengeli Defter",
+    "instantPdfTitle": "Anında PDF",
+    "instantPdfSubtitle": "Günlük Roznamcha",
+    "exploreDemo": "Giriş Yapmadan Demo Defteri İncele",
+    "copyright": "DigitalAzizi Döviz Bulut Sistemi © 2025. Tüm Hakları Saklıdır.",
+    "compliance": "Saraf Havale Muhasebe Protokollerine Uygun"
   }
 }

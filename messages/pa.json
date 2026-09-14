@@ -2,20 +2,42 @@
   "Header": {
     "subtitle": "حوالہ تے ملٹی کرنسی",
     "notifications": "اطلاعات",
-    "noNotifications": "کوئی نوی اطلاع نہیں",
+    "noNotifications": "کوئی نویں اطلاع نہیں",
     "darkMode": "ڈارک موڈ",
     "lightMode": "لائٹ موڈ"
   },
   "Navigation": {
     "customers": "گاہک",
-    "details": "ویروے",
+    "details": "تفصیلات",
     "cashBook": "کیش بک",
-    "exchange": "وٹاندرا",
+    "exchange": "ایکسچینج",
     "settings": "سیٹنگز"
   },
   "HomePage": {
     "title": "ست شری اکال / سلام دنیا!",
     "description": "موجودہ کاؤنٹر ویلیو: {count}",
-    "selectLanguage": "بولی چنو / زبان منتخب کرو"
+    "selectLanguage": "بولی چنو"
+  },
+  "Landing": {
+    "subtitle": "الرحمن لیجر",
+    "cloudSyncActive": "کلاؤڈ سنک چالو اے",
+    "heroTitle": "ملٹی کرنسی حوالہ لیجر",
+    "heroDescription": "ملٹی کرنسی لین دین (AFN, USD, PKR) دا حساب رکھو، ڈیبٹ کریڈٹ بیلنس سنبھالو، تے کیش فلو محفوظ بناؤ۔",
+    "encryptedStorage": "اینڈ ٹو اینڈ انکرپٹڈ کلاؤڈ سٹوریج",
+    "signInTitle": "ایکسچینج پورٹل وچ لاگ ان کرو",
+    "signInSubtitle": "گوگل ورک سپیس راہیں سنگل سائن آن چالو اے",
+    "signInGoogle": "گوگل (Gmail) نال لاگ ان کرو",
+    "legacyNoticeTitle": "پرانے پاسورڈ بند کر دتے گئے نیں",
+    "legacyNoticeDesc": "ڈیلرز صرف ۲ فیکٹر گوگل انٹرپرائز اتھینٹیکیشن نال لاگ ان ہوندے نیں تاں جو بیلنس نال چھیڑ چھاڑ نہ ہو سکے۔",
+    "selectAppLanguage": "ایپ دی بولی چنو",
+    "currenciesTitle": "AFN · USD · PKR",
+    "currenciesSubtitle": "لائیو کیش ڈیسک",
+    "balancedLedgerTitle": "ڈیبٹ تے کریڈٹ",
+    "balancedLedgerSubtitle": "بیلنسڈ لیجر",
+    "instantPdfTitle": "فوری PDF",
+    "instantPdfSubtitle": "روزانہ روزنامچہ",
+    "exploreDemo": "لاگ ان توں بغیر ڈیمو لیجر ویکھو",
+    "copyright": "ڈیجیٹل عزیزی ایکسچینج کلاؤڈ سسٹم © ۲۰۲۵۔ سارے حق محفوظ نیں۔",
+    "compliance": "صراف حوالہ بک کیپنگ اصولاں مطابق"
   }
 }
