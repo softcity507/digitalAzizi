@@ -39,5 +39,20 @@
     "exploreDemo": "Explorer la Démo sans Connexion",
     "copyright": "Système Cloud DigitalAzizi Exchange © 2025. Tous droits réservés.",
     "compliance": "Conforme aux Protocoles de Tenue de Livres Hawala Saraf"
+  },
+  "CustomerBook": {
+    "searchPlaceholder": "Rechercher un client ou un numéro...",
+    "deskMirrorTitle": "Position Miroir du Guichet & Partie Double",
+    "deskMirrorFormula": "Somme(Soldes Clients) + Solde Miroir = 0",
+    "ledgerBalanced": "Grand Livre Équilibré",
+    "allAccounts": "Tous les comptes",
+    "receivable": "Créances (Cr)",
+    "payable": "Dettes (Dr)",
+    "addCustomer": "Ajouter un client",
+    "cust": "Client",
+    "desk": "Guichet",
+    "net": "Net",
+    "balanced": "Équilibré",
+    "noAccountsFound": "Aucun compte trouvé correspondant à vos critères."
   }
 }

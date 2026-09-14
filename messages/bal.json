@@ -39,5 +39,20 @@
     "exploreDemo": "بے پُترگ ءَ ڈیمو لیجر بچار اِت",
     "copyright": "ڈیجیٹل عزیزی ایکسچینج کلاؤڈ سسٹم © ۲۰۲۵۔ کلیں ھک پھریزگ بوتگ انت۔",
     "compliance": "صراف حوالہ بک کیپنگ رہبند ءِ ردا"
+  },
+  "CustomerBook": {
+    "searchPlaceholder": "گاہگ ءِ نام یا نمبر پٹّ اِت...",
+    "deskMirrorTitle": "ڈیسک مرر پوزیشن ءُ ڈبل اینٹری",
+    "deskMirrorFormula": "گاہگانی کساس + ڈیسک کساس = ۰",
+    "ledgerBalanced": "لیجر تراز بوت",
+    "allAccounts": "کلیں کھاتہ",
+    "receivable": "رسگی (Cr)",
+    "payable": "دیگی (Dr)",
+    "addCustomer": "نوکیں گاہگ",
+    "cust": "گاہگ",
+    "desk": "ڈیسک",
+    "net": "خالص",
+    "balanced": "تراز",
+    "noAccountsFound": "ہچ کھاتہ دست نه کپت۔"
   }
 }

@@ -39,5 +39,20 @@
     "exploreDemo": "Giriş Yapmadan Demo Defteri İncele",
     "copyright": "DigitalAzizi Döviz Bulut Sistemi © 2025. Tüm Hakları Saklıdır.",
     "compliance": "Saraf Havale Muhasebe Protokollerine Uygun"
+  },
+  "CustomerBook": {
+    "searchPlaceholder": "Müşteri adı veya telefon ara...",
+    "deskMirrorTitle": "Kasa Ayna Pozisyonu ve Çift Kayıt",
+    "deskMirrorFormula": "Toplam(Müşteri Bakiyeleri) + Kasa Ayna Bakiyesi = 0",
+    "ledgerBalanced": "Defter Dengelendi",
+    "allAccounts": "Tüm Hesaplar",
+    "receivable": "Alacak (Cr)",
+    "payable": "Borç (Dr)",
+    "addCustomer": "Müşteri Ekle",
+    "cust": "Müşteri",
+    "desk": "Kasa",
+    "net": "Net",
+    "balanced": "Dengeli",
+    "noAccountsFound": "Kriterlerinize uygun hesap bulunamadı."
   }
 }

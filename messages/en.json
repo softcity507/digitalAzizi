@@ -39,5 +39,20 @@
     "exploreDemo": "Explore Demo Ledger without Sign-In",
     "copyright": "DigitalAzizi Exchange Cloud System © 2025. All Rights Reserved.",
     "compliance": "Compliant with Saraf Hawala Bookkeeping Protocols"
+  },
+  "CustomerBook": {
+    "searchPlaceholder": "Search customer or phone...",
+    "deskMirrorTitle": "Desk Mirror Position & Double-Entry",
+    "deskMirrorFormula": "Sum(Customer Balances) + Desk Mirror Balance = 0",
+    "ledgerBalanced": "Ledger Balanced",
+    "allAccounts": "All Accounts",
+    "receivable": "Receivable (Cr)",
+    "payable": "Payable (Dr)",
+    "addCustomer": "Add Customer",
+    "cust": "Cust",
+    "desk": "Desk",
+    "net": "Net",
+    "balanced": "Balanced",
+    "noAccountsFound": "No accounts found matching your criteria."
   }
 }

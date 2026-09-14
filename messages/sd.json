@@ -39,5 +39,20 @@
     "exploreDemo": "سائن ان کان سواءِ ڊيمو ليجر ڏسو",
     "copyright": "ڊجيٽل عزيزي ايڪسچينج ڪلائوڊ سسٽم © ۲۰۲۵. سڀ حق محفوظ آهن.",
     "compliance": "صراف حوالا بڪ ڪيپنگ اصولن موجب"
+  },
+  "CustomerBook": {
+    "searchPlaceholder": "گراهڪ جو نالو يا فون ڳوليو...",
+    "deskMirrorTitle": "ڊيسڪ مرر پوزيشن ۽ ڊبل انٽري",
+    "deskMirrorFormula": "گراهڪن جي بيلنس جو ڪل + ڊيسڪ بيلنس = ۰",
+    "ledgerBalanced": "ليجر بيلنس ٿي ويو",
+    "allAccounts": "سڀ کاتا",
+    "receivable": "وصولڻ جوڳو (Cr)",
+    "payable": "ادا ڪرڻ جوڳو (Dr)",
+    "addCustomer": "گراهڪ شامل ڪريو",
+    "cust": "گراهڪ",
+    "desk": "ڊيسڪ",
+    "net": "خالص",
+    "balanced": "بيلنس",
+    "noAccountsFound": "ڪو به کاتو نه مليو."
   }
 }

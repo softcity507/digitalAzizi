@@ -39,5 +39,20 @@
     "exploreDemo": "لاگ ان توں بغیر ڈیمو لیجر ویکھو",
     "copyright": "ڈیجیٹل عزیزی ایکسچینج کلاؤڈ سسٹم © ۲۰۲۵۔ سارے حق محفوظ نیں۔",
     "compliance": "صراف حوالہ بک کیپنگ اصولاں مطابق"
+  },
+  "CustomerBook": {
+    "searchPlaceholder": "گاہک دا ناں یا فون لبھو...",
+    "deskMirrorTitle": "ڈیسک مرر پوزیشن تے ڈبل اینٹری",
+    "deskMirrorFormula": "گاہک بیلنس دا جوڑ + ڈیسک بیلنس = ۰",
+    "ledgerBalanced": "لیجر بیلنس ہو گیا",
+    "allAccounts": "سارے کھاتے",
+    "receivable": "وصول طلب (Cr)",
+    "payable": "دین داری (Dr)",
+    "addCustomer": "گاہک جوڑو",
+    "cust": "گاہک",
+    "desk": "ڈیسک",
+    "net": "نیٹ",
+    "balanced": "بیلنسڈ",
+    "noAccountsFound": "کوئی کھاتہ نہیں لبھیا۔"
   }
 }

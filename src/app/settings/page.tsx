@@ -1,3 +1,5 @@
+import LanguageSelector from '@/components/mini/LanguageSelector';
+import ThemeToggle from '@/components/mini/ThemeToggle';
 import { useTranslations } from 'next-intl';
 
 export default function SettingsPage() {
@@ -9,6 +11,10 @@ export default function SettingsPage() {
         <div className="w-16 h-16 mx-auto rounded-2xl bg-surface-hover text-content-primary flex items-center justify-center text-3xl font-bold border border-surface-border">
           ⚙️
         </div>
+        <div className='flex items-center justify-center gap-4'>
+          <LanguageSelector compact />
+          <ThemeToggle />
+        </div>
         <h1 className="text-3xl font-extrabold text-content-primary">
           {t('settings')}
         </h1>
@@ -16,6 +22,7 @@ export default function SettingsPage() {
           SettingsPage (src/app/settings/page.tsx)
         </p>
       </div>
+
     </div>
   );
 }

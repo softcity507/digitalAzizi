@@ -1,21 +1,21 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { useTransition } from 'react';
+import { useTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LANGUAGES, SupportedLocale } from '@/i18n/languages';
 
-const PRIMARY_LANGUAGES: { code: SupportedLocale; title: string; subtitle: string }[] = [
-  { code: 'en', title: 'EN', subtitle: 'English' },
-  { code: 'ps', title: 'پښتو', subtitle: 'Pashto' },
-  { code: 'fa', title: 'دری', subtitle: 'Farsi' },
-  { code: 'ar', title: 'العربية', subtitle: 'Arabic' },
-];
+const PRIMARY_CODES: SupportedLocale[] = ['en', 'ps', 'fa', 'ar'];
 
 export default function QuickLanguageSelector({ className = '' }: { className?: string }) {
   const currentLocale = useLocale() as SupportedLocale;
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [showAll, setShowAll] = useState(false);
+
+  const displayLanguages = showAll
+    ? LANGUAGES
+    : LANGUAGES.filter(l => PRIMARY_CODES.includes(l.code));
 
   const handleLanguageChange = (newLocale: SupportedLocale) => {
     if (newLocale === currentLocale) return;
@@ -36,34 +36,51 @@ export default function QuickLanguageSelector({ className = '' }: { className?: 
   };
 
   return (
-    <div className={`grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 w-full ${className}`}>
-      {PRIMARY_LANGUAGES.map(lang => {
-        const isActive = currentLocale === lang.code;
-        return (
-          <button
-            key={lang.code}
-            type="button"
-            onClick={() => handleLanguageChange(lang.code)}
-            disabled={isPending}
-            className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition-all duration-200 cursor-pointer active:scale-95 ${
-              isActive
-                ? 'bg-surface border-brand shadow-md shadow-brand/15 ring-1 ring-brand text-brand'
-                : 'bg-surface/80 border-surface-border hover:bg-surface-hover hover:border-surface-border text-content-primary'
-            }`}
-          >
-            <span
-              className={`text-sm sm:text-base font-bold tracking-tight ${
-                isActive ? 'text-brand' : 'text-content-primary'
+    <div className={`space-y-2.5 w-full ${className}`}>
+      {/* Dynamic Language Grid mapped over LANGUAGES */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 w-full">
+        {displayLanguages.map(lang => {
+          const isActive = currentLocale === lang.code;
+          return (
+            <button
+              key={lang.code}
+              type="button"
+              onClick={() => handleLanguageChange(lang.code)}
+              disabled={isPending}
+              className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition-all duration-200 cursor-pointer active:scale-95 ${
+                isActive
+                  ? 'bg-surface border-brand shadow-md shadow-brand/15 ring-1 ring-brand text-brand'
+                  : 'bg-surface/80 border-surface-border hover:bg-surface-hover hover:border-surface-border text-content-primary'
               }`}
             >
-              {lang.title}
-            </span>
-            <span className="text-[10px] sm:text-[11px] font-medium text-content-secondary mt-0.5">
-              {lang.subtitle}
-            </span>
-          </button>
-        );
-      })}
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm">{lang.flag}</span>
+                <span
+                  className={`text-sm sm:text-base font-bold tracking-tight ${
+                    isActive ? 'text-brand' : 'text-content-primary'
+                  }`}
+                >
+                  {lang.nativeName}
+                </span>
+              </div>
+              <span className="text-[10px] sm:text-[11px] font-medium text-content-secondary mt-0.5">
+                {lang.name}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Toggle to view all 12 languages from languages.ts */}
+      <div className="flex justify-center pt-1">
+        <button
+          type="button"
+          onClick={() => setShowAll(prev => !prev)}
+          className="text-xs font-semibold text-brand hover:text-brand-300 transition-colors"
+        >
+          {showAll ? 'Show Fewer Languages' : `View All ${LANGUAGES.length} Languages`}
+        </button>
+      </div>
     </div>
   );
 }
