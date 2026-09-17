@@ -3,6 +3,8 @@ export type CurrencyCode = 'AFN' | 'USD' | 'PKR';
 export type TransactionType = 'cash_in' | 'cash_out' | 'exchange';
 
 export interface ExchangeData {
+  fromUser?: string;
+  toUser?: string;
   fromCurrency: CurrencyCode;
   fromAmount: number;
   toCurrency: CurrencyCode;
@@ -13,6 +15,8 @@ export interface ExchangeData {
 export interface CashBookEntry {
   id: string;
   customerName: string;
+  fromCustomer?: string;
+  toCustomer?: string;
   type: TransactionType;
   amount: number;
   currency: CurrencyCode;

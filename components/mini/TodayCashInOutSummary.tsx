@@ -1,8 +1,10 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useCashBookStore } from '@/store/useCashBookStore';
 
 export default function TodayCashInOutSummary() {
+  const t = useTranslations('CashBook');
   const { getTodaySummary } = useCashBookStore();
   const { cashIn, cashOut } = getTodaySummary();
 
@@ -25,12 +27,18 @@ export default function TodayCashInOutSummary() {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-3 w-full">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
       {/* Today Cash In Card */}
-      <div className="bg-surface/90 rounded-3xl p-4 sm:p-5 border border-surface-border shadow-md space-y-3">
-        <h3 className="text-xs sm:text-sm font-bold text-[#34d399] tracking-tight">
-          Today Cash In
-        </h3>
+      <div className="bg-surface/90 rounded-3xl p-4 sm:p-5 border border-surface-border shadow-md space-y-3 hover:border-emerald-500/30 transition-colors">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs sm:text-sm font-bold text-[#34d399] tracking-tight flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#34d399]" />
+            <span>{t('todayCashIn')}</span>
+          </h3>
+          <span className="text-[10px] uppercase font-bold text-[#34d399] bg-[#34d399]/10 px-2 py-0.5 rounded-md">
+            + Cr
+          </span>
+        </div>
 
         <div className="space-y-1.5">
           {/* PKR */}
@@ -72,10 +80,16 @@ export default function TodayCashInOutSummary() {
       </div>
 
       {/* Today Cash Out Card */}
-      <div className="bg-surface/90 rounded-3xl p-4 sm:p-5 border border-surface-border shadow-md space-y-3">
-        <h3 className="text-xs sm:text-sm font-bold text-[#fda4af] tracking-tight">
-          Today Cash Out
-        </h3>
+      <div className="bg-surface/90 rounded-3xl p-4 sm:p-5 border border-surface-border shadow-md space-y-3 hover:border-rose-500/30 transition-colors">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs sm:text-sm font-bold text-[#fda4af] tracking-tight flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#fda4af]" />
+            <span>{t('todayCashOut')}</span>
+          </h3>
+          <span className="text-[10px] uppercase font-bold text-[#fda4af] bg-[#fda4af]/10 px-2 py-0.5 rounded-md">
+            - Dr
+          </span>
+        </div>
 
         <div className="space-y-1.5">
           {/* PKR */}

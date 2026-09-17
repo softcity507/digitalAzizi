@@ -1,8 +1,10 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useCashBookStore } from '@/store/useCashBookStore';
 
 export default function CashSummaryCard() {
+  const t = useTranslations('CashBook');
   const { getCashNetBalances } = useCashBookStore();
   const balances = getCashNetBalances();
 
@@ -16,11 +18,16 @@ export default function CashSummaryCard() {
 
   return (
     <div className="w-full bg-surface/90 rounded-3xl p-4 sm:p-5 border border-surface-border shadow-lg">
-      <div className="text-base font-bold text-white mb-3">Cash</div>
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-[#38bdf8]" />
+          <span>{t('cashDesk')}</span>
+        </div>
+      </div>
 
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {/* PKR Box */}
-        <div className="bg-canvas/90 rounded-2xl p-3 border border-surface-border/50 flex flex-col justify-between">
+        <div className="bg-canvas/90 rounded-2xl p-3 border border-surface-border/50 flex flex-col justify-between hover:border-[#38bdf8]/30 transition-colors">
           <span className="text-[11px] font-semibold text-slate-400">PKR</span>
           <span
             className={`text-sm sm:text-base font-mono font-bold tracking-tight truncate ${
@@ -32,7 +39,7 @@ export default function CashSummaryCard() {
         </div>
 
         {/* AFN Box */}
-        <div className="bg-canvas/90 rounded-2xl p-3 border border-surface-border/50 flex flex-col justify-between">
+        <div className="bg-canvas/90 rounded-2xl p-3 border border-surface-border/50 flex flex-col justify-between hover:border-[#38bdf8]/30 transition-colors">
           <span className="text-[11px] font-semibold text-slate-400">AFN</span>
           <span
             className={`text-sm sm:text-base font-mono font-bold tracking-tight truncate ${
@@ -44,7 +51,7 @@ export default function CashSummaryCard() {
         </div>
 
         {/* USD Box */}
-        <div className="bg-canvas/90 rounded-2xl p-3 border border-surface-border/50 flex flex-col justify-between">
+        <div className="bg-canvas/90 rounded-2xl p-3 border border-surface-border/50 flex flex-col justify-between hover:border-[#38bdf8]/30 transition-colors">
           <span className="text-[11px] font-semibold text-slate-400">USD</span>
           <span
             className={`text-sm sm:text-base font-mono font-bold tracking-tight truncate ${

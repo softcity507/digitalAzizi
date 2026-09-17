@@ -1,8 +1,10 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useCashBookStore } from '@/store/useCashBookStore';
 
 export default function DeleteConfirmModal() {
+  const t = useTranslations('CashBook');
   const { activeModal, closeModal, deleteTransaction, deletingTransactionId } =
     useCashBookStore();
 
@@ -19,9 +21,9 @@ export default function DeleteConfirmModal() {
           🗑️
         </div>
 
-        <h3 className="text-lg font-bold text-white">Delete Transaction</h3>
+        <h3 className="text-lg font-bold text-white">{t('deleteConfirmTitle')}</h3>
         <p className="text-xs text-slate-300">
-          Are you sure you want to delete this cash book entry? This action will update the cash totals immediately.
+          {t('deleteConfirmDesc')}
         </p>
 
         <div className="flex items-center gap-3 pt-2">
@@ -30,14 +32,14 @@ export default function DeleteConfirmModal() {
             onClick={closeModal}
             className="w-1/2 h-11 rounded-xl bg-surface hover:bg-surface-hover border border-surface-border text-slate-300 font-semibold text-sm transition-colors cursor-pointer"
           >
-            Cancel
+            {t('cancel')}
           </button>
           <button
             type="button"
             onClick={handleConfirm}
             className="w-1/2 h-11 rounded-xl bg-[#f87171] hover:bg-red-600 text-white font-bold text-sm transition-all shadow-glow-debit cursor-pointer"
           >
-            Delete
+            {t('delete')}
           </button>
         </div>
       </div>

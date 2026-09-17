@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useCashBookStore } from '@/store/useCashBookStore';
 import { CurrencyCode } from '@/types/cashbook';
 import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 
 export default function CashOutModal() {
+  const t = useTranslations('CashBook');
   const { activeModal, closeModal, addTransaction, selectedDate } = useCashBookStore();
 
   const [customerName, setCustomerName] = useState('');
@@ -21,7 +23,7 @@ export default function CashOutModal() {
     e.preventDefault();
     const numAmount = parseFloat(amount);
     if (!customerName.trim() || isNaN(numAmount) || numAmount <= 0) {
-      alert('Please enter a valid customer name and positive amount.');
+      alert(t('validationError'));
       return;
     }
 
@@ -53,12 +55,12 @@ export default function CashOutModal() {
             <div className="w-8 h-8 rounded-xl bg-[#fda4af]/20 border border-[#fda4af]/40 flex items-center justify-center text-[#fda4af] font-bold">
               -
             </div>
-            <h2 className="text-lg font-bold text-white">Record Cash Out</h2>
+            <h2 className="text-lg font-bold text-white">{t('recordCashOut')}</h2>
           </div>
           <button
             type="button"
             onClick={closeModal}
-            aria-label="Close modal"
+            aria-label={t('cancel')}
             className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-surface-hover transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,7 +74,7 @@ export default function CashOutModal() {
           {/* Customer Name */}
           <div>
             <label className="block text-xs font-semibold text-slate-400 mb-1">
-              Customer / Beneficiary Name
+              {t('beneficiaryName')}
             </label>
             <input
               type="text"
@@ -80,7 +82,7 @@ export default function CashOutModal() {
               required
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
-              placeholder="e.g. Haji Noorullah"
+              placeholder={t('beneficiaryPlaceholder')}
               className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm focus:outline-none focus:border-brand"
             />
             <datalist id="customers-list-out">
@@ -94,7 +96,7 @@ export default function CashOutModal() {
           <div className="grid grid-cols-3 gap-2">
             <div className="col-span-2">
               <label className="block text-xs font-semibold text-slate-400 mb-1">
-                Amount Paid Out
+                {t('amountPaidOut')}
               </label>
               <input
                 type="number"
@@ -108,7 +110,7 @@ export default function CashOutModal() {
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-400 mb-1">
-                Currency
+                {t('currency')}
               </label>
               <select
                 value={currency}
@@ -126,7 +128,7 @@ export default function CashOutModal() {
           <div className="grid grid-cols-2 gap-2">
             <div>
               <label className="block text-xs font-semibold text-slate-400 mb-1">
-                Date
+                {t('date')}
               </label>
               <input
                 type="date"
@@ -138,7 +140,7 @@ export default function CashOutModal() {
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-400 mb-1">
-                Serial Voucher
+                {t('serialVoucher')}
               </label>
               <input
                 type="text"
@@ -152,13 +154,13 @@ export default function CashOutModal() {
           {/* Memo / Description */}
           <div>
             <label className="block text-xs font-semibold text-slate-400 mb-1">
-              Memo / Disbursement Note (Optional)
+              {t('memo')}
             </label>
             <input
               type="text"
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
-              placeholder="e.g. Cash disbursement to agent"
+              placeholder={t('memoCashOutPlaceholder')}
               className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm focus:outline-none focus:border-brand"
             />
           </div>
@@ -170,13 +172,13 @@ export default function CashOutModal() {
               onClick={closeModal}
               className="w-1/2 h-11 rounded-xl bg-surface hover:bg-surface-hover border border-surface-border text-slate-300 font-semibold text-sm transition-colors cursor-pointer"
             >
-              Cancel
+              {t('cancel')}
             </button>
             <button
               type="submit"
               className="w-1/2 h-11 rounded-xl bg-[#fda4af] hover:bg-[#f87171] text-black font-bold text-sm transition-all shadow-glow-debit cursor-pointer"
             >
-              Confirm Cash Out
+              {t('confirmCashOut')}
             </button>
           </div>
         </form>

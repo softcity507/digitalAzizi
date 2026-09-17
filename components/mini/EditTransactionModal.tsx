@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { useCashBookStore } from '@/store/useCashBookStore';
 import { CurrencyCode, TransactionType } from '@/types/cashbook';
 import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 
 export default function EditTransactionModal() {
+  const t = useTranslations('CashBook');
   const { activeModal, closeModal, updateTransaction, editingTransaction } =
     useCashBookStore();
 
@@ -37,7 +39,7 @@ export default function EditTransactionModal() {
     e.preventDefault();
     const numAmount = parseFloat(amount);
     if (!customerName.trim() || isNaN(numAmount) || numAmount <= 0) {
-      alert('Please enter valid fields.');
+      alert(t('editValidationError'));
       return;
     }
 
@@ -62,12 +64,12 @@ export default function EditTransactionModal() {
             <div className="w-8 h-8 rounded-xl bg-surface-hover border border-surface-border flex items-center justify-center text-[#38bdf8] font-bold">
               ✎
             </div>
-            <h2 className="text-lg font-bold text-white">Edit Transaction</h2>
+            <h2 className="text-lg font-bold text-white">{t('editTransaction')}</h2>
           </div>
           <button
             type="button"
             onClick={closeModal}
-            aria-label="Close modal"
+            aria-label={t('cancel')}
             className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-surface-hover transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -81,7 +83,7 @@ export default function EditTransactionModal() {
           {/* Transaction Type Radio Selector */}
           <div>
             <label className="block text-xs font-semibold text-slate-400 mb-1.5">
-              Entry Type
+              {t('entryType')}
             </label>
             <div className="grid grid-cols-2 gap-2">
               <button
@@ -93,7 +95,7 @@ export default function EditTransactionModal() {
                     : 'bg-surface-input border-surface-border text-slate-400'
                 }`}
               >
-                Cash In (+)
+                {t('cashInBtn')}
               </button>
               <button
                 type="button"
@@ -104,7 +106,7 @@ export default function EditTransactionModal() {
                     : 'bg-surface-input border-surface-border text-slate-400'
                 }`}
               >
-                Cash Out (-)
+                {t('cashOutBtn')}
               </button>
             </div>
           </div>
@@ -112,7 +114,7 @@ export default function EditTransactionModal() {
           {/* Customer Name */}
           <div>
             <label className="block text-xs font-semibold text-slate-400 mb-1">
-              Customer / Counterparty Name
+              {t('customerName')}
             </label>
             <input
               type="text"
@@ -120,6 +122,7 @@ export default function EditTransactionModal() {
               required
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
+              placeholder={t('customerPlaceholder')}
               className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm focus:outline-none focus:border-brand"
             />
             <datalist id="customers-list-edit">
@@ -133,7 +136,7 @@ export default function EditTransactionModal() {
           <div className="grid grid-cols-3 gap-2">
             <div className="col-span-2">
               <label className="block text-xs font-semibold text-slate-400 mb-1">
-                Amount
+                {t('amount')}
               </label>
               <input
                 type="number"
@@ -146,7 +149,7 @@ export default function EditTransactionModal() {
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-400 mb-1">
-                Currency
+                {t('currency')}
               </label>
               <select
                 value={currency}
@@ -164,7 +167,7 @@ export default function EditTransactionModal() {
           <div className="grid grid-cols-2 gap-2">
             <div>
               <label className="block text-xs font-semibold text-slate-400 mb-1">
-                Date
+                {t('date')}
               </label>
               <input
                 type="date"
@@ -176,7 +179,7 @@ export default function EditTransactionModal() {
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-400 mb-1">
-                Time
+                {t('time')}
               </label>
               <input
                 type="text"
@@ -191,7 +194,7 @@ export default function EditTransactionModal() {
           <div className="grid grid-cols-3 gap-2">
             <div>
               <label className="block text-xs font-semibold text-slate-400 mb-1">
-                Serial
+                {t('serial')}
               </label>
               <input
                 type="text"
@@ -202,7 +205,7 @@ export default function EditTransactionModal() {
             </div>
             <div className="col-span-2">
               <label className="block text-xs font-semibold text-slate-400 mb-1">
-                Memo
+                {t('memo')}
               </label>
               <input
                 type="text"
@@ -220,13 +223,13 @@ export default function EditTransactionModal() {
               onClick={closeModal}
               className="w-1/2 h-11 rounded-xl bg-surface hover:bg-surface-hover border border-surface-border text-slate-300 font-semibold text-sm transition-colors cursor-pointer"
             >
-              Cancel
+              {t('cancel')}
             </button>
             <button
               type="submit"
               className="w-1/2 h-11 rounded-xl bg-brand hover:bg-brand-hover text-black font-bold text-sm transition-all shadow-glow-brand cursor-pointer"
             >
-              Save Changes
+              {t('saveChanges')}
             </button>
           </div>
         </form>

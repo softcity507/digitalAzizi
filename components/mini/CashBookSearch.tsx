@@ -1,15 +1,17 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useCashBookStore } from '@/store/useCashBookStore';
 
 export default function CashBookSearch() {
+  const t = useTranslations('CashBook');
   const { searchQuery, setSearchQuery } = useCashBookStore();
 
   return (
     <div className="relative w-full">
       <div className="relative flex items-center">
-        {/* Left Search Icon */}
-        <div className="absolute left-4 flex items-center pointer-events-none text-slate-400">
+        {/* Search Icon */}
+        <div className="absolute left-4 rtl:left-auto rtl:right-4 flex items-center pointer-events-none text-slate-400">
           <svg
             className="w-5 h-5"
             fill="none"
@@ -30,8 +32,8 @@ export default function CashBookSearch() {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search customer, memo, serial..."
-          className="w-full h-12 pl-12 pr-10 rounded-2xl bg-surface-input/90 border border-surface-border text-slate-100 placeholder:text-slate-400 text-sm focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all shadow-inner"
+          placeholder={t('searchPlaceholder')}
+          className="w-full h-12 pl-12 pr-10 rtl:pl-10 rtl:pr-12 rounded-2xl bg-surface-input/90 border border-surface-border text-slate-100 placeholder:text-slate-400 text-sm focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all shadow-inner"
         />
 
         {/* Clear Button */}
@@ -39,8 +41,9 @@ export default function CashBookSearch() {
           <button
             type="button"
             onClick={() => setSearchQuery('')}
-            aria-label="Clear Search"
-            className="absolute right-3.5 p-1 rounded-full text-slate-400 hover:text-white hover:bg-surface-hover transition-colors"
+            aria-label={t('clearSearch')}
+            title={t('clearSearch')}
+            className="absolute right-3.5 rtl:right-auto rtl:left-3.5 p-1 rounded-full text-slate-400 hover:text-white hover:bg-surface-hover transition-colors"
           >
             <svg
               className="w-4 h-4"

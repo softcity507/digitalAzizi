@@ -21,33 +21,46 @@ export default function CashBookContainer() {
   const transactions = getFilteredTransactions();
 
   return (
-    <div className="w-full max-w-xl mx-auto px-4 sm:px-6 py-3 sm:py-5 space-y-4 pb-28 sm:pb-24">
+    <div className="w-full max-w-7xl 2xl:max-w-[1500px] mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 space-y-5 sm:space-y-6 pb-28 sm:pb-20">
       {/* 1. Header (Company Title, Subtitle, Notifications & Page Heading) */}
       <CashBookHeader />
 
-      {/* 2. Date Navigation Bar (< Date >) */}
-      <CashBookDateBar />
+      {/* 2. Responsive Dashboard Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
+        {/* Left Column: Summary, Date, Filters & Operations (Sticky on Laptop/Desktop) */}
+        <div className="lg:col-span-5 xl:col-span-4 space-y-4 lg:sticky lg:top-20">
+          {/* Operations Action Buttons */}
+          <div className="bg-surface/60 rounded-3xl p-3 border border-surface-border shadow-sm">
+            <CashBookOperations />
+          </div>
 
-      {/* 3. Customer / Desk Currency Filter Tabs (All, PKR, AFN, USD) */}
-      <CashBookCurrencyFilter />
+          {/* Date Navigation Bar (< Date >) */}
+          <CashBookDateBar />
 
-      {/* 4. Cash Summary Card (PKR, AFN, USD) */}
-      <CashSummaryCard />
+          {/* Currency Filter Tabs (All, PKR, AFN, USD) */}
+          <CashBookCurrencyFilter />
 
-      {/* 5. Today Cash In & Today Cash Out Dual Summary Cards */}
-      <TodayCashInOutSummary />
+          {/* Cash Summary Card (PKR, AFN, USD) */}
+          <CashSummaryCard />
 
-      {/* 6. Search Bar (Customer, Memo, Serial...) */}
-      <CashBookSearch />
+          {/* Today Cash In & Today Cash Out Dual Summary Cards */}
+          <TodayCashInOutSummary />
+        </div>
 
-      {/* 7. Transactions Count Badge */}
-      <TransactionCounterBadge count={transactions.length} />
+        {/* Right Column: Search & Transactions Details Feed */}
+        <div className="lg:col-span-7 xl:col-span-8 space-y-4">
+          {/* Search Bar (Customer, Memo, Serial...) */}
+          <CashBookSearch />
 
-      {/* 8. Cash Book Transaction Details List */}
-      <CashBookTransactionList />
+          {/* Transactions Count & Status Header */}
+          <div className="flex items-center justify-between gap-2 px-1">
+            <TransactionCounterBadge count={transactions.length} />
+          </div>
 
-      {/* 9. Operations Action Buttons (Cash Out (-), Exchange, Cash In (+)) */}
-      <CashBookOperations />
+          {/* Cash Book Transaction Details List */}
+          <CashBookTransactionList />
+        </div>
+      </div>
 
       {/* Interactive Modals */}
       <CashInModal />
