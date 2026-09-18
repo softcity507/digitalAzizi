@@ -7,17 +7,12 @@ import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 
 export default function ExchangeCustomerSelect() {
   const t = useTranslations('ExchangeDesk');
-  const { customerId, setCustomerId, getCurrency } = useExchangeDeskStore();
+  const { customerId, setCustomerId } = useExchangeDeskStore();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const selectedCustomer =
     CUSTOMER_ACCOUNTS.find((c) => c.id === customerId) || CUSTOMER_ACCOUNTS[1] || CUSTOMER_ACCOUNTS[0];
-
-  // Find balance matching target currency or default to first balance
-  const primaryBalance =
-    selectedCustomer.balances.find((b) => b.currency === getCurrency) ||
-    selectedCustomer.balances[0] || { amount: '+8,449,800', currency: 'AFN', isCredit: true };
 
   // Close on outside click
   useEffect(() => {
@@ -58,20 +53,19 @@ export default function ExchangeCustomerSelect() {
           </div>
         </div>
 
-        {/* All Currency Balances Displayed Separately & Chevron */}
+        {/* Responsive Balances Display & Chevron */}
         <div className="flex items-center gap-2 shrink-0">
-          <div className="flex items-center gap-1.5 flex-wrap justify-end">
+          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-1.5 justify-end">
             {selectedCustomer.balances.map((bal, idx) => {
               const num = parseFloat(bal.amount.replace(/[^0-9.-]/g, ''));
               if (!isNaN(num) && num === 0) return null;
               return (
                 <span
                   key={idx}
-                  className={`text-[11px] sm:text-xs font-mono font-extrabold px-2 py-0.5 rounded-lg border whitespace-nowrap ${
-                    bal.isCredit
+                  className={`text-[10px] sm:text-xs font-mono font-extrabold px-2 py-0.5 rounded-lg border whitespace-nowrap ${bal.isCredit
                       ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
                       : 'text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/20'
-                  }`}
+                    }`}
                 >
                   {bal.amount}{' '}
                   <span className="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-300">
@@ -82,9 +76,8 @@ export default function ExchangeCustomerSelect() {
             })}
           </div>
           <svg
-            className={`w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200 shrink-0 ${
-              isOpen ? 'rotate-180' : ''
-            }`}
+            className={`w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''
+              }`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -108,11 +101,10 @@ export default function ExchangeCustomerSelect() {
                   setCustomerId(customer.id);
                   setIsOpen(false);
                 }}
-                className={`w-full p-2.5 rounded-xl text-left flex items-center justify-between gap-2 transition-colors ${
-                  isSelected
+                className={`w-full p-2.5 rounded-xl text-left flex items-center justify-between gap-2 transition-colors ${isSelected
                     ? 'bg-brand/15 border border-brand/40 text-brand'
                     : 'hover:bg-surface-hover text-slate-800 dark:text-slate-200'
-                }`}
+                  }`}
               >
                 <div className="min-w-0 pr-2">
                   <span className="block text-xs sm:text-sm font-bold truncate">{customer.name}</span>
@@ -123,19 +115,18 @@ export default function ExchangeCustomerSelect() {
                   )}
                 </div>
 
-                {/* Separately Displayed Balances for Every Customer */}
-                <div className="flex flex-wrap items-center justify-end gap-1.5 shrink-0">
+                {/* Responsive Balances for Dropdown Items */}
+                <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-1.5 justify-end shrink-0">
                   {customer.balances.map((bal, idx) => {
                     const num = parseFloat(bal.amount.replace(/[^0-9.-]/g, ''));
                     if (!isNaN(num) && num === 0) return null;
                     return (
                       <span
                         key={idx}
-                        className={`text-[10px] sm:text-xs font-mono font-extrabold px-1.5 sm:px-2 py-0.5 rounded-md border whitespace-nowrap ${
-                          bal.isCredit
+                        className={`text-[10px] sm:text-xs font-mono font-extrabold px-1.5 sm:px-2 py-0.5 rounded-md border whitespace-nowrap ${bal.isCredit
                             ? 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
                             : 'text-rose-500 dark:text-rose-400 bg-rose-500/10 border-rose-500/20'
-                        }`}
+                          }`}
                       >
                         {bal.amount}{' '}
                         <span className="text-[9px] uppercase font-bold text-slate-400">
