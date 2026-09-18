@@ -13,16 +13,25 @@ export default function ExchangeEditModal() {
   const [customerId, setCustomerId] = useState('');
   const [giveAmount, setGiveAmount] = useState('');
   const [giveCurrency, setGiveCurrency] = useState<ExchangeCurrencyCode>('USD');
+  const [calcMode, setCalcMode] = useState<'multiply' | 'divide'>('multiply');
   const [exchangeRate, setExchangeRate] = useState('');
   const [getCurrency, setGetCurrency] = useState<ExchangeCurrencyCode>('AFN');
   const [type, setType] = useState<ExchangeType>('SELL');
   const [memo, setMemo] = useState('');
+
+  const matchedCustomer = CUSTOMER_ACCOUNTS.find((c) => c.id === customerId);
+  const userCurrencies = (matchedCustomer?.balances?.map((b) => b.currency) || [
+    'USD',
+    'AFN',
+    'PKR',
+  ]) as ExchangeCurrencyCode[];
 
   useEffect(() => {
     if (editingTransaction) {
       setCustomerId(editingTransaction.customerId);
       setGiveAmount(editingTransaction.giveAmount.toString());
       setGiveCurrency(editingTransaction.giveCurrency);
+      setCalcMode(editingTransaction.calcMode || 'multiply');
       setExchangeRate(editingTransaction.exchangeRate.toString());
       setGetCurrency(editingTransaction.getCurrency);
       setType(editingTransaction.type);
@@ -42,14 +51,15 @@ export default function ExchangeEditModal() {
       return;
     }
 
-    const matchedCustomer = CUSTOMER_ACCOUNTS.find((c) => c.id === customerId);
-    const customerName = matchedCustomer ? matchedCustomer.name : editingTransaction.customerName;
+    const currentCustomer = CUSTOMER_ACCOUNTS.find((c) => c.id === customerId);
+    const customerName = currentCustomer ? currentCustomer.name : editingTransaction.customerName;
 
     updateTransaction(editingTransaction.id, {
       customerId,
       customerName,
       giveAmount: gAmt,
       giveCurrency,
+      calcMode,
       exchangeRate: rate,
       getCurrency,
       type,
@@ -153,45 +163,74 @@ export default function ExchangeEditModal() {
               <select
                 value={giveCurrency}
                 onChange={(e) => setGiveCurrency(e.target.value as ExchangeCurrencyCode)}
-                className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-brand"
+                className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-brand uppercase"
               >
-                <option value="USD">USD</option>
-                <option value="AFN">AFN</option>
-                <option value="PKR">PKR</option>
-                <option value="EUR">EUR</option>
+                {userCurrencies.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
 
-          {/* Rate & Target Currency */}
-          <div className="grid grid-cols-3 gap-2">
-            <div className="col-span-2">
-              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">
+          {/* Operation Mode (Multiply vs Divide) & Rate */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-slate-500 dark:text-slate-400">
                 {t('exchangeRate')}
               </label>
-              <input
-                type="number"
-                step="any"
-                required
-                value={exchangeRate}
-                onChange={(e) => setExchangeRate(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-mono focus:outline-none focus:border-brand"
-              />
+              <div className="flex items-center gap-1 bg-surface-subtle border border-surface-border rounded-lg p-0.5">
+                <button
+                  type="button"
+                  onClick={() => setCalcMode('multiply')}
+                  className={`px-2 py-0.5 text-[11px] font-bold rounded transition-all ${
+                    calcMode === 'multiply'
+                      ? 'bg-[#38bdf8] text-black font-extrabold shadow-sm'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  ✖ Multiply
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCalcMode('divide')}
+                  className={`px-2 py-0.5 text-[11px] font-bold rounded transition-all ${
+                    calcMode === 'divide'
+                      ? 'bg-[#38bdf8] text-black font-extrabold shadow-sm'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  ➗ Divide
+                </button>
+              </div>
             </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">
-                Target
-              </label>
-              <select
-                value={getCurrency}
-                onChange={(e) => setGetCurrency(e.target.value as ExchangeCurrencyCode)}
-                className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-brand"
-              >
-                <option value="AFN">AFN</option>
-                <option value="PKR">PKR</option>
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-              </select>
+
+            <div className="grid grid-cols-3 gap-2">
+              <div className="col-span-2">
+                <input
+                  type="number"
+                  step="any"
+                  required
+                  value={exchangeRate}
+                  onChange={(e) => setExchangeRate(e.target.value)}
+                  placeholder={calcMode === 'multiply' ? '278.4' : '1500'}
+                  className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-mono focus:outline-none focus:border-brand"
+                />
+              </div>
+              <div>
+                <select
+                  value={getCurrency}
+                  onChange={(e) => setGetCurrency(e.target.value as ExchangeCurrencyCode)}
+                  className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-brand uppercase"
+                >
+                  {userCurrencies.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 

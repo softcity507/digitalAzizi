@@ -1,6 +1,19 @@
-export type ExchangeCurrencyCode = 'AFN' | 'USD' | 'PKR' | 'EUR';
+export type ExchangeCurrencyCode =
+  | 'PKR'
+  | 'AFN'
+  | 'USD'
+  | 'INR'
+  | 'IRR'
+  | 'EUR'
+  | 'GBP'
+  | 'AED'
+  | 'CNY'
+  | 'TRY'
+  | string;
 
 export type ExchangeType = 'BUY' | 'SELL';
+
+export type ExchangeCalcMode = 'multiply' | 'divide';
 
 export interface DoubleEntryLedgerImpact {
   customerReceives: {
@@ -32,6 +45,7 @@ export interface ExchangeDeskEntry {
   type: ExchangeType;
   giveAmount: number;
   giveCurrency: ExchangeCurrencyCode;
+  calcMode?: ExchangeCalcMode;
   exchangeRate: number;
   getAmount: number;
   getCurrency: ExchangeCurrencyCode;

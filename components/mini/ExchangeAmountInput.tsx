@@ -3,19 +3,33 @@
 import { useTranslations } from 'next-intl';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 import { ExchangeCurrencyCode } from '@/types/exchange';
+import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 
-const CURRENCIES: ExchangeCurrencyCode[] = ['AFN', 'USD', 'PKR', 'EUR'];
-
-const CURRENCY_SYMBOLS: Record<ExchangeCurrencyCode, string> = {
+const CURRENCY_SYMBOLS: Record<string, string> = {
   USD: '$',
   AFN: '؋',
   PKR: '₨',
+  INR: '₹',
+  IRR: '﷼',
   EUR: '€',
+  GBP: '£',
+  AED: 'د.إ',
+  CNY: '¥',
+  TRY: '₺',
 };
 
 export default function ExchangeAmountInput() {
   const t = useTranslations('ExchangeDesk');
-  const { giveAmount, setGiveAmount, giveCurrency, setGiveCurrency, type } = useExchangeDeskStore();
+  const { customerId, giveAmount, setGiveAmount, giveCurrency, setGiveCurrency, type } =
+    useExchangeDeskStore();
+
+  // Find customer's assigned 3 currencies
+  const matchedCustomer = CUSTOMER_ACCOUNTS.find((c) => c.id === customerId);
+  const userCurrencies = (matchedCustomer?.balances?.map((b) => b.currency) || [
+    'USD',
+    'AFN',
+    'PKR',
+  ]) as ExchangeCurrencyCode[];
 
   const symbol = CURRENCY_SYMBOLS[giveCurrency] || '$';
 
@@ -47,9 +61,9 @@ export default function ExchangeAmountInput() {
           />
         </div>
 
-        {/* Currency Selector Pills */}
+        {/* User's 3 Specific Currency Selector Pills */}
         <div className="flex items-center gap-1 p-1 rounded-xl bg-surface-input border border-surface-border shrink-0">
-          {CURRENCIES.map((curr) => {
+          {userCurrencies.map((curr) => {
             const isSelected = giveCurrency === curr;
             return (
               <button

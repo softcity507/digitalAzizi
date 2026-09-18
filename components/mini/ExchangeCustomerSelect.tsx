@@ -61,18 +61,16 @@ export default function ExchangeCustomerSelect() {
         {/* Balance Badge & Chevron */}
         <div className="flex items-center gap-2 shrink-0">
           <span
-            className={`text-xs sm:text-sm font-mono font-extrabold px-2.5 py-1 rounded-xl border ${
-              primaryBalance.isCredit
+            className={`text-xs sm:text-sm font-mono font-extrabold px-2.5 py-1 rounded-xl border ${primaryBalance.isCredit
                 ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
                 : 'text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/20'
-            }`}
+              }`}
           >
             {primaryBalance.amount} {primaryBalance.currency}
           </span>
           <svg
-            className={`w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200 ${
-              isOpen ? 'rotate-180' : ''
-            }`}
+            className={`w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200 ${isOpen ? 'rotate-180' : ''
+              }`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -98,11 +96,10 @@ export default function ExchangeCustomerSelect() {
                   setCustomerId(customer.id);
                   setIsOpen(false);
                 }}
-                className={`w-full p-2.5 rounded-xl text-left flex items-center justify-between transition-colors ${
-                  isSelected
+                className={`w-full p-2.5 rounded-xl text-left flex items-center justify-between transition-colors ${isSelected
                     ? 'bg-brand/15 border border-brand/40 text-brand'
                     : 'hover:bg-surface-hover text-slate-800 dark:text-slate-200'
-                }`}
+                  }`}
               >
                 <div>
                   <span className="block text-xs sm:text-sm font-bold">{customer.name}</span>
@@ -114,9 +111,8 @@ export default function ExchangeCustomerSelect() {
                 </div>
                 {bal && (
                   <span
-                    className={`text-xs font-mono font-bold ${
-                      bal.isCredit ? 'text-emerald-500' : 'text-rose-500'
-                    }`}
+                    className={`text-xs font-mono font-bold ${bal.isCredit ? 'text-emerald-500' : 'text-rose-500'
+                      }`}
                   >
                     {bal.amount} {bal.currency}
                   </span>

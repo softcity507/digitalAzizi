@@ -5,13 +5,23 @@ import { useExchangeDeskStore, computeDoubleEntryLedger } from '@/store/useExcha
 
 export default function ExchangeLiveComputed() {
   const t = useTranslations('ExchangeDesk');
-  const { type, giveAmount, giveCurrency, exchangeRate, getCurrency } = useExchangeDeskStore();
+  const { type, giveAmount, giveCurrency, exchangeRate, getCurrency, calcMode } =
+    useExchangeDeskStore();
 
   const gAmt = parseFloat(giveAmount) || 0;
   const rate = parseFloat(exchangeRate) || 0;
-  const computedGetAmount = Math.round(gAmt * rate * 100) / 100;
+  
+  // Calculate based on Multiply vs Divide mode:
+  const computedGetAmount =
+    calcMode === 'multiply'
+      ? Math.round(gAmt * rate * 100) / 100
+      : rate > 0
+      ? Math.round((gAmt / rate) * 100) / 100
+      : 0;
 
   const ledger = computeDoubleEntryLedger(type, gAmt, giveCurrency, computedGetAmount, getCurrency);
+
+  const opSymbol = calcMode === 'multiply' ? '✖' : '➗';
 
   return (
     <div className="w-full rounded-3xl bg-surface-subtle/90 dark:bg-canvas/90 border border-surface-border p-4 sm:p-5 space-y-4 shadow-xl">
@@ -26,13 +36,15 @@ export default function ExchangeLiveComputed() {
         </span>
       </div>
 
-      {/* Main Equation Display */}
-      <div className="text-center py-2 px-3 rounded-2xl bg-surface/70 border border-surface-border">
-        <div className="text-lg sm:text-2xl font-mono font-black tracking-tight text-slate-900 dark:text-white">
+      {/* Main Equation Display (Multiply or Divide) */}
+      <div className="text-center py-2.5 px-3 rounded-2xl bg-surface/70 border border-surface-border">
+        <div className="text-lg sm:text-2xl font-mono font-black tracking-tight text-slate-900 dark:text-white flex items-center justify-center flex-wrap gap-1.5">
           <span>{gAmt.toLocaleString()} {giveCurrency}</span>
-          <span className="text-slate-400 dark:text-slate-500 mx-2">×</span>
+          <span className="text-brand font-extrabold mx-1 bg-brand/10 px-2 py-0.5 rounded-lg border border-brand/20 text-sm">
+            {opSymbol}
+          </span>
           <span>{rate}</span>
-          <span className="text-slate-400 dark:text-slate-500 mx-2">=</span>
+          <span className="text-slate-400 dark:text-slate-500 mx-1">=</span>
           <span className="text-[#38bdf8] font-black">{computedGetAmount.toLocaleString()} {getCurrency}</span>
         </div>
       </div>

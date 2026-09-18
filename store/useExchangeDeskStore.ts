@@ -1,7 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
-import { ExchangeCurrencyCode, ExchangeType, ExchangeDeskEntry, DoubleEntryLedgerImpact } from '@/types/exchange';
+import { ExchangeCurrencyCode, ExchangeType, ExchangeDeskEntry, DoubleEntryLedgerImpact, ExchangeCalcMode } from '@/types/exchange';
 import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 
 export function computeDoubleEntryLedger(
@@ -70,6 +70,7 @@ const INITIAL_EXCHANGES: ExchangeDeskEntry[] = [
     type: 'SELL',
     giveAmount: 5000,
     giveCurrency: 'USD',
+    calcMode: 'multiply',
     exchangeRate: 71.2,
     getAmount: 356000,
     getCurrency: 'AFN',
@@ -91,6 +92,7 @@ const INITIAL_EXCHANGES: ExchangeDeskEntry[] = [
     type: 'SELL',
     giveAmount: 2500,
     giveCurrency: 'USD',
+    calcMode: 'multiply',
     exchangeRate: 278.4,
     getAmount: 696000,
     getCurrency: 'PKR',
@@ -107,22 +109,23 @@ const INITIAL_EXCHANGES: ExchangeDeskEntry[] = [
   },
   {
     id: 'ex-3',
-    customerId: 'haji-noorullah',
-    customerName: 'Haji Noorullah',
+    customerId: 'rajesh-kumar',
+    customerName: 'Rajesh Kumar & Sons',
     type: 'SELL',
-    giveAmount: 10000,
-    giveCurrency: 'EUR',
-    exchangeRate: 1.085,
-    getAmount: 10850,
-    getCurrency: 'USD',
+    giveAmount: 5000,
+    giveCurrency: 'USD',
+    calcMode: 'multiply',
+    exchangeRate: 83.5,
+    getAmount: 417500,
+    getCurrency: 'INR',
     date: '2026-09-16',
     time: '04:20 PM',
     timeAgo: 'Yesterday',
     ledgerImpact: {
-      customerReceives: { amount: 10850, formatted: '+10,850', currency: 'USD' },
-      customerPays: { amount: 10000, formatted: '-10,000', currency: 'EUR' },
-      exchangePays: { amount: 10850, formatted: '-10,850', currency: 'USD' },
-      exchangeReceives: { amount: 10000, formatted: '+10,000', currency: 'EUR' },
+      customerReceives: { amount: 417500, formatted: '+417,500', currency: 'INR' },
+      customerPays: { amount: 5000, formatted: '-5,000', currency: 'USD' },
+      exchangePays: { amount: 417500, formatted: '-417,500', currency: 'INR' },
+      exchangeReceives: { amount: 5000, formatted: '+5,000', currency: 'USD' },
     },
     createdAt: Date.now() - 1000 * 60 * 60 * 24,
   },
@@ -133,6 +136,7 @@ interface ExchangeDeskState {
   type: ExchangeType;
   giveAmount: string;
   giveCurrency: ExchangeCurrencyCode;
+  calcMode: ExchangeCalcMode;
   exchangeRate: string;
   getCurrency: ExchangeCurrencyCode;
   memo: string;
@@ -147,6 +151,7 @@ interface ExchangeDeskState {
   setType: (type: ExchangeType) => void;
   setGiveAmount: (amt: string) => void;
   setGiveCurrency: (curr: ExchangeCurrencyCode) => void;
+  setCalcMode: (mode: ExchangeCalcMode) => void;
   setExchangeRate: (rate: string) => void;
   setGetCurrency: (curr: ExchangeCurrencyCode) => void;
   setMemo: (memo: string) => void;
@@ -169,6 +174,7 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
   type: 'SELL',
   giveAmount: '5000',
   giveCurrency: 'USD',
+  calcMode: 'multiply',
   exchangeRate: '71.2',
   getCurrency: 'AFN',
   memo: '',
@@ -178,17 +184,32 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
   deletingTransactionId: null,
   notificationMessage: null,
 
-  setCustomerId: (id) => set({ customerId: id }),
+  setCustomerId: (id) => {
+    const cust = CUSTOMER_ACCOUNTS.find((c) => c.id === id);
+    if (cust && cust.balances && cust.balances.length > 0) {
+      const userCurrs = cust.balances.map((b) => b.currency);
+      const newGive = userCurrs[0] || 'USD';
+      const newGet = userCurrs.find((c) => c !== newGive) || userCurrs[1] || 'PKR';
+      set({
+        customerId: id,
+        giveCurrency: newGive,
+        getCurrency: newGet,
+      });
+    } else {
+      set({ customerId: id });
+    }
+  },
   setType: (type) => set({ type }),
   setGiveAmount: (giveAmount) => set({ giveAmount }),
   setGiveCurrency: (giveCurrency) => set({ giveCurrency }),
+  setCalcMode: (calcMode) => set({ calcMode }),
   setExchangeRate: (exchangeRate) => set({ exchangeRate }),
   setGetCurrency: (getCurrency) => set({ getCurrency }),
   setMemo: (memo) => set({ memo }),
   setSerialNo: (serialNo) => set({ serialNo }),
 
   swapCurrencies: () => {
-    const { giveCurrency, getCurrency, exchangeRate, giveAmount } = get();
+    const { giveCurrency, getCurrency, exchangeRate, calcMode } = get();
     const rateNum = parseFloat(exchangeRate);
     const newRate = rateNum > 0 ? (1 / rateNum).toFixed(4) : exchangeRate;
     set({
@@ -199,7 +220,7 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
   },
 
   commitTransaction: () => {
-    const { customerId, type, giveAmount, giveCurrency, exchangeRate, getCurrency, memo, serialNo, exchanges } = get();
+    const { customerId, type, giveAmount, giveCurrency, calcMode, exchangeRate, getCurrency, memo, serialNo, exchanges } = get();
     const gAmt = parseFloat(giveAmount);
     const rate = parseFloat(exchangeRate);
 
@@ -209,7 +230,11 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
 
     const matchedCustomer = CUSTOMER_ACCOUNTS.find((c) => c.id === customerId);
     const customerName = matchedCustomer ? matchedCustomer.name : 'Counterparty';
-    const computedGetAmount = Math.round(gAmt * rate * 100) / 100;
+    
+    // Multiply vs Divide Calculation:
+    const computedGetAmount = calcMode === 'multiply'
+      ? Math.round(gAmt * rate * 100) / 100
+      : Math.round((gAmt / rate) * 100) / 100;
 
     const ledgerImpact = computeDoubleEntryLedger(
       type,
@@ -233,6 +258,7 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
       type,
       giveAmount: gAmt,
       giveCurrency,
+      calcMode,
       exchangeRate: rate,
       getAmount: computedGetAmount,
       getCurrency,
@@ -247,7 +273,7 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
 
     set({
       exchanges: [newEntry, ...exchanges],
-      notificationMessage: `Committed ${gAmt.toLocaleString()} ${giveCurrency} ➔ ${computedGetAmount.toLocaleString()} ${getCurrency}`,
+      notificationMessage: `Committed ${gAmt.toLocaleString()} ${giveCurrency} ${calcMode === 'multiply' ? '✖' : '➗'} ${rate} ➔ ${computedGetAmount.toLocaleString()} ${getCurrency}`,
     });
 
     return true;
@@ -265,7 +291,10 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
         const rAmt = updated.exchangeRate ?? ex.exchangeRate;
         const targetCurr = updated.getCurrency ?? ex.getCurrency;
         const exType = updated.type ?? ex.type;
-        const computedGetAmount = Math.round(gAmt * rAmt * 100) / 100;
+        const mode = updated.calcMode ?? ex.calcMode ?? 'multiply';
+        const computedGetAmount = mode === 'multiply'
+          ? Math.round(gAmt * rAmt * 100) / 100
+          : Math.round((gAmt / rAmt) * 100) / 100;
         const ledgerImpact = computeDoubleEntryLedger(exType, gAmt, gCurr, computedGetAmount, targetCurr);
 
         return {
@@ -291,3 +320,4 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
 
   clearNotification: () => set({ notificationMessage: null }),
 }));
+

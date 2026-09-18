@@ -19,7 +19,7 @@ export default function ExchangeDeskContainer() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
         {/* Left Column: Exchange Terminal Inputs & Live Double-Entry Math */}
         <div className="lg:col-span-7 xl:col-span-7 space-y-4">
-          <div className="bg-surface/80 dark:bg-surface/60 backdrop-blur-md rounded-3xl p-4 sm:p-6 border border-surface-border shadow-xl space-y-4">
+          <div className="bg-surface/80  dark:bg-surface/60 backdrop-blur-md rounded-3xl p-4 sm:p-6 border border-surface-border shadow-xl space-y-4">
             {/* Customer Selector */}
             <ExchangeCustomerSelect />
 

@@ -3,19 +3,64 @@
 import { useTranslations } from 'next-intl';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 import { ExchangeCurrencyCode } from '@/types/exchange';
-
-const TARGET_CURRENCIES: ExchangeCurrencyCode[] = ['AFN', 'USD', 'PKR', 'EUR'];
+import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 
 export default function ExchangeRateInput() {
   const t = useTranslations('ExchangeDesk');
-  const { exchangeRate, setExchangeRate, getCurrency, setGetCurrency, swapCurrencies } =
-    useExchangeDeskStore();
+  const {
+    customerId,
+    exchangeRate,
+    setExchangeRate,
+    getCurrency,
+    setGetCurrency,
+    swapCurrencies,
+    calcMode,
+    setCalcMode,
+  } = useExchangeDeskStore();
+
+  // Find customer's assigned 3 currencies
+  const matchedCustomer = CUSTOMER_ACCOUNTS.find((c) => c.id === customerId);
+  const userCurrencies = (matchedCustomer?.balances?.map((b) => b.currency) || [
+    'AFN',
+    'USD',
+    'PKR',
+  ]) as ExchangeCurrencyCode[];
 
   return (
-    <div className="w-full space-y-1.5">
-      {/* Label & Invert Button */}
-      <div className="flex items-center justify-between text-[11px] font-black tracking-wider uppercase">
+    <div className="w-full space-y-2">
+      {/* Label, Multiply/Divide Mode Toggle & Swap Button */}
+      <div className="flex items-center justify-between text-[11px] font-black tracking-wider uppercase flex-wrap gap-2">
         <span className="text-slate-500 dark:text-slate-400">{t('exchangeRate')}</span>
+
+        {/* Multiply (✖) and Divide (➗) Toggle */}
+        <div className="flex items-center gap-1 bg-surface-subtle border border-surface-border rounded-xl p-0.5">
+          <button
+            type="button"
+            onClick={() => setCalcMode('multiply')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all duration-150 flex items-center gap-1 ${
+              calcMode === 'multiply'
+                ? 'bg-[#38bdf8] text-black font-extrabold shadow-sm'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <span>✖</span>
+            <span>Multiply</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setCalcMode('divide')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all duration-150 flex items-center gap-1 ${
+              calcMode === 'divide'
+                ? 'bg-[#38bdf8] text-black font-extrabold shadow-sm'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <span>➗</span>
+            <span>Divide</span>
+          </button>
+        </div>
+
+        {/* Swap Currencies Button */}
         <button
           type="button"
           onClick={swapCurrencies}
@@ -29,22 +74,25 @@ export default function ExchangeRateInput() {
 
       {/* Input & Target Currency Pill Group */}
       <div className="flex items-center gap-2 p-2 rounded-2xl bg-surface-subtle border border-surface-border focus-within:border-brand/60 focus-within:ring-2 focus-within:ring-brand/20 transition-all shadow-sm">
-        {/* Rate Numeric Input */}
-        <div className="flex items-center flex-1 px-3">
+        {/* Operation Indicator (✖ or ➗) & Rate Numeric Input */}
+        <div className="flex items-center gap-2 flex-1 px-3">
+          <span className="text-sm font-black text-brand bg-brand/10 px-2 py-0.5 rounded-lg border border-brand/20 select-none">
+            {calcMode === 'multiply' ? '✖' : '➗'}
+          </span>
           <input
             type="number"
             step="any"
             min="0"
             value={exchangeRate}
             onChange={(e) => setExchangeRate(e.target.value)}
-            placeholder="71.2"
+            placeholder={calcMode === 'multiply' ? '278.4' : '1500'}
             className="w-full bg-transparent text-xl sm:text-2xl font-black font-mono text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none tracking-tight"
           />
         </div>
 
-        {/* Target Currency Selector Pills */}
+        {/* Target Currency Selector Pills (Customer's 3 Currencies) */}
         <div className="flex items-center gap-1 p-1 rounded-xl bg-surface-input border border-surface-border shrink-0">
-          {TARGET_CURRENCIES.map((curr) => {
+          {userCurrencies.map((curr) => {
             const isSelected = getCurrency === curr;
             return (
               <button
