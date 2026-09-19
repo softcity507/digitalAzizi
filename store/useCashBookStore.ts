@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { CashBookEntry, CurrencyCode, TransactionType, ExchangeData } from '@/types/cashbook';
+import { CashBookEntry } from '@/types/cashbook';
 
 export type CurrencyFilterType = 'ALL' | 'PKR' | 'AFN' | 'USD';
 export type ModalType = 'cash_in' | 'cash_out' | 'exchange' | 'edit' | 'delete' | null;
