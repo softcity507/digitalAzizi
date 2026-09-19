@@ -1,30 +1,21 @@
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, getLocale } from 'next-intl/server';
-import { cookies } from 'next/headers';
 import './globals.css';
-import { LANGUAGES_MAP, SupportedLocale } from '@/i18n/request';
-import Header from '@/components/max/Header';
+import messages from '../../messages/en.json';
+import { DEFAULT_LOCALE, LANGUAGES_MAP } from '@/i18n/request';
 
 type Props = {
   children: React.ReactNode;
 };
 
-export default async function RootLayout({ children }: Props) {
-  const messages = await getMessages();
-  const locale = (await getLocale()) as SupportedLocale;
-  const langInfo = LANGUAGES_MAP[locale] || LANGUAGES_MAP.en;
-
-  const cookieStore = await cookies();
-  const themeCookie = cookieStore.get('theme')?.value;
-  // Default to dark mode unless explicitly saved as 'light'
-  const isDark = themeCookie !== 'light';
+export default function RootLayout({ children }: Props) {
+  const langInfo = LANGUAGES_MAP[DEFAULT_LOCALE];
 
   return (
     <html
-      lang={locale}
+      lang={DEFAULT_LOCALE}
       dir={langInfo.dir}
-      className={isDark ? 'dark' : ''}
-      data-theme={isDark ? 'dark' : 'light'}
+      className="dark"
+      data-theme="dark"
       suppressHydrationWarning
     >
       <head>
@@ -56,9 +47,13 @@ export default async function RootLayout({ children }: Props) {
         />
       </head>
       <body className="min-h-screen bg-canvas text-content-primary antialiased flex flex-col">
-        <NextIntlClientProvider messages={messages} locale={locale}>
-          <Header />
-          <main className="flex-1">{children}</main>
+        <NextIntlClientProvider
+          formats={{}}
+          locale={DEFAULT_LOCALE}
+          messages={messages}
+          timeZone="UTC"
+        >
+          {children}
         </NextIntlClientProvider>
       </body>
     </html>

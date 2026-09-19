@@ -12,7 +12,7 @@ interface HeaderProps {
 
 export default function Header({ className = '', activeHref }: HeaderProps) {
   const pathname = usePathname();
-  const isLandingPage = pathname === '/';
+  const isLandingPage = /^\/[a-z]{2,3}\/?$/.test(pathname);
 
   if (isLandingPage) {
     return null;

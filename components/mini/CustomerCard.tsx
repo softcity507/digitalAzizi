@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useLocale } from 'next-intl';
 import { CustomerAccount } from '@/types/customer';
 
 interface CustomerCardProps {
@@ -12,9 +13,11 @@ export default function CustomerCard({
   customer,
   className = '',
 }: CustomerCardProps) {
+  const locale = useLocale();
+
   return (
     <Link
-      href={`/details?id=${customer.id}`}
+      href={`/${locale}/details?id=${customer.id}`}
       className={`group flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-surface border border-surface-border shadow-sm hover:border-brand/40 hover:bg-surface-hover/50 transition-all duration-200 cursor-pointer ${className}`}
     >
       {/* Left Column: Customer Details */}

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { NAV_ITEMS_CONFIG } from '@/data/navigation';
 
 interface LinksProps {
@@ -17,12 +17,16 @@ export default function Links({
   onNavigate,
 }: LinksProps) {
   const pathname = usePathname();
+  const locale = useLocale();
   const t = useTranslations('Navigation');
+
+  const localizedHref = (href: string) => `/${locale}${href}`;
+  const routePath = pathname.replace(new RegExp(`^/${locale}(?=/|$)`), '') || '/';
 
   const isCurrentActive = (itemHref: string) => {
     if (activeHref) return activeHref === itemHref;
-    if (itemHref === '/customers') return pathname === '/customers' || pathname === '/';
-    return pathname.startsWith(itemHref);
+    if (itemHref === '/customers') return routePath === '/customers' || routePath === '/';
+    return routePath.startsWith(itemHref);
   };
 
   if (variant === 'desktop-header') {
@@ -33,7 +37,7 @@ export default function Links({
           return (
             <Link
               key={item.key}
-              href={item.href}
+              href={localizedHref(item.href)}
               onClick={onNavigate}
               className={`px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all duration-200 select-none ${
                 active
@@ -58,7 +62,7 @@ export default function Links({
             return (
               <Link
                 key={item.key}
-                href={item.href}
+                href={localizedHref(item.href)}
                 onClick={onNavigate}
                 className={`flex flex-col items-center justify-center gap-1 py-1.5 px-3 rounded-xl text-[10px] font-semibold transition-all duration-200 ${
                   active ? 'text-brand scale-105' : 'text-content-muted hover:text-content-primary'
@@ -89,7 +93,7 @@ export default function Links({
         return (
           <Link
             key={item.key}
-            href={item.href}
+            href={localizedHref(item.href)}
             onClick={onNavigate}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
               active

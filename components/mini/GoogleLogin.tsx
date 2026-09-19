@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
 
 interface GoogleLoginProps {
   className?: string;
@@ -17,6 +18,7 @@ export default function GoogleLogin({
   onSuccess,
 }: GoogleLoginProps) {
   const router = useRouter();
+  const locale = useLocale();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSignIn = async () => {
@@ -27,7 +29,7 @@ export default function GoogleLogin({
       if (onSuccess) {
         onSuccess();
       } else {
-        router.push(redirectTo);
+        router.push(`/${locale}${redirectTo}`);
       }
     } catch (error) {
       console.error('Google Sign-In error:', error);

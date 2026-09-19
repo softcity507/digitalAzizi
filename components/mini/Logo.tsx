@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface LogoProps {
   className?: string;
@@ -19,11 +19,12 @@ export default function Logo({
   size = 'md',
 }: LogoProps) {
   const t = useTranslations('Header');
+  const locale = useLocale();
   const displaySubtitle = subtitle || t('subtitle');
 
   return (
     <Link
-      href="/customers"
+      href={`/${locale}/customers`}
       className={`group flex items-center gap-2.5 select-none transition-transform duration-200 hover:opacity-95 ${className}`}
     >
       {/* Icon Badge */}

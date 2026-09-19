@@ -91,26 +91,13 @@ export default function ThemeToggle() {
       document.documentElement.setAttribute('data-theme', 'light');
     }
 
-    // 2. Persist in LocalStorage & Cookies for instant SSR / refresh persistence
+    // Persist client-side because static exports do not have a request-time server.
     try {
       localStorage.setItem('theme', themeValue);
-      document.cookie = `theme=${themeValue}; path=/; max-age=31536000; SameSite=Lax`;
     } catch (e) {
-      console.warn('Unable to persist theme to localStorage/cookie:', e);
+      console.warn('Unable to persist theme to localStorage:', e);
     }
     window.dispatchEvent(new Event('themechange'));
-
-    // 3. Connect & sync to DB endpoint
-    try {
-      await fetch('/api/user/theme', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ theme: themeValue }),
-      });
-    } catch (e) {
-      // Graceful fallback if backend API/DB is offline or not configured yet
-      console.debug('Theme DB sync skipped:', e);
-    }
   };
 
   return (
@@ -154,4 +141,3 @@ export default function ThemeToggle() {
     </button>
   );
 }
-

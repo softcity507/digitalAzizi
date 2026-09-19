@@ -1,5 +1,4 @@
 import { getRequestConfig } from 'next-intl/server';
-import { cookies } from 'next/headers';
 
 export const SUPPORTED_LOCALES = [
   'en',  // English (Global / Default)
@@ -44,25 +43,8 @@ export const LANGUAGES_MAP: Record<SupportedLocale, LanguageInfo> = {
 
 export const DEFAULT_LOCALE: SupportedLocale = 'en';
 
-export default getRequestConfig(async ({ requestLocale }) => {
-  let locale = await requestLocale;
-
-  if (!locale) {
-    try {
-      const cookieStore = await cookies();
-      const cookieLocale = cookieStore.get('NEXT_LOCALE')?.value;
-      if (cookieLocale && SUPPORTED_LOCALES.includes(cookieLocale as SupportedLocale)) {
-        locale = cookieLocale;
-      }
-    } catch {
-      // Ignore if headers/cookies unavailable
-    }
-  }
-
-  // Validate or fallback to default
-  if (!locale || !SUPPORTED_LOCALES.includes(locale as SupportedLocale)) {
-    locale = DEFAULT_LOCALE;
-  }
+export default getRequestConfig(async () => {
+  const locale = DEFAULT_LOCALE;
 
   return {
     locale,

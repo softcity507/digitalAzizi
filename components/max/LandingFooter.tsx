@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface LandingFooterProps {
   className?: string;
@@ -9,6 +9,7 @@ interface LandingFooterProps {
 
 export default function LandingFooter({ className = '' }: LandingFooterProps) {
   const t = useTranslations('Landing');
+  const locale = useLocale();
 
   return (
     <footer
@@ -16,7 +17,7 @@ export default function LandingFooter({ className = '' }: LandingFooterProps) {
     >
       {/* Explore Demo CTA Button */}
       <Link
-        href="/cash-book"
+        href={`/${locale}/cash-book`}
         className="group inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand hover:text-brand-300 transition-colors py-1 px-3 rounded-xl hover:bg-brand/10 select-none"
       >
         <span>{t('exploreDemo')}</span>

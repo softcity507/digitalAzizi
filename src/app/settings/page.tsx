@@ -1,3 +1,5 @@
+'use client';
+
 import LanguageSelector from '@/components/mini/LanguageSelector';
 import ThemeToggle from '@/components/mini/ThemeToggle';
 import { useTranslations } from 'next-intl';

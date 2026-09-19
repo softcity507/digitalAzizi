@@ -2,7 +2,7 @@
 
 import { useLocale } from 'next-intl';
 import { useTransition, useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { LANGUAGES, SupportedLocale } from '@/i18n/languages';
 
 interface LanguageSelectorProps {
@@ -12,6 +12,7 @@ interface LanguageSelectorProps {
 export default function LanguageSelector({ compact = false }: LanguageSelectorProps) {
   const currentLocale = useLocale() as SupportedLocale;
   const router = useRouter();
+  const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
   const [activeLocale, setActiveLocale] = useState(() => currentLocale);
@@ -33,8 +34,6 @@ export default function LanguageSelector({ compact = false }: LanguageSelectorPr
   useEffect(() => {
     if (activeLocale === currentLocale) return;
 
-    document.cookie = `NEXT_LOCALE=${activeLocale}; path=/; max-age=31536000; SameSite=Lax`;
-
     const langInfo = LANGUAGES.find(l => l.code === activeLocale);
     if (langInfo) {
       document.documentElement.dir = langInfo.dir;
@@ -42,9 +41,10 @@ export default function LanguageSelector({ compact = false }: LanguageSelectorPr
     }
 
     startTransition(() => {
-      router.refresh();
+      const pathWithoutLocale = pathname.replace(/^\/[^/]+/, '') || '/';
+      router.push(`/${activeLocale}${pathWithoutLocale}`);
     });
-  }, [activeLocale, currentLocale, router, startTransition]);
+  }, [activeLocale, currentLocale, pathname, router, startTransition]);
 
   const handleSelect = (localeCode: SupportedLocale) => {
     setIsOpen(false);

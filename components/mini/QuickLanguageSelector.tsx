@@ -2,7 +2,7 @@
 
 import { useLocale } from 'next-intl';
 import { useTransition, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { LANGUAGES, SupportedLocale } from '@/i18n/languages';
 
 const PRIMARY_CODES: SupportedLocale[] = ['en', 'ps', 'fa', 'ar'];
@@ -10,6 +10,7 @@ const PRIMARY_CODES: SupportedLocale[] = ['en', 'ps', 'fa', 'ar'];
 export default function QuickLanguageSelector({ className = '' }: { className?: string }) {
   const currentLocale = useLocale() as SupportedLocale;
   const router = useRouter();
+  const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
   const [showAll, setShowAll] = useState(false);
   const [activeLocale, setActiveLocale] = useState(() => currentLocale);
@@ -21,8 +22,6 @@ export default function QuickLanguageSelector({ className = '' }: { className?: 
   useEffect(() => {
     if (activeLocale === currentLocale) return;
 
-    document.cookie = `NEXT_LOCALE=${activeLocale}; path=/; max-age=31536000; SameSite=Lax`;
-
     const langInfo = LANGUAGES.find(l => l.code === activeLocale);
     if (langInfo) {
       document.documentElement.dir = langInfo.dir;
@@ -30,9 +29,10 @@ export default function QuickLanguageSelector({ className = '' }: { className?: 
     }
 
     startTransition(() => {
-      router.refresh();
+      const pathWithoutLocale = pathname.replace(/^\/[^/]+/, '') || '/';
+      router.push(`/${activeLocale}${pathWithoutLocale}`);
     });
-  }, [activeLocale, currentLocale, router, startTransition]);
+  }, [activeLocale, currentLocale, pathname, router, startTransition]);
 
   const handleLanguageChange = (newLocale: SupportedLocale) => {
     if (newLocale === activeLocale) return;
