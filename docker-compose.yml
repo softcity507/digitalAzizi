@@ -1,0 +1,9 @@
+services:
+  web:
+    build: .
+    container_name: digitalazizi-app
+    restart: always
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
