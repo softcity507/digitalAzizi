@@ -1,16 +1,41 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { useTranslations } from 'next-intl';
+
+const getThemeSnapshot = () => {
+  const savedTheme = localStorage.getItem('theme');
+
+  if (savedTheme === 'dark') {
+    return true;
+  }
+
+  if (savedTheme === 'light') {
+    return false;
+  }
+
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches
+    ?? document.documentElement.classList.contains('dark');
+};
+
+const subscribeToTheme = (onThemeChange: () => void) => {
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  mediaQuery.addEventListener('change', onThemeChange);
+  window.addEventListener('storage', onThemeChange);
+  window.addEventListener('themechange', onThemeChange);
+
+  return () => {
+    mediaQuery.removeEventListener('change', onThemeChange);
+    window.removeEventListener('storage', onThemeChange);
+    window.removeEventListener('themechange', onThemeChange);
+  };
+};
 
 export default function ThemeToggle() {
   const t = useTranslations('Header');
-  const [isDark, setIsDark] = useState(true);
-  const [mounted, setMounted] = useState(false);
+  const isDark = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, () => true);
 
   useEffect(() => {
-    setMounted(true);
-
     // 1. Read theme from localStorage first, then fallback to matchMedia or document class
     const savedTheme = localStorage.getItem('theme');
     let isDarkMode = true;
@@ -27,8 +52,6 @@ export default function ThemeToggle() {
       isDarkMode = document.documentElement.classList.contains('dark');
     }
 
-    setIsDark(isDarkMode);
-
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
       document.documentElement.setAttribute('data-theme', 'dark');
@@ -41,7 +64,6 @@ export default function ThemeToggle() {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleSystemThemeChange = (e: MediaQueryListEvent) => {
       if (!localStorage.getItem('theme')) {
-        setIsDark(e.matches);
         if (e.matches) {
           document.documentElement.classList.add('dark');
           document.documentElement.setAttribute('data-theme', 'dark');
@@ -60,8 +82,6 @@ export default function ThemeToggle() {
     const newDark = !isDark;
     const themeValue = newDark ? 'dark' : 'light';
 
-    setIsDark(newDark);
-
     // 1. Update DOM classes & attributes immediately
     if (newDark) {
       document.documentElement.classList.add('dark');
@@ -78,6 +98,7 @@ export default function ThemeToggle() {
     } catch (e) {
       console.warn('Unable to persist theme to localStorage/cookie:', e);
     }
+    window.dispatchEvent(new Event('themechange'));
 
     // 3. Connect & sync to DB endpoint
     try {
@@ -99,7 +120,7 @@ export default function ThemeToggle() {
       title={isDark ? t('lightMode') : t('darkMode')}
       className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-full bg-surface-subtle hover:bg-surface-hover text-content-primary border border-surface-border transition-all duration-200 active:scale-95 shadow-sm"
     >
-      {mounted && !isDark ? (
+      {!isDark ? (
         // Moon Icon for switching to dark mode
         <svg
           className="w-5 h-5 text-brand hover:-rotate-12 transition-transform duration-300"

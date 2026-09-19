@@ -209,7 +209,7 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
   setSerialNo: (serialNo) => set({ serialNo }),
 
   swapCurrencies: () => {
-    const { giveCurrency, getCurrency, exchangeRate, calcMode } = get();
+    const { giveCurrency, getCurrency, exchangeRate } = get();
     const rateNum = parseFloat(exchangeRate);
     const newRate = rateNum > 0 ? (1 / rateNum).toFixed(4) : exchangeRate;
     set({
@@ -320,4 +320,3 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
 
   clearNotification: () => set({ notificationMessage: null }),
 }));
-

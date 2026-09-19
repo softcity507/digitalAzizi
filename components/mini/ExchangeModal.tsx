@@ -18,7 +18,7 @@ export default function ExchangeModal() {
   const [toAmount, setToAmount] = useState('280500');
   const [rate, setRate] = useState('280.50');
   const [memo, setMemo] = useState('');
-  const [serialNo, setSerialNo] = useState(`EX-${Math.floor(1000 + Math.random() * 9000)}`);
+  const [serialNo, setSerialNo] = useState(() => `EX-${Math.floor(1000 + Math.random() * 9000)}`);
   const [date, setDate] = useState(selectedDate);
 
   if (activeModal !== 'exchange') return null;

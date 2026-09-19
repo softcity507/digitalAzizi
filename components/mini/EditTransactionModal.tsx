@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useCashBookStore } from '@/store/useCashBookStore';
 import { CurrencyCode, TransactionType } from '@/types/cashbook';
@@ -11,27 +11,15 @@ export default function EditTransactionModal() {
   const { activeModal, closeModal, updateTransaction, editingTransaction } =
     useCashBookStore();
 
-  const [customerName, setCustomerName] = useState('');
-  const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState<CurrencyCode>('PKR');
-  const [type, setType] = useState<TransactionType>('cash_in');
-  const [memo, setMemo] = useState('');
-  const [serialNo, setSerialNo] = useState('');
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-
-  useEffect(() => {
-    if (editingTransaction) {
-      setCustomerName(editingTransaction.customerName);
-      setAmount(editingTransaction.amount.toString());
-      setCurrency(editingTransaction.currency);
-      setType(editingTransaction.type);
-      setMemo(editingTransaction.memo || '');
-      setSerialNo(editingTransaction.serialNo || '');
-      setDate(editingTransaction.date);
-      setTime(editingTransaction.time);
-    }
-  }, [editingTransaction]);
+  // Initialize state directly from editingTransaction using fallback values
+  const [customerName, setCustomerName] = useState(() => editingTransaction?.customerName || '');
+  const [amount, setAmount] = useState(() => editingTransaction?.amount?.toString() || '');
+  const [currency, setCurrency] = useState<CurrencyCode>(() => editingTransaction?.currency || 'PKR');
+  const [type, setType] = useState<TransactionType>(() => editingTransaction?.type || 'cash_in');
+  const [memo, setMemo] = useState(() => editingTransaction?.memo || '');
+  const [serialNo, setSerialNo] = useState(() => editingTransaction?.serialNo || '');
+  const [date, setDate] = useState(() => editingTransaction?.date || '');
+  const [time, setTime] = useState(() => editingTransaction?.time || '');
 
   if (activeModal !== 'edit' || !editingTransaction) return null;
 
@@ -89,22 +77,20 @@ export default function EditTransactionModal() {
               <button
                 type="button"
                 onClick={() => setType('cash_in')}
-                className={`py-2 rounded-xl text-xs font-bold transition-all border ${
-                  type === 'cash_in'
-                    ? 'bg-[#34d399]/20 border-[#34d399] text-[#34d399]'
-                    : 'bg-surface-input border-surface-border text-slate-400'
-                }`}
+                className={`py-2 rounded-xl text-xs font-bold transition-all border ${type === 'cash_in'
+                  ? 'bg-[#34d399]/20 border-[#34d399] text-[#34d399]'
+                  : 'bg-surface-input border-surface-border text-slate-400'
+                  }`}
               >
                 {t('cashInBtn')}
               </button>
               <button
                 type="button"
                 onClick={() => setType('cash_out')}
-                className={`py-2 rounded-xl text-xs font-bold transition-all border ${
-                  type === 'cash_out'
-                    ? 'bg-[#fda4af]/20 border-[#fda4af] text-[#fda4af]'
-                    : 'bg-surface-input border-surface-border text-slate-400'
-                }`}
+                className={`py-2 rounded-xl text-xs font-bold transition-all border ${type === 'cash_out'
+                  ? 'bg-[#fda4af]/20 border-[#fda4af] text-[#fda4af]'
+                  : 'bg-surface-input border-surface-border text-slate-400'
+                  }`}
               >
                 {t('cashOutBtn')}
               </button>

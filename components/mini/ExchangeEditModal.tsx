@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 import { ExchangeCurrencyCode, ExchangeType } from '@/types/exchange';
@@ -10,14 +10,20 @@ export default function ExchangeEditModal() {
   const t = useTranslations('ExchangeDesk');
   const { editingTransaction, closeEditModal, updateTransaction } = useExchangeDeskStore();
 
-  const [customerId, setCustomerId] = useState('');
-  const [giveAmount, setGiveAmount] = useState('');
-  const [giveCurrency, setGiveCurrency] = useState<ExchangeCurrencyCode>('USD');
-  const [calcMode, setCalcMode] = useState<'multiply' | 'divide'>('multiply');
-  const [exchangeRate, setExchangeRate] = useState('');
-  const [getCurrency, setGetCurrency] = useState<ExchangeCurrencyCode>('AFN');
-  const [type, setType] = useState<ExchangeType>('SELL');
-  const [memo, setMemo] = useState('');
+  const [customerId, setCustomerId] = useState(() => editingTransaction?.customerId || '');
+  const [giveAmount, setGiveAmount] = useState(() => editingTransaction?.giveAmount.toString() || '');
+  const [giveCurrency, setGiveCurrency] = useState<ExchangeCurrencyCode>(
+    () => editingTransaction?.giveCurrency || 'USD'
+  );
+  const [calcMode, setCalcMode] = useState<'multiply' | 'divide'>(
+    () => editingTransaction?.calcMode || 'multiply'
+  );
+  const [exchangeRate, setExchangeRate] = useState(() => editingTransaction?.exchangeRate.toString() || '');
+  const [getCurrency, setGetCurrency] = useState<ExchangeCurrencyCode>(
+    () => editingTransaction?.getCurrency || 'AFN'
+  );
+  const [type, setType] = useState<ExchangeType>(() => editingTransaction?.type || 'SELL');
+  const [memo, setMemo] = useState(() => editingTransaction?.memo || '');
 
   const matchedCustomer = CUSTOMER_ACCOUNTS.find((c) => c.id === customerId);
   const userCurrencies = (matchedCustomer?.balances?.map((b) => b.currency) || [
@@ -25,19 +31,6 @@ export default function ExchangeEditModal() {
     'AFN',
     'PKR',
   ]) as ExchangeCurrencyCode[];
-
-  useEffect(() => {
-    if (editingTransaction) {
-      setCustomerId(editingTransaction.customerId);
-      setGiveAmount(editingTransaction.giveAmount.toString());
-      setGiveCurrency(editingTransaction.giveCurrency);
-      setCalcMode(editingTransaction.calcMode || 'multiply');
-      setExchangeRate(editingTransaction.exchangeRate.toString());
-      setGetCurrency(editingTransaction.getCurrency);
-      setType(editingTransaction.type);
-      setMemo(editingTransaction.memo || '');
-    }
-  }, [editingTransaction]);
 
   if (!editingTransaction) return null;
 

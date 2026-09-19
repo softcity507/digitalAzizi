@@ -14,7 +14,7 @@ export default function CashInModal() {
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState<CurrencyCode>('PKR');
   const [memo, setMemo] = useState('');
-  const [serialNo, setSerialNo] = useState(`CB-${Math.floor(1000 + Math.random() * 9000)}`);
+  const [serialNo, setSerialNo] = useState(() => `CB-${Math.floor(1000 + Math.random() * 9000)}`);
   const [date, setDate] = useState(selectedDate);
 
   if (activeModal !== 'cash_in') return null;

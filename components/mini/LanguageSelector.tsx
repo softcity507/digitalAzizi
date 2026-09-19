@@ -14,10 +14,11 @@ export default function LanguageSelector({ compact = false }: LanguageSelectorPr
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
+  const [activeLocale, setActiveLocale] = useState(() => currentLocale);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const currentLang =
-    LANGUAGES.find(l => l.code === currentLocale) || LANGUAGES[0];
+    LANGUAGES.find(l => l.code === activeLocale) || LANGUAGES[0];
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -29,11 +30,12 @@ export default function LanguageSelector({ compact = false }: LanguageSelectorPr
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSelect = (localeCode: SupportedLocale) => {
-    setIsOpen(false);
-    document.cookie = `NEXT_LOCALE=${localeCode}; path=/; max-age=31536000; SameSite=Lax`;
+  useEffect(() => {
+    if (activeLocale === currentLocale) return;
 
-    const langInfo = LANGUAGES.find(l => l.code === localeCode);
+    document.cookie = `NEXT_LOCALE=${activeLocale}; path=/; max-age=31536000; SameSite=Lax`;
+
+    const langInfo = LANGUAGES.find(l => l.code === activeLocale);
     if (langInfo) {
       document.documentElement.dir = langInfo.dir;
       document.documentElement.lang = langInfo.code;
@@ -42,6 +44,11 @@ export default function LanguageSelector({ compact = false }: LanguageSelectorPr
     startTransition(() => {
       router.refresh();
     });
+  }, [activeLocale, currentLocale, router, startTransition]);
+
+  const handleSelect = (localeCode: SupportedLocale) => {
+    setIsOpen(false);
+    setActiveLocale(localeCode);
   };
 
   return (
@@ -81,7 +88,7 @@ export default function LanguageSelector({ compact = false }: LanguageSelectorPr
           </div>
           <div className="space-y-1">
             {LANGUAGES.map(lang => {
-              const isSelected = lang.code === currentLocale;
+              const isSelected = lang.code === activeLocale;
               return (
                 <button
                   key={lang.code}

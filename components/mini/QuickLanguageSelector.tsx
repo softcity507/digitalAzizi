@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { useTransition, useState } from 'react';
+import { useTransition, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { LANGUAGES, SupportedLocale } from '@/i18n/languages';
 
@@ -12,19 +12,18 @@ export default function QuickLanguageSelector({ className = '' }: { className?: 
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [showAll, setShowAll] = useState(false);
+  const [activeLocale, setActiveLocale] = useState(() => currentLocale);
 
   const displayLanguages = showAll
     ? LANGUAGES
     : LANGUAGES.filter(l => PRIMARY_CODES.includes(l.code));
 
-  const handleLanguageChange = (newLocale: SupportedLocale) => {
-    if (newLocale === currentLocale) return;
+  useEffect(() => {
+    if (activeLocale === currentLocale) return;
 
-    // Set cookie for next-intl server request resolution
-    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
+    document.cookie = `NEXT_LOCALE=${activeLocale}; path=/; max-age=31536000; SameSite=Lax`;
 
-    // Update HTML direction and language attributes
-    const langInfo = LANGUAGES.find(l => l.code === newLocale);
+    const langInfo = LANGUAGES.find(l => l.code === activeLocale);
     if (langInfo) {
       document.documentElement.dir = langInfo.dir;
       document.documentElement.lang = langInfo.code;
@@ -33,6 +32,12 @@ export default function QuickLanguageSelector({ className = '' }: { className?: 
     startTransition(() => {
       router.refresh();
     });
+  }, [activeLocale, currentLocale, router, startTransition]);
+
+  const handleLanguageChange = (newLocale: SupportedLocale) => {
+    if (newLocale === activeLocale) return;
+
+    setActiveLocale(newLocale);
   };
 
   return (
@@ -40,7 +45,7 @@ export default function QuickLanguageSelector({ className = '' }: { className?: 
       {/* Dynamic Language Grid mapped over LANGUAGES */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 w-full">
         {displayLanguages.map(lang => {
-          const isActive = currentLocale === lang.code;
+          const isActive = activeLocale === lang.code;
           return (
             <button
               key={lang.code}

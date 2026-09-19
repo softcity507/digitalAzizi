@@ -17,7 +17,7 @@ import DeleteConfirmModal from '@/components/mini/DeleteConfirmModal';
 import { useCashBookStore } from '@/store/useCashBookStore';
 
 export default function CashBookContainer() {
-  const { getFilteredTransactions } = useCashBookStore();
+  const { getFilteredTransactions, editingTransaction } = useCashBookStore();
   const transactions = getFilteredTransactions();
 
   return (
@@ -66,8 +66,7 @@ export default function CashBookContainer() {
       <CashInModal />
       <CashOutModal />
       <ExchangeModal />
-      <EditTransactionModal />
-      <DeleteConfirmModal />
+      <EditTransactionModal key={editingTransaction?.id || 'idle'} />      <DeleteConfirmModal />
     </div>
   );
 }
