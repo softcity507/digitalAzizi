@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
+import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
+import { useSettingsStore } from '@/store/useSettingsStore';
 import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 
 export default function ExchangeCustomerSelect() {
@@ -99,6 +101,8 @@ export default function ExchangeCustomerSelect() {
                 type="button"
                 onClick={() => {
                   setCustomerId(customer.id);
+                  useCustomerDetailsStore.getState().setSelectedCustomerId(customer.id);
+                  useSettingsStore.getState().setDefaultUser(customer.id);
                   setIsOpen(false);
                 }}
                 className={`w-full p-2.5 rounded-xl text-left flex items-center justify-between gap-2 transition-colors ${isSelected

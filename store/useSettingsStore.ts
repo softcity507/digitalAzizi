@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { BusinessProfile, AppAdminProfile, RegisteredUser, AuditLogItem } from '@/types/settings';
+import { useCustomerDetailsStore } from './useCustomerDetailsStore';
+import { useExchangeDeskStore } from './useExchangeDeskStore';
 
 export type SettingsModalType = 'add_customer' | 'audit_log' | 'backup_success' | 'restore_success' | null;
 
@@ -45,21 +47,21 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   ],
   users: [
     {
-      id: 'u-1',
+      id: 'aziz-khan',
       name: 'Aziz Khan',
       roleTag: 'DEFAULT',
       subtitle: 'Primary Active User / Default Account',
       isDefault: true,
     },
     {
-      id: 'u-2',
+      id: 'salam-jan',
       name: 'Salam Jan',
       roleTag: 'Customer',
       subtitle: 'Secondary Record',
       isDefault: false,
     },
     {
-      id: 'u-3',
+      id: 'haji-noorullah',
       name: 'Haji Noorullah',
       roleTag: 'Customer',
       subtitle: 'Hawala & Trade Account',
@@ -94,21 +96,27 @@ export const useSettingsStore = create<SettingsState>((set) => ({
       businesses: s.businesses.map((b) => ({ ...b, isActive: b.id === id })),
     })),
 
-  setDefaultUser: (id) =>
+  setDefaultUser: (id) => {
     set((s) => ({
       users: s.users.map((u) => ({
         ...u,
         isDefault: u.id === id,
         roleTag: u.id === id ? 'DEFAULT' : 'Customer',
       })),
-    })),
+    }));
+    // Sync with Customer Details Page
+    useCustomerDetailsStore.getState().setSelectedCustomerId(id);
+    // Sync with Exchange Desk Page
+    useExchangeDeskStore.getState().setCustomerId(id);
+  },
 
-  addUser: (name, subtitle, roleTag = 'Customer') =>
+  addUser: (name, subtitle, roleTag = 'Customer') => {
+    const slugId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `user-${Date.now()}`;
     set((s) => ({
       users: [
         ...s.users,
         {
-          id: `u-${Date.now()}`,
+          id: slugId,
           name,
           subtitle,
           roleTag,
@@ -116,7 +124,8 @@ export const useSettingsStore = create<SettingsState>((set) => ({
         },
       ],
       activeModal: null,
-    })),
+    }));
+  },
 
   triggerBackup: () =>
     set({

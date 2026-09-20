@@ -25,7 +25,7 @@ export default function SettingsHubContainer() {
         </div>
 
         {/* Right Column: Registered Users, Preferences, Cloud Backup & Sign Out */}
-        <div className="lg:col-span-7 xl:col-span-8 space-y-5">
+        <div className="lg:col-span-7 border xl:col-span-8 space-y-5">
           <RegisteredUsersSection />
           <PreferencesSection />
           <CloudBackupSection />

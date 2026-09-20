@@ -1,25 +1,66 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { CurrencyCode } from '@/types/customer';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
+import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 
-interface CurrencyChipConfig {
+interface CurrencyTabConfig {
   code: CurrencyCode;
   label: string;
-  badgeAmount: string;
-  dotColor: string;
 }
 
-const CURRENCY_CHIPS: CurrencyChipConfig[] = [
-  { code: 'AFN', label: 'AFN (؋)', badgeAmount: '+8.45M', dotColor: 'bg-emerald-400' },
-  { code: 'USD', label: 'USD ($)', badgeAmount: '+$5,000', dotColor: 'bg-slate-400' },
-  { code: 'PKR', label: 'PKR (Rs)', badgeAmount: '-785K', dotColor: 'bg-rose-400' },
+const CURRENCY_CONFIG: CurrencyTabConfig[] = [
+  { code: 'AFN', label: 'AFN (؋)' },
+  { code: 'USD', label: 'USD ($)' },
+  { code: 'PKR', label: 'PKR (Rs)' },
 ];
 
 export default function CustomerCurrencyTabs() {
   const t = useTranslations('CustomerDetails');
-  const { selectedCurrency, setSelectedCurrency } = useCustomerDetailsStore();
+  const { selectedCurrency, setSelectedCurrency, selectedCustomerId, transactions } =
+    useCustomerDetailsStore();
+
+  const customer = useMemo(() => {
+    return CUSTOMER_ACCOUNTS.find((c) => c.id === selectedCustomerId) || CUSTOMER_ACCOUNTS[1];
+  }, [selectedCustomerId]);
+
+  const getCurrencySummary = (code: CurrencyCode) => {
+    // 1. Check if matching ledger transactions exist
+    const matchingTx = transactions.filter(
+      (tx) => tx.customerId === selectedCustomerId && tx.currency === code
+    );
+
+    if (matchingTx.length > 0) {
+      let net = 0;
+      for (const tx of matchingTx) {
+        net += tx.isCredit ? tx.amount : -tx.amount;
+      }
+      const formatted = `${net >= 0 ? '+' : ''}${Math.abs(net) >= 1000000 ? (net / 1000000).toFixed(2) + 'M' : Math.abs(net) >= 1000 ? (net / 1000).toFixed(0) + 'K' : net.toLocaleString()}`;
+      return {
+        amountFormatted: formatted,
+        isPositive: net >= 0,
+        dotColor: net > 0 ? 'bg-emerald-400' : net < 0 ? 'bg-rose-400' : 'bg-slate-400',
+      };
+    }
+
+    // 2. Fallback to customer default balances
+    const bal = customer.balances.find((b) => b.currency === code);
+    if (bal) {
+      return {
+        amountFormatted: bal.amount,
+        isPositive: bal.isCredit,
+        dotColor: bal.isCredit ? 'bg-emerald-400' : 'bg-rose-400',
+      };
+    }
+
+    return {
+      amountFormatted: '0',
+      isPositive: true,
+      dotColor: 'bg-slate-400',
+    };
+  };
 
   return (
     <div className="w-full space-y-2.5">
@@ -33,8 +74,10 @@ export default function CustomerCurrencyTabs() {
       </div>
 
       <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
-        {CURRENCY_CHIPS.map((item) => {
+        {CURRENCY_CONFIG.map((item) => {
           const isActive = selectedCurrency === item.code;
+          const summary = getCurrencySummary(item.code);
+
           return (
             <button
               key={item.code}
@@ -48,16 +91,14 @@ export default function CustomerCurrencyTabs() {
             >
               <div className="flex items-center justify-between w-full">
                 <span className="text-xs font-bold text-content-primary">{item.label}</span>
-                <span className={`w-2 h-2 rounded-full ${item.dotColor}`} />
+                <span className={`w-2 h-2 rounded-full ${summary.dotColor}`} />
               </div>
               <span
                 className={`text-xs sm:text-sm font-bold font-mono mt-1.5 ${
-                  item.badgeAmount.startsWith('-')
-                    ? 'text-rose-400'
-                    : 'text-emerald-400'
+                  summary.isPositive ? 'text-emerald-400' : 'text-rose-400'
                 }`}
               >
-                {item.badgeAmount}
+                {summary.amountFormatted}
               </span>
             </button>
           );

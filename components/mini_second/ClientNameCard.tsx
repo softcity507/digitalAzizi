@@ -3,13 +3,23 @@
 import { useMemo } from 'react';
 import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
+import { useSettingsStore } from '@/store/useSettingsStore';
+import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 
 export default function ClientNameCard() {
   const { selectedCustomerId, setSelectedCustomerId } = useCustomerDetailsStore();
+  const { setDefaultUser } = useSettingsStore();
+  const { setCustomerId } = useExchangeDeskStore();
 
   const currentCustomer = useMemo(() => {
     return CUSTOMER_ACCOUNTS.find((c) => c.id === selectedCustomerId) || CUSTOMER_ACCOUNTS[1];
   }, [selectedCustomerId]);
+
+  const handleSelectCustomer = (newId: string) => {
+    setSelectedCustomerId(newId);
+    setDefaultUser(newId);
+    setCustomerId(newId);
+  };
 
   return (
     <div className="w-full bg-surface border border-surface-border rounded-2xl p-4 sm:p-5 flex items-center justify-between shadow-sm transition-all">
@@ -30,7 +40,7 @@ export default function ClientNameCard() {
       <div className="flex items-center gap-2">
         <select
           value={selectedCustomerId}
-          onChange={(e) => setSelectedCustomerId(e.target.value)}
+          onChange={(e) => handleSelectCustomer(e.target.value)}
           aria-label="Select Customer"
           className="bg-surface-subtle border border-surface-border text-xs font-semibold rounded-xl px-3 py-2 text-content-primary focus:outline-none focus:ring-1 focus:ring-brand cursor-pointer"
         >
