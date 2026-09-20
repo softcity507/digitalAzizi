@@ -55,6 +55,28 @@
     "balanced": "تراز",
     "noAccountsFound": "هیچ حسابی مطابق با جستجوی شما یافت نشد."
   },
+  "CustomerDetails": {
+    "currency": "ارز",
+    "tapToSwitch": "برای تغییر کلیک کنید",
+    "balance": "موجودی",
+    "searchPlaceholder": "جستجوی شماره ارجاع، حواله یا یادداشت...",
+    "allDates": "همه تاریخ‌ها",
+    "transactions": "معاملات",
+    "records": "{count} رکورد",
+    "export": "خروجی",
+    "noTransactions": "معامله‌ای یافت نشد",
+    "noTransactionsDesc": "هیچ سندی مطابق با فیلتر شما یافت نشد.",
+    "editTransaction": "ویرایش معامله",
+    "deleteConfirmTitle": "حذف معامله",
+    "deleteConfirmDesc": "آیا از حذف این معامله اطمینان دارید؟ موجودی مشتری فوراً به‌روزرسانی می‌شود.",
+    "saveChanges": "ذخیره تغییرات",
+    "cancel": "انصراف",
+    "delete": "حذف",
+    "title": "عنوان",
+    "amount": "مبلغ",
+    "refNo": "شماره ارجاع",
+    "notes": "یادداشت‌ها / حواله"
+  },
   "CashBook": {
     "title": "دفتر صندوق (کیش بوک)",
     "subtitle": "حواله و چند ارزی",

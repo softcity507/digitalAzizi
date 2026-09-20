@@ -55,6 +55,28 @@
     "balanced": "بیلنسڈ",
     "noAccountsFound": "کوئی کھاتہ نہیں لبھیا۔"
   },
+  "CustomerDetails": {
+    "currency": "کرنسی",
+    "tapToSwitch": "بدلن لئی ٹیپ کرو",
+    "balance": "بیلنس",
+    "searchPlaceholder": "ریفرنس نمبر یا نوٹس لبھو...",
+    "allDates": "ساریاں تاریخاں",
+    "transactions": "لین دین",
+    "records": "{count} ریکارڈ",
+    "export": "ایکسپورٹ",
+    "noTransactions": "کوئی لین دین نہیں لبھیا",
+    "noTransactionsDesc": "کوئی اندراج نہیں لبھیا۔",
+    "editTransaction": "لین دین بدلو",
+    "deleteConfirmTitle": "اندراج ہٹاؤ",
+    "deleteConfirmDesc": "کی تسیں واقعی اس لین دین نوں ہٹانا چاہندے ہو؟",
+    "saveChanges": "تبدیلیاں سانبھو",
+    "cancel": "رد کرو",
+    "delete": "ہٹاؤ",
+    "title": "عنوان",
+    "amount": "رقم",
+    "refNo": "ریفرنس #",
+    "notes": "نوٹس"
+  },
   "CashBook": {
     "title": "کیش بک",
     "subtitle": "حوالہ تے ملٹی کرنسی",

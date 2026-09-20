@@ -55,6 +55,28 @@
     "balanced": "انډول",
     "noAccountsFound": "هیڅ حساب ونه موندل شو."
   },
+  "CustomerDetails": {
+    "currency": "اسعار",
+    "tapToSwitch": "د بدلولو لپاره کلیک وکړئ",
+    "balance": "بیلانس",
+    "searchPlaceholder": "د حوالې شمېره، یادښت یا نوټ ولټوئ...",
+    "allDates": "ټولې نېټې",
+    "transactions": "معاملات",
+    "records": "{count} ریکارډونه",
+    "export": "صادرول",
+    "noTransactions": "هیڅ معامله ونه موندل شوه",
+    "noTransactionsDesc": "ستاسو د لټون سره سم هیڅ معامله ونه موندل شوه.",
+    "editTransaction": "معامله تغیر کړئ",
+    "deleteConfirmTitle": "معامله حذف کړئ",
+    "deleteConfirmDesc": "ایا تاسو ډاډه یاست چې دا معامله حذف کول غواړئ؟",
+    "saveChanges": "تغیرات خوندي کړئ",
+    "cancel": "لغوه",
+    "delete": "حذف",
+    "title": "عنوان",
+    "amount": "مبلغ",
+    "refNo": "د حوالې شمېره",
+    "notes": "یادښتونه"
+  },
   "CashBook": {
     "title": "نغدو کتاب (کیش بک)",
     "subtitle": "حواله او څو اسعار",

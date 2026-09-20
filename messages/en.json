@@ -55,6 +55,28 @@
     "balanced": "Balanced",
     "noAccountsFound": "No accounts found matching your criteria."
   },
+  "CustomerDetails": {
+    "currency": "CURRENCY",
+    "tapToSwitch": "Tap to switch",
+    "balance": "BALANCE",
+    "searchPlaceholder": "Search by ref #, remittance, or notes...",
+    "allDates": "All Dates",
+    "transactions": "Transactions",
+    "records": "{count} records",
+    "export": "Export",
+    "noTransactions": "No transactions found",
+    "noTransactionsDesc": "No ledger entries match your filter criteria.",
+    "editTransaction": "Edit Ledger Entry",
+    "deleteConfirmTitle": "Delete Entry",
+    "deleteConfirmDesc": "Are you sure you want to delete this ledger transaction? This will update the customer balance immediately.",
+    "saveChanges": "Save Changes",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "title": "Title",
+    "amount": "Amount",
+    "refNo": "Reference #",
+    "notes": "Notes / Remittance"
+  },
   "CashBook": {
     "title": "Cash Book",
     "subtitle": "HAWALA & MULTI-CURRENCY",

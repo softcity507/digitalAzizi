@@ -55,6 +55,28 @@
     "balanced": "متوازن",
     "noAccountsFound": "تلاش کے مطابق کوئی کھاتہ نہیں ملا۔"
   },
+  "CustomerDetails": {
+    "currency": "کرنسی",
+    "tapToSwitch": "تبدیل کرنے کے لیے ٹیپ کریں",
+    "balance": "بیلنس",
+    "searchPlaceholder": "ریفرنس نمبر، ترسیل یا نوٹس تلاش کریں...",
+    "allDates": "تمام تاریخیں",
+    "transactions": "لین دین",
+    "records": "{count} ریکارڈز",
+    "export": "برآمد کریں",
+    "noTransactions": "کوئی لین دین نہیں ملا",
+    "noTransactionsDesc": "آپ کے فلٹر کے مطابق کوئی اندراج نہیں ملا۔",
+    "editTransaction": "لین دین میں ترمیم کریں",
+    "deleteConfirmTitle": "اندراج حذف کریں",
+    "deleteConfirmDesc": "کیا آپ واقعی اس لین دین کو حذف کرنا چاہتے ہیں؟ اس سے صارف کا بیلنس فوری طور پر اپ ڈیٹ ہو جائے گا۔",
+    "saveChanges": "تبدیلیاں محفوظ کریں",
+    "cancel": "منسوخ",
+    "delete": "حذف کریں",
+    "title": "عنوان",
+    "amount": "رقم",
+    "refNo": "ریفرنس #",
+    "notes": "نوٹس / ترسیل"
+  },
   "CashBook": {
     "title": "کیش بک",
     "subtitle": "حوالہ اور ملٹی کرنسی",

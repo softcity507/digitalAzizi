@@ -55,6 +55,28 @@
     "balanced": "تراز",
     "noAccountsFound": "ہچ کھاتہ دست نه کپت۔"
   },
+  "CustomerDetails": {
+    "currency": "کرنسی",
+    "tapToSwitch": "بدل کنگ ءِ واستہ کلک کن اِت",
+    "balance": "بیلنس",
+    "searchPlaceholder": "ریفرنس نمبر یا نوٹس شوھاز کن اِت...",
+    "allDates": "درست روچ",
+    "transactions": "معاملات",
+    "records": "{count} ریکارڈ",
+    "export": "ایکسپورٹ",
+    "noTransactions": "ھچ معاملہ دست نہ کپت",
+    "noTransactionsDesc": "شمی لوٹ ءِ مطابق ھچ اندراج نیست۔",
+    "editTransaction": "معاملہ سار کن اِت",
+    "deleteConfirmTitle": "اندراج گار کن اِت",
+    "deleteConfirmDesc": "شما وت دلجم اِت کہ اے معاملہ گار کنگ لوٹ اِت؟",
+    "saveChanges": "بدلی سار کن اِت",
+    "cancel": "رد",
+    "delete": "گار کن اِت",
+    "title": "عنوان",
+    "amount": "کچ / رقم",
+    "refNo": "ریفرنس نمبر",
+    "notes": "نوٹس"
+  },
   "CashBook": {
     "title": "کیش بک (روپیہ ءِ کتاب)",
     "subtitle": "حوالہ ءُ گیشیں کرنسی",

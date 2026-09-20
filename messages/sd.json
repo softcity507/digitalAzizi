@@ -55,6 +55,28 @@
     "balanced": "بيلنس",
     "noAccountsFound": "ڪو به کاتو نه مليو."
   },
+  "CustomerDetails": {
+    "currency": "ڪرنسي",
+    "tapToSwitch": "تبديل ڪرڻ لاءِ ڪلڪ ڪريو",
+    "balance": "بيلنس",
+    "searchPlaceholder": "حوالو نمبر يا نوٽ ڳوليو...",
+    "allDates": "سڀ تاريخون",
+    "transactions": "ٽرانزيڪشن",
+    "records": "{count} رڪارڊ",
+    "export": "ايڪسپورٽ",
+    "noTransactions": "ڪو به ٽرانزيڪشن نه مليو",
+    "noTransactionsDesc": "ڪا به داخلا نه ملي.",
+    "editTransaction": "ٽرانزيڪشن تبديل ڪريو",
+    "deleteConfirmTitle": "داخلا ختم ڪريو",
+    "deleteConfirmDesc": "ڇا توهان واقعي هن ٽرانزيڪشن کي ختم ڪرڻ چاهيو ٿا؟",
+    "saveChanges": "تبديليون محفوظ ڪريو",
+    "cancel": "رد",
+    "delete": "ختم ڪريو",
+    "title": "عنوان",
+    "amount": "رقم",
+    "refNo": "حوالو نمبر",
+    "notes": "نوٽس"
+  },
   "CashBook": {
     "title": "ڪيش بڪ",
     "subtitle": "حوالا ۽ گھڻ-ڪرنسي",

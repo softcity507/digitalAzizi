@@ -55,6 +55,28 @@
     "balanced": "Équilibré",
     "noAccountsFound": "Aucun compte trouvé correspondant à vos critères."
   },
+  "CustomerDetails": {
+    "currency": "DEVISE",
+    "tapToSwitch": "Appuyez pour changer",
+    "balance": "SOLDE",
+    "searchPlaceholder": "Rechercher par réf #, remise ou notes...",
+    "allDates": "Toutes les dates",
+    "transactions": "Transactions",
+    "records": "{count} enregistrements",
+    "export": "Exporter",
+    "noTransactions": "Aucune transaction trouvée",
+    "noTransactionsDesc": "Aucune entrée ne correspond à vos critères de recherche.",
+    "editTransaction": "Modifier l'entrée",
+    "deleteConfirmTitle": "Supprimer l'entrée",
+    "deleteConfirmDesc": "Êtes-vous sûr de vouloir supprimer cette transaction ?",
+    "saveChanges": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "title": "Titre",
+    "amount": "Montant",
+    "refNo": "Réf #",
+    "notes": "Notes / Remise"
+  },
   "CashBook": {
     "title": "Livre de Caisse",
     "subtitle": "HAWALA & MULTI-DEVISES",

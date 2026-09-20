@@ -55,6 +55,28 @@
     "balanced": "ভারসাম্যপূর্ণ",
     "noAccountsFound": "অনুসন্ধানের সাথে মিলে এমন কোন একাউন্ট পাওয়া যায়নি।"
   },
+  "CustomerDetails": {
+    "currency": "মুদ্রা",
+    "tapToSwitch": "পরিবর্তন করতে ট্যাপ করুন",
+    "balance": "ব্যালেন্স",
+    "searchPlaceholder": "রেফারেন্স নম্বর বা নোট খুঁজুন...",
+    "allDates": "সকল তারিখ",
+    "transactions": "লেনদেন",
+    "records": "{count} টি রেকর্ড",
+    "export": "রপ্তানি (Export)",
+    "noTransactions": "কোনো লেনদেন পাওয়া যায়নি",
+    "noTransactionsDesc": "আপনার ফিল্টারের সাথে মিলে এমন কোনো লেনদেন নেই।",
+    "editTransaction": "লেনদেন সম্পাদনা করুন",
+    "deleteConfirmTitle": "এন্ট্রি মুছুন",
+    "deleteConfirmDesc": "আপনি কি নিশ্চিত যে এই লেনদেনটি মুছতে চান?",
+    "saveChanges": "পরিবর্তন সংরক্ষণ করুন",
+    "cancel": "বাতিল",
+    "delete": "মুছুন",
+    "title": "শিরোনাম",
+    "amount": "পরিমাণ",
+    "refNo": "রেফারেন্স #",
+    "notes": "নোট / বিবরণ"
+  },
   "CashBook": {
     "title": "ক্যাশ বুক (নগদ খাতা)",
     "subtitle": "হাওয়ালা ও বহু-মুদ্রা",

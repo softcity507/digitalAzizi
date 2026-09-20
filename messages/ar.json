@@ -55,6 +55,28 @@
     "balanced": "متوازن",
     "noAccountsFound": "لم يتم العثور على أي حسابات مطابقة."
   },
+  "CustomerDetails": {
+    "currency": "العملة",
+    "tapToSwitch": "اضغط للتبديل",
+    "balance": "الرصيد",
+    "searchPlaceholder": "البحث برقم المرجع أو الحوالة أو الملاحظات...",
+    "allDates": "جميع التواريخ",
+    "transactions": "المعاملات",
+    "records": "{count} سجلات",
+    "export": "تصدير",
+    "noTransactions": "لم يتم العثور على معاملات",
+    "noTransactionsDesc": "لا توجد قيود مطابقة لمعايير البحث الخاصة بك.",
+    "editTransaction": "تعديل المعاملة",
+    "deleteConfirmTitle": "حذف المعاملة",
+    "deleteConfirmDesc": "هل أنت متأكد من رغبتك في حذف هذا القيد؟ سيتم تحديث رصيد العميل على الفور.",
+    "saveChanges": "حفظ التغييرات",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "title": "العنوان",
+    "amount": "المبلغ",
+    "refNo": "رقم المرجع",
+    "notes": "الملاحظات / الحوالة"
+  },
   "CashBook": {
     "title": "دفتر الصندوق (الكاش)",
     "subtitle": "الحوالات وتعدد العملات",

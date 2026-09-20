@@ -34,3 +34,26 @@ export interface CustomerAccount {
 }
 
 export type AccountFilterType = 'all' | 'receivable' | 'payable';
+
+export type TransactionCategory = 'cash_in' | 'cash_out' | 'exchange' | 'bank' | 'initial';
+
+export interface CustomerTransaction {
+  id: string;
+  customerId: string;
+  title: string;
+  tag: string;
+  category: TransactionCategory;
+  amount: number;
+  currency: CurrencyCode;
+  isCredit: boolean;
+  date: string;
+  refNo?: string;
+  notes?: string;
+}
+
+export interface CustomerCurrencyTab {
+  currency: CurrencyCode;
+  symbol: string;
+  balanceFormatted: string;
+  dotColor: 'emerald' | 'slate' | 'rose';
+}

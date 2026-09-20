@@ -53,7 +53,29 @@
     "desk": "डेस्क",
     "net": "नेट",
     "balanced": "संतुलित",
-    "noAccountsFound": "खोज के अनुसार कोई खाता नहीं मिला।"
+    "noAccountsFound": "खोज کے अनुसार कोई खाता नहीं मिला।"
+  },
+  "CustomerDetails": {
+    "currency": "मुद्रा",
+    "tapToSwitch": "बदलने के लिए टैप करें",
+    "balance": "शेष राशि (बैलेंस)",
+    "searchPlaceholder": "रेफरेंस नंबर, प्रेषण या नोट्स खोजें...",
+    "allDates": "सभी तिथियां",
+    "transactions": "लेन-देन",
+    "records": "{count} रिकॉर्ड",
+    "export": "निर्यात (Export)",
+    "noTransactions": "कोई लेन-देन नहीं मिला",
+    "noTransactionsDesc": "आपके फ़िल्टर से मेल खाता कोई लेन-देन नहीं मिला।",
+    "editTransaction": "लेन-देन संपादित करें",
+    "deleteConfirmTitle": "प्रविष्टि हटाएं",
+    "deleteConfirmDesc": "क्या आप वाकई इस लेन-देन को हटाना चाहते हैं? ग्राहक का बैलेंस तुरंत अपडेट हो जाएगा।",
+    "saveChanges": "परिवर्तन सहेजें",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं",
+    "title": "शीर्षक",
+    "amount": "राशि",
+    "refNo": "रेफरेंस #",
+    "notes": "नोट्स / प्रेषण"
   },
   "CashBook": {
     "title": "कैश बुक",

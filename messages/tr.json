@@ -55,6 +55,28 @@
     "balanced": "Dengeli",
     "noAccountsFound": "Kriterlerinize uygun hesap bulunamadı."
   },
+  "CustomerDetails": {
+    "currency": "PARA BİRİMİ",
+    "tapToSwitch": "Değiştirmek için dokunun",
+    "balance": "BAKİYE",
+    "searchPlaceholder": "Ref no, havale veya notlara göre ara...",
+    "allDates": "Tüm Tarihler",
+    "transactions": "İşlemler",
+    "records": "{count} kayıt",
+    "export": "Dışa Aktar",
+    "noTransactions": "İşlem bulunamadı",
+    "noTransactionsDesc": "Filtreleme kriterlerinize uygun kayıt bulunamadı.",
+    "editTransaction": "İşlemi Düzenle",
+    "deleteConfirmTitle": "Kaydı Sil",
+    "deleteConfirmDesc": "Bu işlemi silmek istediğinizden emin misiniz?",
+    "saveChanges": "Değişiklikleri Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "title": "Başlık",
+    "amount": "Tutar",
+    "refNo": "Referans No",
+    "notes": "Notlar / Açıklama"
+  },
   "CashBook": {
     "title": "Kasa Defteri",
     "subtitle": "HAVALE & ÇOKLU PARA BİRİMİ",
