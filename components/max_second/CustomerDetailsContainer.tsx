@@ -14,7 +14,7 @@ export default function CustomerDetailsContainer() {
       {/* Responsive 12-Column Dashboard Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
         {/* Left Column: Client Name, Currency Tabs & Balance Summary (Sticky on Laptop/Desktop) */}
-        <div className="lg:col-span-5 xl:col-span-4 space-y-4 lg:sticky lg:top-20">
+        <div className="lg:col-span-5   xl:col-span-4 space-y-4 lg:sticky lg:top-20">
           <ClientNameCard />
           <CustomerCurrencyTabs />
           <CustomerBalanceCard />

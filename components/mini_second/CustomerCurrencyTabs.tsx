@@ -37,7 +37,7 @@ export default function CustomerCurrencyTabs() {
       for (const tx of matchingTx) {
         net += tx.isCredit ? tx.amount : -tx.amount;
       }
-      const formatted = `${net >= 0 ? '+' : ''}${Math.abs(net) >= 1000000 ? (net / 1000000).toFixed(2) + 'M' : Math.abs(net) >= 1000 ? (net / 1000).toFixed(0) + 'K' : net.toLocaleString()}`;
+      const formatted = `${net >= 0 ? '+' : ''}${net.toLocaleString()}`;
       return {
         amountFormatted: formatted,
         isPositive: net >= 0,
@@ -63,7 +63,7 @@ export default function CustomerCurrencyTabs() {
   };
 
   return (
-    <div className="w-full space-y-2.5">
+    <div className="w-full space-y-2.5 ">
       <div className="flex items-center justify-between px-1">
         <span className="text-[11px] font-bold tracking-wider uppercase text-content-muted">
           {t('currency')}
@@ -83,20 +83,18 @@ export default function CustomerCurrencyTabs() {
               key={item.code}
               type="button"
               onClick={() => setSelectedCurrency(item.code)}
-              className={`p-3 sm:p-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between ${
-                isActive
-                  ? 'bg-surface border-brand shadow-sm ring-1 ring-brand/40'
-                  : 'bg-surface/60 border-surface-border hover:bg-surface hover:border-surface-border/80'
-              }`}
+              className={`p-3 sm:p-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between ${isActive
+                ? 'bg-surface border-brand shadow-sm ring-1 ring-brand/40'
+                : 'bg-surface/60 border-surface-border hover:bg-surface hover:border-surface-border/80'
+                }`}
             >
               <div className="flex items-center justify-between w-full">
                 <span className="text-xs font-bold text-content-primary">{item.label}</span>
                 <span className={`w-2 h-2 rounded-full ${summary.dotColor}`} />
               </div>
               <span
-                className={`text-xs sm:text-sm font-bold font-mono mt-1.5 ${
-                  summary.isPositive ? 'text-emerald-400' : 'text-rose-400'
-                }`}
+                className={`text-xs sm:text-sm font-bold font-mono mt-1.5 ${summary.isPositive ? 'text-emerald-400' : 'text-rose-400'
+                  }`}
               >
                 {summary.amountFormatted}
               </span>

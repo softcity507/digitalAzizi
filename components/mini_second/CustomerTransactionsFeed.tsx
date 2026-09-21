@@ -2,34 +2,68 @@
 
 import { useTranslations } from 'next-intl';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
+import { CUSTOMER_ACCOUNTS, LedgerTransaction } from '@/data/customerData';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import CustomerTransactionItemCard from '@/components/mini_second/CustomerTransactionItemCard';
+
+interface HandleExportProps {
+  transactions: LedgerTransaction[];
+  selectedCurrency: string;
+  customerName: string;
+}
 
 export default function CustomerTransactionsFeed() {
   const t = useTranslations('CustomerDetails');
-  const { getFilteredTransactions, selectedCurrency } = useCustomerDetailsStore();
-  const transactions = getFilteredTransactions();
+  const { getFilteredTransactions, selectedCurrency, selectedCustomerId } = useCustomerDetailsStore();
 
-  const handleExport = () => {
-    const csvContent =
-      'data:text/csv;charset=utf-8,' +
-      ['Date,Title,Tag,Amount,Currency,Type,Notes']
-        .concat(
-          transactions.map(
-            (tx) =>
-              `${tx.date},"${tx.title}","${tx.tag}",${tx.amount},${tx.currency},${
-                tx.isCredit ? 'Credit' : 'Debit'
-              },"${tx.notes || ''}"`
-          )
-        )
-        .join('\n');
+  const transactions = getFilteredTransactions() as LedgerTransaction[];
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `customer_ledger_${selectedCurrency}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  // Find current customer name for the export
+  const currentCustomer = CUSTOMER_ACCOUNTS.find((c) => c.id === selectedCustomerId);
+  const customerName = currentCustomer ? currentCustomer.name : 'Customer';
+
+  const handleExport = ({ transactions, selectedCurrency, customerName }: HandleExportProps) => {
+    try {
+      const doc = new jsPDF();
+
+      // Title & Header info
+      doc.setFontSize(16);
+      doc.setTextColor(40, 40, 40);
+      doc.text(`Customer Ledger Statement (${selectedCurrency})`, 14, 20);
+
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Customer: ${customerName}`, 14, 26);
+      doc.text(`Generated on: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 14, 32);
+
+      // Table Headers & Rows
+      const headers = [['Date', 'Customer', 'Title', 'Tag', 'Amount', 'Currency', 'Type', 'Notes']];
+      const rows = transactions.map((tx) => [
+        tx.date,
+        customerName,
+        tx.title,
+        tx.tag,
+        `${tx.isCredit ? '+' : '-'}${tx.amount.toLocaleString()}`,
+        tx.currency,
+        tx.isCredit ? 'Credit' : 'Debit',
+        tx.notes || '-',
+      ]);
+
+      autoTable(doc, {
+        startY: 38,
+        head: headers,
+        body: rows,
+        theme: 'striped',
+        headStyles: { fillColor: [41, 128, 185], textColor: 255 },
+        styles: { fontSize: 8, cellPadding: 3 },
+      });
+
+      // Save PDF file
+      doc.save(`customer_ledger_${customerName.replace(/\s+/g, '_')}_${selectedCurrency}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
   };
 
   return (
@@ -47,7 +81,7 @@ export default function CustomerTransactionsFeed() {
 
         <button
           type="button"
-          onClick={handleExport}
+          onClick={() => handleExport({ transactions, selectedCurrency, customerName })}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface hover:bg-surface-hover border border-surface-border text-xs font-semibold text-content-primary transition-colors cursor-pointer"
         >
           <svg className="w-3.5 h-3.5 text-content-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">

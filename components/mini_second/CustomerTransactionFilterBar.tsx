@@ -42,7 +42,7 @@ export default function CustomerTransactionFilterBar() {
       </div>
 
       {/* Date & Sort Actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center   gap-2">
         <button
           type="button"
           onClick={() => setDateFilter(dateFilter === 'all' ? 'today' : 'all')}
@@ -61,11 +61,10 @@ export default function CustomerTransactionFilterBar() {
           type="button"
           onClick={toggleSortOrder}
           title={sortAscending ? 'Oldest first' : 'Newest first'}
-          className={`p-2 rounded-xl border transition-colors cursor-pointer ${
-            sortAscending
+          className={`p-2 rounded-xl border transition-colors cursor-pointer ${sortAscending
               ? 'bg-brand/15 border-brand/40 text-brand'
               : 'bg-surface border-surface-border text-content-muted hover:text-content-primary hover:bg-surface-hover'
-          }`}
+            }`}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />

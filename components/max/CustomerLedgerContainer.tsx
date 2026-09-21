@@ -3,13 +3,14 @@
 import { useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { AccountFilterType } from '@/types/customer';
-import { CURRENCY_SUMMARIES, DOUBLE_ENTRY_BOOKS, CUSTOMER_ACCOUNTS } from '@/data/customerData';
+import { CURRENCY_SUMMARIES, DOUBLE_ENTRY_BOOKS, CUSTOMER_ACCOUNTS, DEFAULT_CUSTOMER_TRANSACTIONS } from '@/data/customerData';
 import CurrencySummaryGrid from '@/components/max/CurrencySummaryGrid';
 import CustomerSearch from '@/components/mini/CustomerSearch';
 import DeskMirrorSection from '@/components/max/DeskMirrorSection';
 import AccountFilterTabs from '@/components/mini/AccountFilterTabs';
 import CustomerList from '@/components/max/CustomerList';
 import AddCustomerButton from '@/components/mini/AddCustomerButton';
+import CustomerPdfExport from '../max_second/CustomerPdfExport';
 
 export default function CustomerLedgerContainer() {
   const t = useTranslations('CustomerBook');
@@ -46,7 +47,7 @@ export default function CustomerLedgerContainer() {
       {/* 2. Responsive 12-Column Dashboard Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
         {/* Left Column: Desk Mirror Position & Filter Tabs (Sticky on Laptop/Desktop) */}
-        <div className="lg:col-span-5 xl:col-span-4 space-y-4 lg:sticky lg:top-20">
+        <div className="lg:col-span-5 xl:col-span-4  space-y-4 lg:sticky lg:top-20">
           {/* Desk Mirror Position & Double-Entry Section */}
           <DeskMirrorSection books={DOUBLE_ENTRY_BOOKS} />
 
@@ -63,10 +64,18 @@ export default function CustomerLedgerContainer() {
           </div>
         </div>
 
-        {/* Right Column: Search & Customer Accounts Feed */}
+        {/* Right Column: Search, PDF Export & Customer Accounts Feed */}
         <div className="lg:col-span-7 xl:col-span-8 space-y-4">
-          {/* Customer & Phone Search Bar */}
-          <CustomerSearch value={searchQuery} onChange={setSearchQuery} />
+          <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+            {/* Customer & Phone Search Bar */}
+            <div className="w-full flex-1">
+              <CustomerSearch value={searchQuery} onChange={setSearchQuery} />
+            </div>
+            {/* PDF Export Component Button */}
+            <div className="w-full sm:w-auto shrink-0 flex justify-end">
+              <CustomerPdfExport customers={CUSTOMER_ACCOUNTS} transactions={DEFAULT_CUSTOMER_TRANSACTIONS} />
+            </div>
+          </div>
 
           {/* Customers Feed Counter Header */}
           <div className="flex items-center justify-between px-1">

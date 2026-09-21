@@ -4,7 +4,7 @@ export const CURRENCY_SUMMARIES: CurrencySummary[] = [
   {
     currency: 'AFN',
     badge: 'Net Cr',
-    total: '+9.23M',
+    total: '+9,229,800',
     customerBalance: '+9,229,800',
     deskBalance: '-9,229,800',
     isPositive: true,
@@ -20,7 +20,7 @@ export const CURRENCY_SUMMARIES: CurrencySummary[] = [
   {
     currency: 'PKR',
     badge: 'Net Cr',
-    total: '+165.0K',
+    total: '+165,000',
     customerBalance: '+165,000',
     deskBalance: '-165,000',
     isPositive: true,
@@ -243,3 +243,21 @@ export const DEFAULT_CUSTOMER_TRANSACTIONS = [
     notes: 'Dubai trade wire settlement',
   },
 ];
+
+export type CurrencyCode = 'AFN' | 'USD' | 'PKR';
+
+export type TransactionCategory = 'cash_in' | 'cash_out' | 'exchange' | 'bank' | 'initial';
+
+export interface LedgerTransaction {
+  id: string;
+  customerId: string;
+  title: string;
+  tag: string;
+  category: TransactionCategory;
+  amount: number;
+  currency: CurrencyCode;
+  isCredit: boolean;
+  date: string;
+  refNo: string;
+  notes?: string;
+}
