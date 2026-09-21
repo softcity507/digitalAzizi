@@ -18,7 +18,7 @@ export default function CashBookTransactionList() {
         <div className="text-sm sm:text-base font-bold text-slate-200">
           {t('noTransactions')}
         </div>
-        <p className="text-xs sm:text-sm text-slate-400 max-w-sm mx-auto">
+        <p className="text-xs  sm:text-sm text-slate-400 max-w-sm mx-auto">
           {t('noTransactionsDesc')}
         </p>
       </div>
@@ -26,7 +26,7 @@ export default function CashBookTransactionList() {
   }
 
   return (
-    <div className="w-full space-y-2.5">
+    <div className="w-full space-y-2.5  ">
       {transactions.map((tx) => (
         <CashBookTransactionItem key={tx.id} transaction={tx} />
       ))}
