@@ -14,33 +14,11 @@ export default function ExchangeModal() {
   const [toCustomer, setToCustomer] = useState('Haji Noorullah');
   const [fromCurrency, setFromCurrency] = useState<CurrencyCode>('USD');
   const [fromAmount, setFromAmount] = useState('1000');
-  const [toCurrency, setToCurrency] = useState<CurrencyCode>('PKR');
-  const [toAmount, setToAmount] = useState('280500');
-  const [rate, setRate] = useState('280.50');
   const [memo, setMemo] = useState('');
   const [serialNo, setSerialNo] = useState(() => `EX-${Math.floor(1000 + Math.random() * 9000)}`);
   const [date, setDate] = useState(selectedDate);
 
   if (activeModal !== 'exchange') return null;
-
-  // Auto calculate when fromAmount changes
-  const handleFromAmountChange = (val: string) => {
-    setFromAmount(val);
-    const num = parseFloat(val);
-    const numRate = parseFloat(rate);
-    if (!isNaN(num) && !isNaN(numRate)) {
-      setToAmount((num * numRate).toFixed(2));
-    }
-  };
-
-  const handleRateChange = (val: string) => {
-    setRate(val);
-    const num = parseFloat(fromAmount);
-    const numRate = parseFloat(val);
-    if (!isNaN(num) && !isNaN(numRate)) {
-      setToAmount((num * numRate).toFixed(2));
-    }
-  };
 
   // Swap From & To users
   const handleSwapUsers = () => {
@@ -49,28 +27,11 @@ export default function ExchangeModal() {
     setToCustomer(tempUser);
   };
 
-  // Swap currencies
-  const handleSwapCurrencies = () => {
-    const tempCurr = fromCurrency;
-    setFromCurrency(toCurrency);
-    setToCurrency(tempCurr);
-    if (parseFloat(rate) > 0) {
-      const invRate = (1 / parseFloat(rate)).toFixed(4);
-      setRate(invRate);
-      const num = parseFloat(fromAmount);
-      if (!isNaN(num)) {
-        setToAmount((num * parseFloat(invRate)).toFixed(2));
-      }
-    }
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const fAmt = parseFloat(fromAmount);
-    const tAmt = parseFloat(toAmount);
-    const rAmt = parseFloat(rate);
 
-    if (!fromCustomer.trim() || !toCustomer.trim() || isNaN(fAmt) || isNaN(tAmt) || fAmt <= 0) {
+    if (!fromCustomer.trim() || !toCustomer.trim() || isNaN(fAmt) || fAmt <= 0) {
       alert(t('exchangeValidationError'));
       return;
     }
@@ -88,7 +49,7 @@ export default function ExchangeModal() {
     });
 
     const combinedCustomerLabel = `${fromCustomer.trim()} ➔ ${toCustomer.trim()}`;
-    const autoMemo = `${fromCustomer.trim()} sent ${fAmt} ${fromCurrency} to ${toCustomer.trim()} received ${tAmt} ${toCurrency} @ ${rAmt}`;
+    const autoMemo = `${fromCustomer.trim()} transferred ${fAmt} ${fromCurrency} to ${toCustomer.trim()}`;
 
     addTransaction({
       customerName: combinedCustomerLabel,
@@ -106,9 +67,9 @@ export default function ExchangeModal() {
         toUser: toCustomer.trim(),
         fromCurrency,
         fromAmount: fAmt,
-        toCurrency,
-        toAmount: tAmt,
-        rate: rAmt,
+        toCurrency: fromCurrency,
+        toAmount: fAmt,
+        rate: 1,
       },
     });
   };
@@ -141,7 +102,7 @@ export default function ExchangeModal() {
           </button>
         </div>
 
-        {/* 3-Pill Operation Indicator matching CashBookOperations */}
+        {/* 3-Pill Operation Indicator */}
         <div className="grid grid-cols-3 gap-2 p-1.5 rounded-2xl bg-canvas/60 border border-surface-border/80">
           <div className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-[#fda4af]/15 border border-[#fda4af]/30 text-[#fda4af] text-xs font-bold">
             <span className="w-4 h-4 rounded-full bg-[#fda4af]/20 flex items-center justify-center text-[10px] font-black">-</span>
@@ -149,7 +110,7 @@ export default function ExchangeModal() {
           </div>
           <div className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl bg-[#38bdf8]/20 border border-[#38bdf8]/40 text-[#38bdf8] text-xs font-black shadow-sm">
             <span>⇄</span>
-            <span className="truncate">{t('exchangeBtn')}</span>
+            <span className="truncate">{t('transferBtn')}</span>
           </div>
           <div className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-[#34d399]/15 border border-[#34d399]/30 text-[#34d399] text-xs font-bold">
             <span className="w-4 h-4 rounded-full bg-[#34d399]/20 flex items-center justify-center text-[10px] font-black">+</span>
@@ -159,7 +120,7 @@ export default function ExchangeModal() {
 
         {/* Form Fields */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* TWO USERS / WALLETS SECTION (From User [Out -] ➔ To User [In +]) */}
+          {/* TWO USERS / WALLETS SECTION */}
           <div className="bg-canvas/80 rounded-2xl p-3.5 border border-surface-border/60 space-y-3">
             <div className="flex items-center justify-between text-xs font-bold text-slate-300">
               <span className="flex items-center gap-1.5">
@@ -171,7 +132,7 @@ export default function ExchangeModal() {
                 onClick={handleSwapUsers}
                 className="text-[11px] text-[#38bdf8] hover:text-[#7dd3fc] hover:bg-[#38bdf8]/20 flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[#38bdf8]/10 border border-[#38bdf8]/30 transition-all font-semibold"
               >
-                <span>{t('swapUsers')}</span> ⇄
+                <span>{t('transferBtn')}</span> ⇄
               </button>
             </div>
 
@@ -226,9 +187,8 @@ export default function ExchangeModal() {
             </div>
           </div>
 
-          {/* CURRENCY & AMOUNTS SECTION (Out Amount ➔ Rate ➔ In Amount) */}
+          {/* TRANSFER AMOUNT & CURRENCY SECTION */}
           <div className="space-y-3">
-            {/* From / Out Currency & Amount */}
             <div className="grid grid-cols-3 gap-2">
               <div className="col-span-2">
                 <label className="block text-xs font-semibold text-[#fda4af] mb-1">
@@ -239,7 +199,7 @@ export default function ExchangeModal() {
                   step="any"
                   required
                   value={fromAmount}
-                  onChange={(e) => handleFromAmountChange(e.target.value)}
+                  onChange={(e) => setFromAmount(e.target.value)}
                   placeholder="0.00"
                   className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-[#fda4af]/30 focus:border-[#fda4af] text-white text-sm font-mono focus:outline-none transition-colors"
                 />
@@ -257,62 +217,6 @@ export default function ExchangeModal() {
                   <option value="AFN">AFN</option>
                   <option value="PKR">PKR</option>
                 </select>
-              </div>
-            </div>
-
-            {/* Rate & To / In Currency & Amount */}
-            <div className="grid grid-cols-3 gap-2 items-end">
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-semibold text-[#38bdf8]">
-                    {t('rate')}
-                  </label>
-                  <button
-                    type="button"
-                    onClick={handleSwapCurrencies}
-                    title="Swap Currencies"
-                    className="text-[11px] text-[#38bdf8] hover:text-[#7dd3fc] font-bold"
-                  >
-                    ⇄
-                  </button>
-                </div>
-                <input
-                  type="number"
-                  step="any"
-                  required
-                  value={rate}
-                  onChange={(e) => handleRateChange(e.target.value)}
-                  placeholder="280.5"
-                  className="w-full h-11 px-3 rounded-xl bg-surface-input border border-[#38bdf8]/40 focus:border-[#38bdf8] text-white text-xs font-mono focus:outline-none transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">
-                  {t('receiveCurrency')}
-                </label>
-                <select
-                  value={toCurrency}
-                  onChange={(e) => setToCurrency(e.target.value as CurrencyCode)}
-                  className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm font-semibold focus:outline-none focus:border-brand"
-                >
-                  <option value="PKR">PKR</option>
-                  <option value="AFN">AFN</option>
-                  <option value="USD">USD</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-[#34d399] mb-1">
-                  {t('transferInAmount')}
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  required
-                  value={toAmount}
-                  onChange={(e) => setToAmount(e.target.value)}
-                  placeholder="0.00"
-                  className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-[#34d399]/30 focus:border-[#34d399] text-white text-xs font-mono focus:outline-none transition-colors"
-                />
               </div>
             </div>
           </div>
@@ -353,7 +257,7 @@ export default function ExchangeModal() {
               type="text"
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
-              placeholder={`${fromCustomer} ➔ ${toCustomer} wallet transfer & conversion`}
+              placeholder={`${fromCustomer} ➔ ${toCustomer} transfer record`}
               className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm focus:outline-none focus:border-brand"
             />
           </div>
@@ -372,7 +276,7 @@ export default function ExchangeModal() {
               className="w-1/2 h-11 rounded-xl bg-[#38bdf8] hover:bg-[#0ea5e9] text-black font-bold text-sm transition-all shadow-glow-brand cursor-pointer flex items-center justify-center gap-1.5"
             >
               <span>⇄</span>
-              <span>{t('confirmTransfer')}</span>
+              <span>{t('transferBtn')}</span>
             </button>
           </div>
         </form>

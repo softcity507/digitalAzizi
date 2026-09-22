@@ -27,7 +27,7 @@ export default function CashBookOperations() {
           className="h-12 sm:h-14 rounded-2xl bg-[#38bdf8] hover:bg-[#0ea5e9] active:scale-[0.98] text-black font-extrabold text-xs sm:text-sm tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1.5 text-center px-2 cursor-pointer select-none group"
         >
           <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center font-black text-xs shrink-0">⇄</span>
-          <span className="truncate">{t('exchangeBtn')}</span>
+          <span className="truncate">{t('transferBtn')}</span>
         </button>
 
         {/* 3. Cash In (+) Button */}

@@ -101,6 +101,7 @@
     "cashInBtn": "دریافت نقد (+)",
     "cashOutBtn": "پرداخت نقد (-)",
     "exchangeBtn": "تبدیل ارز",
+    "transferBtn":"انتقال",
     "editTransaction": "ویرایش تراکنش",
     "deleteTransaction": "حذف تراکنش",
     "deleteConfirmTitle": "حذف تراکنش",

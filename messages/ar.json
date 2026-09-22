@@ -101,6 +101,7 @@
     "cashInBtn": "قبض نقد (+)",
     "cashOutBtn": "صرف نقد (-)",
     "exchangeBtn": "صرافة",
+    "transferBtn": "تحويل",
     "editTransaction": "تعديل الحركة المالية",
     "deleteTransaction": "حذف الحركة",
     "deleteConfirmTitle": "حذف القيد المالي",

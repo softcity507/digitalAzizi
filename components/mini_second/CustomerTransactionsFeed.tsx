@@ -27,7 +27,7 @@ export default function CustomerTransactionsFeed() {
     try {
       const doc = new jsPDF();
 
-      // Title & Header info
+      // Title & Header info (Safe English to prevent font encoding issues)
       doc.setFontSize(16);
       doc.setTextColor(40, 40, 40);
       doc.text(`Customer Ledger Statement (${selectedCurrency})`, 14, 20);
@@ -37,19 +37,35 @@ export default function CustomerTransactionsFeed() {
       doc.text(`Customer: ${customerName}`, 14, 26);
       doc.text(`Generated on: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 14, 32);
 
-      // Table Headers & Rows
-      const headers = [['Date', 'Customer', 'Title', 'Tag', 'Amount', 'Currency', 'Type', 'Notes']];
-      const rows = transactions.map((tx) => [
-        tx.date,
-        customerName,
-        tx.title,
-        tx.tag,
-        `${tx.isCredit ? '+' : '-'}${tx.amount.toLocaleString()}`,
-        tx.currency,
-        tx.isCredit ? 'Credit' : 'Debit',
-        tx.notes || '-',
-      ]);
+      // Track calculations dynamically
+      let totalCredit = 0;
+      let totalDebit = 0;
 
+      // Table Headers & Rows mapping
+      const headers = [['Date', 'Customer', 'Title', 'Tag', 'Amount', 'Currency', 'Type', 'Notes']];
+
+      const rows = transactions.map((tx) => {
+        const amountVal = Number(tx.amount) || 0;
+
+        if (tx.isCredit) {
+          totalCredit += amountVal;
+        } else {
+          totalDebit += amountVal;
+        }
+
+        return [
+          tx.date || '-',
+          customerName || '-',
+          tx.title || '-',
+          tx.tag || '-',
+          `${tx.isCredit ? '+' : '-'}${amountVal.toLocaleString()}`,
+          tx.currency || selectedCurrency,
+          tx.isCredit ? 'Credit' : 'Debit',
+          tx.notes || '-',
+        ];
+      });
+
+      // Generate Table
       autoTable(doc, {
         startY: 38,
         head: headers,
@@ -59,13 +75,30 @@ export default function CustomerTransactionsFeed() {
         styles: { fontSize: 8, cellPadding: 3 },
       });
 
+      const finalY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
+
+      // Net Balance Calculation
+      const netBalance = totalCredit - totalDebit;
+
+      // Summary Box Footer matching calculations
+      doc.setFillColor(245, 247, 250);
+      doc.roundedRect(14, finalY, 182, 16, 2, 2, 'F');
+
+      doc.setFontSize(8);
+      doc.setTextColor(50, 50, 50);
+      doc.text(`Total Credit (+): ${totalCredit.toLocaleString()} ${selectedCurrency}`, 18, finalY + 6);
+      doc.text(`Total Debit (-): ${totalDebit.toLocaleString()} ${selectedCurrency}`, 85, finalY + 6);
+
+      doc.setFontSize(9);
+      doc.setTextColor(41, 128, 185);
+      doc.text(`Net Balance: ${netBalance >= 0 ? '+' : ''}${netBalance.toLocaleString()} ${selectedCurrency}`, 18, finalY + 12);
+
       // Save PDF file
       doc.save(`customer_ledger_${customerName.replace(/\s+/g, '_')}_${selectedCurrency}.pdf`);
     } catch (error) {
       console.error('Error generating PDF:', error);
     }
   };
-
   return (
     <div className="w-full space-y-3">
       {/* Header with Title, Count Badge, and Export Button */}

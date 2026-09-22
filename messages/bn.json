@@ -101,6 +101,7 @@
     "cashInBtn": "নগদ জমা (+)",
     "cashOutBtn": "নগদ প্রদান (-)",
     "exchangeBtn": "বিনিময়",
+    "transferBtn":"টাকা পাঠা",
     "editTransaction": "লেনদেন সম্পাদনা করুন",
     "deleteTransaction": "লেনদেন মুছুন",
     "deleteConfirmTitle": "লেনদেন মুছুন",

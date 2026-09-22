@@ -68,7 +68,7 @@ export const CUSTOMER_ACCOUNTS: CustomerAccount[] = [
     id: 'aziz-khan',
     name: 'Aziz Khan',
     subtitle: 'Wholesaler, Kabul Market',
-    phone: '+93 70 821 4402',
+    phone: '+93 70 526 9096',
     balances: [
       { currency: 'AFN', amount: '+8,449,800', isCredit: true },
       { currency: 'USD', amount: '+$5,000', isCredit: true },
@@ -79,7 +79,7 @@ export const CUSTOMER_ACCOUNTS: CustomerAccount[] = [
     id: 'salam-jan',
     name: 'Salam Jan',
     subtitle: 'Sarraf, Herat Bazaar',
-    phone: '+93 79 984 1120',
+    phone: '+93 70 526 9096',
     balances: [
       { currency: 'AFN', amount: '+1,200,000', isCredit: true },
       { currency: 'USD', amount: '-$5,000', isCredit: false },
@@ -90,7 +90,7 @@ export const CUSTOMER_ACCOUNTS: CustomerAccount[] = [
     id: 'haji-noorullah',
     name: 'Haji Noorullah',
     subtitle: 'Fruit Exporter, Kandahar',
-    phone: '+93 78 400 6655',
+    phone: '+93 70 526 9096',
     balances: [
       { currency: 'AFN', amount: '-420,000', isCredit: false },
       { currency: 'USD', amount: '+$12,400', isCredit: true },

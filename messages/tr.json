@@ -101,6 +101,7 @@
     "cashInBtn": "Nakit Girişi (+)",
     "cashOutBtn": "Nakit Çıkışı (-)",
     "exchangeBtn": "Döviz Takası",
+    "transferBtn": "Havale",
     "editTransaction": "İşlemi Düzenle",
     "deleteTransaction": "İşlemi Sil",
     "deleteConfirmTitle": "İşlemi Sil",

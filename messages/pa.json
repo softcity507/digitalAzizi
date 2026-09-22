@@ -101,6 +101,7 @@
     "cashInBtn": "کیش وصولی (+)",
     "cashOutBtn": "کیش ادائیگی (-)",
     "exchangeBtn": "وٹاندرا",
+    "transferBtn":"تبادلہ",
     "editTransaction": "لین دین بدلو",
     "deleteTransaction": "لین دین مکاؤ",
     "deleteConfirmTitle": "لین دین مٹاؤ",

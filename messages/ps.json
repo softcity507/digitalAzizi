@@ -101,6 +101,7 @@
     "cashInBtn": "نغد ترلاسه کول (+)",
     "cashOutBtn": "نغد ورکول (-)",
     "exchangeBtn": "تبادله",
+    "transferBtn":"حواله",
     "editTransaction": "معامله ترمیم کړئ",
     "deleteTransaction": "معامله حذف کړئ",
     "deleteConfirmTitle": "معامله حذف کړئ",

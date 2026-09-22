@@ -101,6 +101,7 @@
     "cashInBtn": "कैश आवक (+)",
     "cashOutBtn": "कैश निकासी (-)",
     "exchangeBtn": "विनिमय",
+    "transferBtn":"स्थानांतरण",
     "editTransaction": "लेन-देन संपादित करें",
     "deleteTransaction": "लेन-देन हटाएं",
     "deleteConfirmTitle": "लेन-देन हटाएं",
