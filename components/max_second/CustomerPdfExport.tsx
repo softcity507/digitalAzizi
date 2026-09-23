@@ -11,7 +11,7 @@ interface CustomerPdfExportProps {
     transactions: LedgerTransaction[];
 }
 
-export default function CustomerPdfExport({ customers, transactions }: CustomerPdfExportProps) {
+export default function CustomerPdfExport({ transactions }: CustomerPdfExportProps) {
     const [isGenerating, setIsGenerating] = useState(false);
 
     const generatePdf = () => {
@@ -38,25 +38,13 @@ export default function CustomerPdfExport({ customers, transactions }: CustomerP
             doc.setTextColor(0, 0, 0);
             doc.text(new Date().toISOString().slice(0, 10), 143, 22);
 
-            // --- 2. Meta Info Grid ---
-            doc.setFontSize(8);
-            doc.setTextColor(90, 90, 90);
-            doc.text('Business Name:', 14, 32);
-            doc.text('Al-Rahman Company', 45, 32);
-
-            doc.text('Customer Name:', 14, 37);
-            doc.text(customers[0]?.name || 'Exchange', 45, 37);
-
-            doc.text('Date Range:', 110, 32);
-            doc.text(`${new Date().toISOString().slice(0, 10)}`, 135, 32);
-
             // --- 3. Calculations & Rows Mapping ---
             let runningBalance = 0;
             let totalCredit = 0;
             let totalDebit = 0;
             let activeCurrency = 'AFN';
 
-            const headers = [['No', 'Date', 'Description', 'Credit (+)', 'Debit / Balance']];
+            const headers = [['No', 'Date', 'Description', 'Credit (+)', 'Debit (-)', 'Balance']];
 
             const rows = transactions.map((t, index) => {
                 const serialNo = t.refNo || String(index + 1);
@@ -87,24 +75,39 @@ export default function CustomerPdfExport({ customers, transactions }: CustomerP
                     dateStr,
                     description || '-',
                     creditStr,
-                    debitStr !== '-' ? `${debitStr}\n${balanceDisplay}` : balanceDisplay,
+                    debitStr,
+                    balanceDisplay,
                 ];
             });
 
             // --- 4. Table Generation using autoTable ---
             autoTable(doc, {
-                startY: 44,
+                startY: 32,
                 head: headers,
                 body: rows,
                 theme: 'grid',
                 headStyles: { fillColor: [16, 185, 129], textColor: 255, fontSize: 8 },
                 styles: { fontSize: 7.5, cellPadding: 2.5 },
                 columnStyles: {
-                    0: { cellWidth: 15 },
-                    1: { cellWidth: 28 },
-                    2: { cellWidth: 65 },
-                    3: { cellWidth: 32, halign: 'right' },
-                    4: { cellWidth: 38, halign: 'right' },
+                    0: { cellWidth: 14 },
+                    1: { cellWidth: 25 },
+                    2: { cellWidth: 54 },
+                    3: { cellWidth: 29, halign: 'right' },
+                    4: { cellWidth: 29, halign: 'right' },
+                    5: { cellWidth: 31, halign: 'right' },
+                },
+                didParseCell: (data) => {
+                    if (data.section === 'head' && data.column.index === 4) {
+                        data.cell.styles.fillColor = [220, 38, 38];
+                    }
+
+                    if (data.section !== 'body') return;
+
+                    if (data.column.index === 3) {
+                        data.cell.styles.textColor = [5, 150, 105];
+                    } else if (data.column.index === 4) {
+                        data.cell.styles.textColor = [220, 38, 38];
+                    }
                 },
             });
 

@@ -44,7 +44,7 @@ export default function CustomerTransactionsFeed() {
       let totalDebit = 0;
 
       // Table Headers & Rows mapping
-      const headers = [['Date', 'Customer', 'Title', 'Tag', 'Amount', 'Currency', 'Type', 'Notes']];
+      const headers = [['Date', 'Title', 'Tag', 'Credit (+)', 'Debit (-)', 'Notes']];
 
       const rows = transactions.map((tx) => {
         const amountVal = Number(tx.amount) || 0;
@@ -57,12 +57,10 @@ export default function CustomerTransactionsFeed() {
 
         return [
           tx.date || '-',
-          customerName || '-',
           tx.title || '-',
           tx.tag || '-',
-          `${tx.isCredit ? '+' : '-'}${amountVal.toLocaleString()}`,
-          tx.currency || selectedCurrency,
-          tx.isCredit ? 'Credit' : 'Debit',
+          tx.isCredit ? `${amountVal.toLocaleString()} ${tx.currency || selectedCurrency}` : '-',
+          !tx.isCredit ? `${amountVal.toLocaleString()} ${tx.currency || selectedCurrency}` : '-',
           tx.notes || '-',
         ];
       });
@@ -75,6 +73,19 @@ export default function CustomerTransactionsFeed() {
         theme: 'striped',
         headStyles: { fillColor: [41, 128, 185], textColor: 255 },
         styles: { fontSize: 8, cellPadding: 3 },
+        didParseCell: (data) => {
+          if (data.section === 'head' && data.column.index === 4) {
+            data.cell.styles.fillColor = [220, 38, 38];
+          }
+
+          if (data.section !== 'body') return;
+
+          if (data.column.index === 3) {
+            data.cell.styles.textColor = [5, 150, 105];
+          } else if (data.column.index === 4) {
+            data.cell.styles.textColor = [220, 38, 38];
+          }
+        },
       });
 
       const finalY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;

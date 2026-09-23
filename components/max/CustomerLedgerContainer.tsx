@@ -9,7 +9,7 @@ import CustomerSearch from '@/components/mini/CustomerSearch';
 import DeskMirrorSection from '@/components/max/DeskMirrorSection';
 import AccountFilterTabs from '@/components/mini/AccountFilterTabs';
 import CustomerList from '@/components/max/CustomerList';
-import AddCustomerButton from '@/components/mini/AddCustomerButton';
+// import AddCustomerButton from '@/components/mini/AddCustomerButton';
 import CustomerPdfExport from '../max_second/CustomerPdfExport';
 import { useSettingsStore } from '@/store/useSettingsStore';
 
