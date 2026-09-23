@@ -18,6 +18,15 @@ export default function ExchangeModal() {
   const [memo, setMemo] = useState('');
   const [serialNo, setSerialNo] = useState(() => `EX-${Math.floor(1000 + Math.random() * 9000)}`);
   const [date, setDate] = useState(selectedDate);
+  const sender = customers.find((customer) => customer.name === fromCustomer);
+  const availableCurrencies = sender?.balances.map((balance) => balance.currency) || ['AFN', 'USD', 'PKR'];
+
+  const handleFromCustomerChange = (value: string) => {
+    setFromCustomer(value);
+    const customer = customers.find((item) => item.name === value);
+    const currencies = customer?.balances.map((balance) => balance.currency) || ['AFN', 'USD', 'PKR'];
+    if (!currencies.includes(fromCurrency)) setFromCurrency(currencies[0] as CurrencyCode);
+  };
 
   if (activeModal !== 'exchange') return null;
 
@@ -151,7 +160,7 @@ export default function ExchangeModal() {
                   list="customers-list-from"
                   required
                   value={fromCustomer}
-                  onChange={(e) => setFromCustomer(e.target.value)}
+                  onChange={(e) => handleFromCustomerChange(e.target.value)}
                   placeholder={t('senderPlaceholder')}
                   className="w-full h-11 px-3 rounded-xl bg-surface-input border border-[#fda4af]/30 focus:border-[#fda4af] text-white text-xs sm:text-sm font-semibold focus:outline-none transition-colors"
                 />
@@ -214,9 +223,9 @@ export default function ExchangeModal() {
                   onChange={(e) => setFromCurrency(e.target.value as CurrencyCode)}
                   className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm font-semibold focus:outline-none focus:border-brand"
                 >
-                  <option value="USD">USD</option>
-                  <option value="AFN">AFN</option>
-                  <option value="PKR">PKR</option>
+                  {availableCurrencies.map((availableCurrency) => (
+                    <option key={availableCurrency} value={availableCurrency}>{availableCurrency}</option>
+                  ))}
                 </select>
               </div>
             </div>

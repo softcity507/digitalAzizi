@@ -3,21 +3,35 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import { CurrencyCode } from '@/types/customer';
+
+const AVAILABLE_CURRENCIES: CurrencyCode[] = ['AFN', 'USD', 'PKR', 'IRR', 'INR', 'AED', 'EUR', 'GBP', 'CNY', 'TRY'];
+const DEFAULT_CURRENCIES: CurrencyCode[] = ['AFN', 'USD', 'PKR'];
 
 export default function AddCustomerModal() {
   const t = useTranslations('Settings');
   const { activeModal, closeModal, addUser } = useSettingsStore();
   const [name, setName] = useState('');
   const [subtitle, setSubtitle] = useState('');
+  const [selectedCurrencies, setSelectedCurrencies] = useState<CurrencyCode[]>(DEFAULT_CURRENCIES);
 
   if (activeModal !== 'add_customer') return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
-    addUser(name.trim(), subtitle.trim() || 'Customer Account');
+    if (!name.trim() || selectedCurrencies.length !== 3) return;
+    addUser(name.trim(), subtitle.trim() || 'Customer Account', selectedCurrencies);
     setName('');
     setSubtitle('');
+    setSelectedCurrencies(DEFAULT_CURRENCIES);
+  };
+
+  const toggleCurrency = (currency: CurrencyCode) => {
+    setSelectedCurrencies((current) => {
+      if (current.includes(currency)) return current.filter((item) => item !== currency);
+      if (current.length >= 3) return [...current.slice(1), currency];
+      return [...current, currency];
+    });
   };
 
   return (
@@ -47,6 +61,38 @@ export default function AddCustomerModal() {
             />
           </div>
 
+          <fieldset className="space-y-2">
+            <legend className="text-xs font-semibold text-content-muted">
+              Deal currencies ({selectedCurrencies.length}/3)
+            </legend>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              {AVAILABLE_CURRENCIES.map((currency) => {
+                const isSelected = selectedCurrencies.includes(currency);
+                return (
+                  <label
+                    key={currency}
+                    className={`flex items-center gap-1.5 px-2 py-2 rounded-lg border text-xs font-semibold cursor-pointer ${
+                      isSelected
+                        ? 'border-brand bg-brand/10 text-brand'
+                        : 'border-surface-border text-content-muted hover:bg-surface-hover'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleCurrency(currency)}
+                      className="accent-brand"
+                    />
+                    {currency}
+                  </label>
+                );
+              })}
+            </div>
+            {selectedCurrencies.length !== 3 && (
+              <p className="text-[11px] text-rose-500">Select exactly 3 currencies.</p>
+            )}
+          </fieldset>
+            
           <div>
             <label className="block text-xs font-semibold text-content-muted mb-1">{t('customerDescription')}</label>
             <input

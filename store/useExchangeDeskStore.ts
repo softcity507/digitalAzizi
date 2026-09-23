@@ -134,6 +134,7 @@ const INITIAL_EXCHANGES: ExchangeDeskEntry[] = [
 interface ExchangeDeskState {
   customerId: string;
   customerNames: Record<string, string>;
+  customerCurrencies: Record<string, ExchangeCurrencyCode[]>;
   type: ExchangeType;
   giveAmount: string;
   giveCurrency: ExchangeCurrencyCode;
@@ -149,7 +150,7 @@ interface ExchangeDeskState {
 
   // Setters
   setCustomerId: (id: string) => void;
-  registerCustomer: (id: string, name: string) => void;
+  registerCustomer: (id: string, name: string, currencies: ExchangeCurrencyCode[]) => void;
   setType: (type: ExchangeType) => void;
   setGiveAmount: (amt: string) => void;
   setGiveCurrency: (curr: ExchangeCurrencyCode) => void;
@@ -174,6 +175,7 @@ interface ExchangeDeskState {
 export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
   customerId: 'aziz-khan',
   customerNames: Object.fromEntries(CUSTOMER_ACCOUNTS.map((customer) => [customer.id, customer.name])),
+  customerCurrencies: Object.fromEntries(CUSTOMER_ACCOUNTS.map((customer) => [customer.id, customer.balances.map((balance) => balance.currency)])),
   type: 'SELL',
   giveAmount: '5000',
   giveCurrency: 'USD',
@@ -188,9 +190,8 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
   notificationMessage: null,
 
   setCustomerId: (id) => {
-    const cust = CUSTOMER_ACCOUNTS.find((c) => c.id === id);
-    if (cust && cust.balances && cust.balances.length > 0) {
-      const userCurrs = cust.balances.map((b) => b.currency);
+    const userCurrs = get().customerCurrencies[id] || [];
+    if (userCurrs.length > 0) {
       const newGive = userCurrs[0] || 'USD';
       const newGet = userCurrs.find((c) => c !== newGive) || userCurrs[1] || 'PKR';
       set({
@@ -202,8 +203,11 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
       set({ customerId: id });
     }
   },
-  registerCustomer: (id, name) =>
-    set((state) => ({ customerNames: { ...state.customerNames, [id]: name } })),
+  registerCustomer: (id, name, currencies) =>
+    set((state) => ({
+      customerNames: { ...state.customerNames, [id]: name },
+      customerCurrencies: { ...state.customerCurrencies, [id]: currencies },
+    })),
   setType: (type) => set({ type }),
   setGiveAmount: (giveAmount) => set({ giveAmount }),
   setGiveCurrency: (giveCurrency) => set({ giveCurrency }),

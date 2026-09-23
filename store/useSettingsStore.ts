@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { BusinessProfile, AppAdminProfile, RegisteredUser, AuditLogItem } from '@/types/settings';
-import { CustomerAccount } from '@/types/customer';
+import { CustomerAccount, CurrencyCode } from '@/types/customer';
 import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 import { useCustomerDetailsStore } from './useCustomerDetailsStore';
 import { useExchangeDeskStore } from './useExchangeDeskStore';
@@ -18,7 +18,7 @@ interface SettingsState {
 
   setActiveBusiness: (id: string) => void;
   setDefaultUser: (id: string) => void;
-  addUser: (name: string, subtitle: string, roleTag?: string) => void;
+  addUser: (name: string, subtitle: string, currencies: CurrencyCode[], roleTag?: string) => void;
   triggerBackup: () => void;
   triggerRestore: () => void;
   openModal: (type: SettingsModalType) => void;
@@ -114,9 +114,9 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     useExchangeDeskStore.getState().setCustomerId(id);
   },
 
-  addUser: (name, subtitle, roleTag = 'Customer') => {
+  addUser: (name, subtitle, currencies, roleTag = 'Customer') => {
     const slugId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `user-${Date.now()}`;
-    useExchangeDeskStore.getState().registerCustomer(slugId, name);
+    useExchangeDeskStore.getState().registerCustomer(slugId, name, currencies);
     set((s) => ({
       users: [
         ...s.users,
@@ -135,9 +135,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
           name,
           subtitle,
           balances: [
-            { currency: 'AFN', amount: '0', isCredit: true },
-            { currency: 'USD', amount: '0', isCredit: true },
-            { currency: 'PKR', amount: '0', isCredit: true },
+            ...currencies.map((currency) => ({ currency, amount: '0', isCredit: true })),
           ],
         },
       ],

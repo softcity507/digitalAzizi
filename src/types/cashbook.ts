@@ -1,4 +1,4 @@
-export type CurrencyCode = 'AFN' | 'USD' | 'PKR';
+export type CurrencyCode = 'AFN' | 'USD' | 'PKR' | 'INR' | 'IRR' | 'EUR' | 'GBP' | 'AED' | 'CNY' | 'TRY';
 
 export type TransactionType = 'cash_in' | 'cash_out' | 'exchange';
 

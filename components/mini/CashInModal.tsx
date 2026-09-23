@@ -17,6 +17,15 @@ export default function CashInModal() {
   const [memo, setMemo] = useState('');
   const [serialNo, setSerialNo] = useState(() => `CB-${Math.floor(1000 + Math.random() * 9000)}`);
   const [date, setDate] = useState(selectedDate);
+  const selectedCustomer = customers.find((customer) => customer.name === customerName);
+  const availableCurrencies = selectedCustomer?.balances.map((balance) => balance.currency) || ['AFN', 'USD', 'PKR'];
+
+  const handleCustomerChange = (value: string) => {
+    setCustomerName(value);
+    const customer = customers.find((item) => item.name === value);
+    const currencies = customer?.balances.map((balance) => balance.currency) || ['AFN', 'USD', 'PKR'];
+    if (!currencies.includes(currency)) setCurrency(currencies[0] as CurrencyCode);
+  };
 
   if (activeModal !== 'cash_in') return null;
 
@@ -82,7 +91,7 @@ export default function CashInModal() {
               list="customers-list"
               required
               value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
+              onChange={(e) => handleCustomerChange(e.target.value)}
               placeholder={t('customerPlaceholder')}
               className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm focus:outline-none focus:border-brand"
             />
@@ -118,9 +127,9 @@ export default function CashInModal() {
                 onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
                 className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm font-semibold focus:outline-none focus:border-brand"
               >
-                <option value="PKR">PKR</option>
-                <option value="AFN">AFN</option>
-                <option value="USD">USD</option>
+                {availableCurrencies.map((availableCurrency) => (
+                  <option key={availableCurrency} value={availableCurrency}>{availableCurrency}</option>
+                ))}
               </select>
             </div>
           </div>
