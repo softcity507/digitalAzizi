@@ -4,11 +4,12 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useCashBookStore } from '@/store/useCashBookStore';
 import { CurrencyCode } from '@/types/cashbook';
-import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function CashOutModal() {
   const t = useTranslations('CashBook');
   const { activeModal, closeModal, addTransaction, selectedDate } = useCashBookStore();
+  const customers = useSettingsStore((state) => state.customers);
 
   const [customerName, setCustomerName] = useState('');
   const [amount, setAmount] = useState('');
@@ -86,7 +87,7 @@ export default function CashOutModal() {
               className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm focus:outline-none focus:border-brand"
             />
             <datalist id="customers-list-out">
-              {CUSTOMER_ACCOUNTS.map((c) => (
+              {customers.map((c) => (
                 <option key={c.id} value={c.name} />
               ))}
             </datalist>

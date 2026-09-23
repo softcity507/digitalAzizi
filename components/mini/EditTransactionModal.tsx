@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useCashBookStore } from '@/store/useCashBookStore';
 import { CurrencyCode, TransactionType } from '@/types/cashbook';
-import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function EditTransactionModal() {
   const t = useTranslations('CashBook');
   const { activeModal, closeModal, updateTransaction, editingTransaction } =
     useCashBookStore();
+  const customers = useSettingsStore((state) => state.customers);
 
   // Initialize state directly from editingTransaction using fallback values
   const [customerName, setCustomerName] = useState(() => editingTransaction?.customerName || '');
@@ -112,7 +113,7 @@ export default function EditTransactionModal() {
               className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm focus:outline-none focus:border-brand"
             />
             <datalist id="customers-list-edit">
-              {CUSTOMER_ACCOUNTS.map((c) => (
+              {customers.map((c) => (
                 <option key={c.id} value={c.name} />
               ))}
             </datalist>

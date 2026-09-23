@@ -227,6 +227,8 @@
     "customerDescription": "الوصف / موقع السوق",
     "save": "حفظ",
     "cancel": "إلغاء",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "PdfExport": { "cashBookReport": "تقرير معاملات دفتر النقدية", "customerLedgerStatement": "كشف حساب العميل", "ledgerStatement": "كشف حساب دفتر الأستاذ", "generatedOn": "تاريخ الإنشاء", "statementDate": "تاريخ الكشف", "businessName": "اسم النشاط التجاري", "customerName": "اسم العميل", "dateRange": "النطاق الزمني", "serialTime": "الرقم / الوقت", "customerExchange": "اسم العميل / الصرافة", "customer": "العميل", "type": "النوع", "amount": "المبلغ", "currency": "العملة", "memo": "مذكرة", "number": "الرقم", "date": "التاريخ", "description": "الوصف", "title": "العنوان", "tag": "الوسم", "notes": "ملاحظات", "credit": "دائن (+)", "debit": "مدين", "balance": "الرصيد", "cashIn": "إيداع نقدي", "cashOut": "سحب نقدي", "exchange": "صرافة", "totalTransactions": "إجمالي المعاملات", "totalCredit": "إجمالي الدائن (+)", "totalDebit": "إجمالي المدين (-)", "netBalance": "الرصيد الصافي" }
   }
-}
+  }
+

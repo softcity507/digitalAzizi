@@ -227,6 +227,7 @@
     "customerDescription": "विवरण / बाज़ार का स्थान",
     "save": "सहेजें",
     "cancel": "रद्द करें",
-    "close": "बंद करें"
+    "close": "बंद करें",
+    "PdfExport": { "cashBookReport": "कैश बुक लेन-देन रिपोर्ट", "customerLedgerStatement": "ग्राहक लेजर विवरण", "ledgerStatement": "लेजर खाता विवरण", "generatedOn": "बनाने की तारीख", "statementDate": "विवरण की तारीख", "businessName": "व्यवसाय का नाम", "customerName": "ग्राहक का नाम", "dateRange": "तिथि सीमा", "serialTime": "सीरियल / समय", "customerExchange": "ग्राहक का नाम / विनिमय", "customer": "ग्राहक", "type": "प्रकार", "amount": "राशि", "currency": "मुद्रा", "memo": "मेमो", "number": "क्रमांक", "date": "तारीख", "description": "विवरण", "title": "शीर्षक", "tag": "टैग", "notes": "नोट्स", "credit": "क्रेडिट (+)", "debit": "डेबिट", "balance": "शेष राशि", "cashIn": "कैश आवक", "cashOut": "कैश निकासी", "exchange": "विनिमय", "totalTransactions": "कुल लेन-देन", "totalCredit": "कुल क्रेडिट (+)", "totalDebit": "कुल डेबिट (-)", "netBalance": "शुद्ध शेष" }
   }
 }

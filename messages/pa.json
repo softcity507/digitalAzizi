@@ -227,6 +227,7 @@
     "customerDescription": "تفصیل / مارکیٹ پتہ",
     "save": "سانبھو",
     "cancel": "رد کرو",
-    "close": "بند کرو"
+    "close": "بند کرو",
+    "PdfExport": { "cashBookReport": "کیش بک لین دین رپورٹ", "customerLedgerStatement": "گاہک لیجر بیان", "ledgerStatement": "لیجر اکاؤنٹ بیان", "generatedOn": "بناؤن دی تاریخ", "statementDate": "بیان دی تاریخ", "businessName": "کاروبار دا ناں", "customerName": "گاہک دا ناں", "dateRange": "تاریخ دی حد", "serialTime": "سیریل / ویلا", "customerExchange": "گاہک دا ناں / وٹاندرا", "customer": "گاہک", "type": "قسم", "amount": "رقم", "currency": "کرنسی", "memo": "میमो", "number": "نمبر", "date": "تریخ", "description": "تفصیل", "title": "عنوان", "tag": "ٹیگ", "notes": "نوٹس", "credit": "کریڈٹ (+)", "debit": "ڈیبٹ", "balance": "بیلنس", "cashIn": "کیش وصولی", "cashOut": "کیش ادائیگی", "exchange": "وٹاندرا", "totalTransactions": "کل لین دین", "totalCredit": "کل کریڈٹ (+)", "totalDebit": "کل ڈیبٹ (-)", "netBalance": "خالص بیلنس" }
   }
 }

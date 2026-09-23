@@ -12,7 +12,7 @@ import AuditLogModal from '@/components/mini_second/AuditLogModal';
 
 export default function SettingsHubContainer() {
   return (
-    <div className="w-full max-w-7xl 2xl:max-w-[1500px] mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-5 sm:space-y-6 pb-28 sm:pb-20 transition-colors duration-200">
+    <div className="w-full max-w-7xl  mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-5 sm:space-y-6 pb-28 sm:pb-20 transition-colors duration-200">
       {/* 1. Header Section */}
       <SettingsHeader />
 

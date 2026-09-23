@@ -2,7 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
-import { CUSTOMER_ACCOUNTS, LedgerTransaction } from '@/data/customerData';
+import { LedgerTransaction } from '@/data/customerData';
+import { useSettingsStore } from '@/store/useSettingsStore';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import CustomerTransactionItemCard from '@/components/mini_second/CustomerTransactionItemCard';
@@ -16,11 +17,12 @@ interface HandleExportProps {
 export default function CustomerTransactionsFeed() {
   const t = useTranslations('CustomerDetails');
   const { getFilteredTransactions, selectedCurrency, selectedCustomerId } = useCustomerDetailsStore();
+  const customers = useSettingsStore((state) => state.customers);
 
   const transactions = getFilteredTransactions() as LedgerTransaction[];
 
   // Find current customer name for the export
-  const currentCustomer = CUSTOMER_ACCOUNTS.find((c) => c.id === selectedCustomerId);
+  const currentCustomer = customers.find((c) => c.id === selectedCustomerId);
   const customerName = currentCustomer ? currentCustomer.name : 'Customer';
 
   const handleExport = ({ transactions, selectedCurrency, customerName }: HandleExportProps) => {

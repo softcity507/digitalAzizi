@@ -4,11 +4,12 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useCashBookStore } from '@/store/useCashBookStore';
 import { CurrencyCode } from '@/types/cashbook';
-import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function ExchangeModal() {
   const t = useTranslations('CashBook');
   const { activeModal, closeModal, addTransaction, selectedDate } = useCashBookStore();
+  const customers = useSettingsStore((state) => state.customers);
 
   const [fromCustomer, setFromCustomer] = useState('Aziz Khan');
   const [toCustomer, setToCustomer] = useState('Haji Noorullah');
@@ -155,7 +156,7 @@ export default function ExchangeModal() {
                   className="w-full h-11 px-3 rounded-xl bg-surface-input border border-[#fda4af]/30 focus:border-[#fda4af] text-white text-xs sm:text-sm font-semibold focus:outline-none transition-colors"
                 />
                 <datalist id="customers-list-from">
-                  {CUSTOMER_ACCOUNTS.map((c) => (
+                  {customers.map((c) => (
                     <option key={c.id} value={c.name} />
                   ))}
                 </datalist>
@@ -179,7 +180,7 @@ export default function ExchangeModal() {
                   className="w-full h-11 px-3 rounded-xl bg-surface-input border border-[#34d399]/30 focus:border-[#34d399] text-white text-xs sm:text-sm font-semibold focus:outline-none transition-colors"
                 />
                 <datalist id="customers-list-to">
-                  {CUSTOMER_ACCOUNTS.map((c) => (
+                  {customers.map((c) => (
                     <option key={c.id} value={c.name} />
                   ))}
                 </datalist>

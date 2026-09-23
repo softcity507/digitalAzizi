@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
@@ -9,11 +8,12 @@ import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 export default function ClientNameCard() {
   const { selectedCustomerId, setSelectedCustomerId } = useCustomerDetailsStore();
   const { setDefaultUser } = useSettingsStore();
+  const customers = useSettingsStore((state) => state.customers);
   const { setCustomerId } = useExchangeDeskStore();
 
   const currentCustomer = useMemo(() => {
-    return CUSTOMER_ACCOUNTS.find((c) => c.id === selectedCustomerId) || CUSTOMER_ACCOUNTS[1];
-  }, [selectedCustomerId]);
+    return customers.find((c) => c.id === selectedCustomerId) || customers[1] || customers[0];
+  }, [customers, selectedCustomerId]);
 
   const handleSelectCustomer = (newId: string) => {
     setSelectedCustomerId(newId);
@@ -44,7 +44,7 @@ export default function ClientNameCard() {
           aria-label="Select Customer"
           className="bg-surface-subtle border border-surface-border text-xs font-semibold rounded-xl px-3 py-2 text-content-primary focus:outline-none focus:ring-1 focus:ring-brand cursor-pointer"
         >
-          {CUSTOMER_ACCOUNTS.map((customer) => (
+          {customers.map((customer) => (
             <option key={customer.id} value={customer.id}>
               {customer.name}
             </option>

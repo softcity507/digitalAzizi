@@ -227,6 +227,7 @@
     "customerDescription": "Açıklama / Pazar Konumu",
     "save": "Kaydet",
     "cancel": "İptal",
-    "close": "Kapat"
+    "close": "Kapat",
+    "PdfExport": { "cashBookReport": "Kasa Defteri İşlem Raporu", "customerLedgerStatement": "Müşteri Hesap Ekstresi", "ledgerStatement": "HESAP EKSTRESİ", "generatedOn": "Oluşturulma tarihi", "statementDate": "EKSTRE TARİHİ", "businessName": "İşletme adı", "customerName": "Müşteri adı", "dateRange": "Tarih aralığı", "serialTime": "Seri / Saat", "customerExchange": "Müşteri / Döviz", "customer": "Müşteri", "type": "Tür", "amount": "Tutar", "currency": "Para birimi", "memo": "Not", "number": "No", "date": "Tarih", "description": "Açıklama", "title": "Başlık", "tag": "Etiket", "notes": "Notlar", "credit": "Alacak (+)", "debit": "Borç", "balance": "Bakiye", "cashIn": "Nakit giriş", "cashOut": "Nakit çıkış", "exchange": "Döviz", "totalTransactions": "Toplam işlemler", "totalCredit": "Toplam alacak (+)", "totalDebit": "Toplam borç (-)", "netBalance": "Net bakiye" }
   }
 }

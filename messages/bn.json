@@ -227,6 +227,7 @@
     "customerDescription": "বিবরণ / বাজারের অবস্থান",
     "save": "সংরক্ষণ করুন",
     "cancel": "বাতিল",
-    "close": "বন্ধ করুন"
+    "close": "বন্ধ করুন",
+    "PdfExport": { "cashBookReport": "ক্যাশ বুক লেনদেনের প্রতিবেদন", "customerLedgerStatement": "গ্রাহক লেজার বিবরণী", "ledgerStatement": "লেজার অ্যাকাউন্ট বিবরণী", "generatedOn": "তৈরির তারিখ", "statementDate": "বিবরণীর তারিখ", "businessName": "ব্যবসার নাম", "customerName": "গ্রাহকের নাম", "dateRange": "তারিখের পরিসর", "serialTime": "সিরিয়াল / সময়", "customerExchange": "গ্রাহকের নাম / বিনিময়", "customer": "গ্রাহক", "type": "ধরন", "amount": "পরিমাণ", "currency": "মুদ্রা", "memo": "মেমো", "number": "নং", "date": "তারিখ", "description": "বিবরণ", "title": "শিরোনাম", "tag": "ট্যাগ", "notes": "নোট", "credit": "ক্রেডিট (+)", "debit": "ডেবিট", "balance": "ব্যালেন্স", "cashIn": "নগদ জমা", "cashOut": "নগদ প্রদান", "exchange": "বিনিময়", "totalTransactions": "মোট লেনদেন", "totalCredit": "মোট ক্রেডিট (+)", "totalDebit": "মোট ডেবিট (-)", "netBalance": "নিট ব্যালেন্স" }
   }
 }

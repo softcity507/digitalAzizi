@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { CurrencyCode } from '@/types/customer';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
-import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 interface CurrencyTabConfig {
   code: CurrencyCode;
@@ -21,10 +21,11 @@ export default function CustomerCurrencyTabs() {
   const t = useTranslations('CustomerDetails');
   const { selectedCurrency, setSelectedCurrency, selectedCustomerId, transactions } =
     useCustomerDetailsStore();
+  const customers = useSettingsStore((state) => state.customers);
 
   const customer = useMemo(() => {
-    return CUSTOMER_ACCOUNTS.find((c) => c.id === selectedCustomerId) || CUSTOMER_ACCOUNTS[1];
-  }, [selectedCustomerId]);
+    return customers.find((c) => c.id === selectedCustomerId) || customers[1] || customers[0];
+  }, [customers, selectedCustomerId]);
 
   const getCurrencySummary = (code: CurrencyCode) => {
     // 1. Check if matching ledger transactions exist

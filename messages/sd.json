@@ -227,6 +227,7 @@
     "customerDescription": "تفصيل / مارڪيٽ جو هنڌ",
     "save": "محفوظ ڪريو",
     "cancel": "رد",
-    "close": "بند ڪريو"
+    "close": "بند ڪريو",
+    "PdfExport": { "cashBookReport": "ڪيش بڪ ٽرانزيڪشن رپورٽ", "customerLedgerStatement": "ڪسٽمر ليجر بيان", "ledgerStatement": "ليجر اڪائونٽ بيان", "generatedOn": "ٺهڻ جي تاريخ", "statementDate": "بيان جي تاريخ", "businessName": "ڪاروبار جو نالو", "customerName": "گراهڪ جو نالو", "dateRange": "تاريخ جي حد", "serialTime": "سيريل / وقت", "customerExchange": "گراهڪ جو نالو / مٽاسٽا", "customer": "گراهڪ", "type": "قسم", "amount": "رقم", "currency": "ڪرنسي", "memo": "ميمو", "number": "نمبر", "date": "تاريخ", "description": "تفصيل", "title": "عنوان", "tag": "ٽيگ", "notes": "نوٽس", "credit": "ڪريڊٽ (+)", "debit": "ڊيبٽ", "balance": "بيلنس", "cashIn": "ڪيش وصولي", "cashOut": "ڪيش ادائيگي", "exchange": "مٽاسٽا", "totalTransactions": "ڪل ٽرانزيڪشن", "totalCredit": "ڪل ڪريڊٽ (+)", "totalDebit": "ڪل ڊيبٽ (-)", "netBalance": "خالص بيلنس" }
   }
 }

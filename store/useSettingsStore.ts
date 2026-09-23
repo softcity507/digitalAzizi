@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { BusinessProfile, AppAdminProfile, RegisteredUser, AuditLogItem } from '@/types/settings';
+import { CustomerAccount } from '@/types/customer';
+import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 import { useCustomerDetailsStore } from './useCustomerDetailsStore';
 import { useExchangeDeskStore } from './useExchangeDeskStore';
 
@@ -9,6 +11,7 @@ interface SettingsState {
   admin: AppAdminProfile;
   businesses: BusinessProfile[];
   users: RegisteredUser[];
+  customers: CustomerAccount[];
   auditLogs: AuditLogItem[];
   lastSynced: string;
   activeModal: SettingsModalType;
@@ -68,6 +71,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
       isDefault: false,
     },
   ],
+  customers: CUSTOMER_ACCOUNTS,
   auditLogs: [
     {
       id: 'log-1',
@@ -112,6 +116,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
 
   addUser: (name, subtitle, roleTag = 'Customer') => {
     const slugId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `user-${Date.now()}`;
+    useExchangeDeskStore.getState().registerCustomer(slugId, name);
     set((s) => ({
       users: [
         ...s.users,
@@ -121,6 +126,19 @@ export const useSettingsStore = create<SettingsState>((set) => ({
           subtitle,
           roleTag,
           isDefault: false,
+        },
+      ],
+      customers: [
+        ...s.customers,
+        {
+          id: slugId,
+          name,
+          subtitle,
+          balances: [
+            { currency: 'AFN', amount: '0', isCredit: true },
+            { currency: 'USD', amount: '0', isCredit: true },
+            { currency: 'PKR', amount: '0', isCredit: true },
+          ],
         },
       ],
       activeModal: null,

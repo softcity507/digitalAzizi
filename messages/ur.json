@@ -33,7 +33,7 @@
     "currenciesTitle": "AFN · USD · PKR",
     "currenciesSubtitle": "لائیو کیش ڈیسک",
     "balancedLedgerTitle": "ڈیبٹ اور کریڈٹ",
-    "balancedLedgerSubtitle": "بیلنسڈ لیجر",
+    "balancedLedgerSubtitle": "متوازن لیجر",
     "instantPdfTitle": "فوری PDF",
     "instantPdfSubtitle": "روزانہ روزنامچہ",
     "exploreDemo": "لاگ ان کے بغیر ڈیمو لیجر دیکھیں",
@@ -227,6 +227,7 @@
     "customerDescription": "تفصیل / مارکیٹ کا مقام",
     "save": "محفوظ کریں",
     "cancel": "منسوخ",
-    "close": "بند کریں"
+    "close": "بند کریں",
+    "PdfExport": { "cashBookReport": "کیش بک لین دین کی رپورٹ", "customerLedgerStatement": "کسٹمر لیجر اسٹیٹمنٹ", "ledgerStatement": "لیجر اکاؤنٹ اسٹیٹمنٹ", "generatedOn": "تیار کردہ تاریخ", "statementDate": "اسٹیٹمنٹ کی تاریخ", "businessName": "کاروبار کا نام", "customerName": "کسٹمر کا نام", "dateRange": "تاریخ کی حد", "serialTime": "سیریل / وقت", "customerExchange": "کسٹمر نام / ایکسچینج", "customer": "کسٹمر", "type": "قسم", "amount": "رقم", "currency": "کرنسی", "memo": "میمو", "number": "نمبر", "date": "تاریخ", "description": "تفصیل", "title": "عنوان", "tag": "ٹیگ", "notes": "نوٹس", "credit": "کریڈٹ (+)", "debit": "ڈیبٹ", "balance": "بیلنس", "cashIn": "کیش آمد", "cashOut": "کیش اخراج", "exchange": "ایکسچینج", "totalTransactions": "کل لین دین", "totalCredit": "کل کریڈٹ (+)", "totalDebit": "کل ڈیبٹ (-)", "netBalance": "خالص بیلنس" }
   }
 }

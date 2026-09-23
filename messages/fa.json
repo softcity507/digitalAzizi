@@ -33,7 +33,7 @@
     "currenciesTitle": "AFN · USD · PKR",
     "currenciesSubtitle": "میز نقدی لحظه‌ای",
     "balancedLedgerTitle": "بدهکار و بستانکار",
-    "balancedLedgerSubtitle": "دفتر کل تراز",
+    "balancedLedgerSubtitle": "دفتر کل متوازن",
     "instantPdfTitle": "پی‌دی‌اف فوری",
     "instantPdfSubtitle": "روزنامچه روزانه",
     "exploreDemo": "مشاهده دموی دفتر کل بدون ورود",
@@ -227,6 +227,8 @@
     "customerDescription": "توضیحات / موقعیت بازار",
     "save": "ذخیره",
     "cancel": "انصراف",
-    "close": "بستن"
+    "close": "بستن",
+    "PdfExport": { "cashBookReport": "گزارش تراکنش‌های دفتر نقدی", "customerLedgerStatement": "صورت‌حساب دفتر مشتری", "ledgerStatement": "صورت‌حساب دفتر حساب", "generatedOn": "تاریخ ایجاد", "statementDate": "تاریخ صورت‌حساب", "businessName": "نام کسب‌وکار", "customerName": "نام مشتری", "dateRange": "محدوده تاریخ", "serialTime": "سریال / زمان", "customerExchange": "نام مشتری / صرافی", "customer": "مشتری", "type": "نوع", "amount": "مبلغ", "currency": "ارز", "memo": "یادداشت", "number": "شماره", "date": "تاریخ", "description": "شرح", "title": "عنوان", "tag": "برچسب", "notes": "یادداشت‌ها", "credit": "بستانکار (+)", "debit": "بدهکار", "balance": "موجودی", "cashIn": "ورودی نقدی", "cashOut": "خروجی نقدی", "exchange": "تبدیل ارز", "totalTransactions": "مجموع تراکنش‌ها", "totalCredit": "مجموع بستانکار (+)", "totalDebit": "مجموع بدهکار (-)", "netBalance": "موجودی خالص" }
   }
-}
+  }
+

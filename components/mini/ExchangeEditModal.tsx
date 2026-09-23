@@ -4,11 +4,12 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 import { ExchangeCurrencyCode, ExchangeType } from '@/types/exchange';
-import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function ExchangeEditModal() {
   const t = useTranslations('ExchangeDesk');
   const { editingTransaction, closeEditModal, updateTransaction } = useExchangeDeskStore();
+  const customers = useSettingsStore((state) => state.customers);
 
   const [customerId, setCustomerId] = useState(() => editingTransaction?.customerId || '');
   const [giveAmount, setGiveAmount] = useState(() => editingTransaction?.giveAmount.toString() || '');
@@ -25,7 +26,7 @@ export default function ExchangeEditModal() {
   const [type, setType] = useState<ExchangeType>(() => editingTransaction?.type || 'SELL');
   const [memo, setMemo] = useState(() => editingTransaction?.memo || '');
 
-  const matchedCustomer = CUSTOMER_ACCOUNTS.find((c) => c.id === customerId);
+  const matchedCustomer = customers.find((c) => c.id === customerId);
   const userCurrencies = (matchedCustomer?.balances?.map((b) => b.currency) || [
     'USD',
     'AFN',
@@ -44,7 +45,7 @@ export default function ExchangeEditModal() {
       return;
     }
 
-    const currentCustomer = CUSTOMER_ACCOUNTS.find((c) => c.id === customerId);
+    const currentCustomer = customers.find((c) => c.id === customerId);
     const customerName = currentCustomer ? currentCustomer.name : editingTransaction.customerName;
 
     updateTransaction(editingTransaction.id, {
@@ -95,7 +96,7 @@ export default function ExchangeEditModal() {
               onChange={(e) => setCustomerId(e.target.value)}
               className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-brand"
             >
-              {CUSTOMER_ACCOUNTS.map((c) => (
+              {customers.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>

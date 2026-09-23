@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 import { ExchangeCurrencyCode } from '@/types/exchange';
-import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function ExchangeRateInput() {
   const t = useTranslations('ExchangeDesk');
@@ -17,9 +17,10 @@ export default function ExchangeRateInput() {
     calcMode,
     setCalcMode,
   } = useExchangeDeskStore();
+  const customers = useSettingsStore((state) => state.customers);
 
   // Find customer's assigned 3 currencies
-  const matchedCustomer = CUSTOMER_ACCOUNTS.find((c) => c.id === customerId);
+  const matchedCustomer = customers.find((c) => c.id === customerId);
   const userCurrencies = (matchedCustomer?.balances?.map((b) => b.currency) || [
     'AFN',
     'USD',

@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { AccountFilterType } from '@/types/customer';
-import { CURRENCY_SUMMARIES, DOUBLE_ENTRY_BOOKS, CUSTOMER_ACCOUNTS, DEFAULT_CUSTOMER_TRANSACTIONS } from '@/data/customerData';
+import { CURRENCY_SUMMARIES, DOUBLE_ENTRY_BOOKS, DEFAULT_CUSTOMER_TRANSACTIONS } from '@/data/customerData';
 import CurrencySummaryGrid from '@/components/max/CurrencySummaryGrid';
 import CustomerSearch from '@/components/mini/CustomerSearch';
 import DeskMirrorSection from '@/components/max/DeskMirrorSection';
@@ -11,14 +11,16 @@ import AccountFilterTabs from '@/components/mini/AccountFilterTabs';
 import CustomerList from '@/components/max/CustomerList';
 import AddCustomerButton from '@/components/mini/AddCustomerButton';
 import CustomerPdfExport from '../max_second/CustomerPdfExport';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function CustomerLedgerContainer() {
   const t = useTranslations('CustomerBook');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<AccountFilterType>('all');
+  const customers = useSettingsStore((state) => state.customers);
 
   const filteredCustomers = useMemo(() => {
-    return CUSTOMER_ACCOUNTS.filter((customer) => {
+    return customers.filter((customer) => {
       // 1. Search filter matching name, subtitle, or phone
       const matchesSearch =
         customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -37,7 +39,7 @@ export default function CustomerLedgerContainer() {
 
       return true;
     });
-  }, [searchQuery, activeFilter]);
+  }, [customers, searchQuery, activeFilter]);
 
   return (
     <div className="w-full max-w-7xl 2xl:max-w-[1500px] mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 space-y-5 sm:space-y-6 pb-28 sm:pb-20 transition-colors duration-200">
@@ -59,7 +61,7 @@ export default function CustomerLedgerContainer() {
             <AccountFilterTabs
               currentFilter={activeFilter}
               onSelect={setActiveFilter}
-              totalAccounts={CUSTOMER_ACCOUNTS.length}
+              totalAccounts={customers.length}
             />
           </div>
         </div>
@@ -73,7 +75,7 @@ export default function CustomerLedgerContainer() {
             </div>
             {/* PDF Export Component Button */}
             <div className="w-full sm:w-auto shrink-0 flex justify-end">
-              <CustomerPdfExport customers={CUSTOMER_ACCOUNTS} transactions={DEFAULT_CUSTOMER_TRANSACTIONS} />
+              <CustomerPdfExport customers={customers} transactions={DEFAULT_CUSTOMER_TRANSACTIONS} />
             </div>
           </div>
 
@@ -83,7 +85,7 @@ export default function CustomerLedgerContainer() {
               {t('allAccounts')}
             </h2>
             <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-surface-subtle border border-surface-border text-slate-600 dark:text-slate-400">
-              {filteredCustomers.length} / {CUSTOMER_ACCOUNTS.length}
+              {filteredCustomers.length} / {customers.length}
             </span>
           </div>
 
@@ -92,8 +94,6 @@ export default function CustomerLedgerContainer() {
         </div>
       </div>
 
-      {/* Floating Add Customer Action Button */}
-      <AddCustomerButton onClick={() => alert('Add Customer Modal')} />
-    </div>
+      </div>
   );
 }

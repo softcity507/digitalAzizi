@@ -133,6 +133,7 @@ const INITIAL_EXCHANGES: ExchangeDeskEntry[] = [
 
 interface ExchangeDeskState {
   customerId: string;
+  customerNames: Record<string, string>;
   type: ExchangeType;
   giveAmount: string;
   giveCurrency: ExchangeCurrencyCode;
@@ -148,6 +149,7 @@ interface ExchangeDeskState {
 
   // Setters
   setCustomerId: (id: string) => void;
+  registerCustomer: (id: string, name: string) => void;
   setType: (type: ExchangeType) => void;
   setGiveAmount: (amt: string) => void;
   setGiveCurrency: (curr: ExchangeCurrencyCode) => void;
@@ -171,6 +173,7 @@ interface ExchangeDeskState {
 
 export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
   customerId: 'aziz-khan',
+  customerNames: Object.fromEntries(CUSTOMER_ACCOUNTS.map((customer) => [customer.id, customer.name])),
   type: 'SELL',
   giveAmount: '5000',
   giveCurrency: 'USD',
@@ -199,6 +202,8 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
       set({ customerId: id });
     }
   },
+  registerCustomer: (id, name) =>
+    set((state) => ({ customerNames: { ...state.customerNames, [id]: name } })),
   setType: (type) => set({ type }),
   setGiveAmount: (giveAmount) => set({ giveAmount }),
   setGiveCurrency: (giveCurrency) => set({ giveCurrency }),
@@ -228,8 +233,7 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
       return false;
     }
 
-    const matchedCustomer = CUSTOMER_ACCOUNTS.find((c) => c.id === customerId);
-    const customerName = matchedCustomer ? matchedCustomer.name : 'Counterparty';
+    const customerName = get().customerNames[customerId] || 'Counterparty';
     
     // Multiply vs Divide Calculation:
     const computedGetAmount = calcMode === 'multiply'

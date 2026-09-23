@@ -227,6 +227,7 @@
     "customerDescription": "تفصیل / بازار جاہ",
     "save": "محفوظ کن ات",
     "cancel": "رد",
-    "close": "بند کن ات"
+    "close": "بند کن ات",
+    "PdfExport": { "cashBookReport": "کیش بک ءِ لین دینانی رپورٹ", "customerLedgerStatement": "گاہگ ءِ لیجر بیان", "ledgerStatement": "لیجر اکاؤنٹ ءِ بیان", "generatedOn": "جوڑ کنگ ءِ تاریخ", "statementDate": "بیان ءِ تاریخ", "businessName": "کاروبار ءِ نام", "customerName": "گاہگ ءِ نام", "dateRange": "تاریخ ءِ حد", "serialTime": "سیریل / وھد", "customerExchange": "گاہگ ءِ نام / مٹ کنگ", "customer": "گاہگ", "type": "وڑ", "amount": "کساس", "currency": "کرنسی", "memo": "میمو", "number": "نمبر", "date": "تاریخ", "description": "تفصیل", "title": "عنوان", "tag": "ٹیگ", "notes": "نوٹس", "credit": "کریڈٹ (+)", "debit": "ڈیبٹ", "balance": "بیلنس", "cashIn": "کیش رسگ", "cashOut": "کیش دیگ", "exchange": "مٹ کنگ", "totalTransactions": "کلین لین دین", "totalCredit": "کل کریڈٹ (+)", "totalDebit": "کل ڈیبٹ (-)", "netBalance": "خالص بیلنس" }
   }
 }

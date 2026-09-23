@@ -5,16 +5,16 @@ import { useTranslations } from 'next-intl';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
-import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 
 export default function ExchangeCustomerSelect() {
   const t = useTranslations('ExchangeDesk');
   const { customerId, setCustomerId } = useExchangeDeskStore();
+  const customers = useSettingsStore((state) => state.customers);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const selectedCustomer =
-    CUSTOMER_ACCOUNTS.find((c) => c.id === customerId) || CUSTOMER_ACCOUNTS[1] || CUSTOMER_ACCOUNTS[0];
+    customers.find((c) => c.id === customerId) || customers[1] || customers[0];
 
   // Close on outside click
   useEffect(() => {
@@ -92,7 +92,7 @@ export default function ExchangeCustomerSelect() {
       {/* Dropdown Options */}
       {isOpen && (
         <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded-2xl bg-surface border border-surface-border shadow-2xl p-2 space-y-1 max-h-72 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150">
-          {CUSTOMER_ACCOUNTS.map((customer) => {
+          {customers.map((customer) => {
             const isSelected = customer.id === customerId;
 
             return (

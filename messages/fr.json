@@ -1,11 +1,9 @@
-{
-  "Header": {
-    "subtitle": "HAWALA & MULTI-DEVISES",
+ {
     "notifications": "Notifications",
     "noNotifications": "Aucune nouvelle notification",
     "darkMode": "Mode Sombre",
-    "lightMode": "Mode Clair"
-  },
+    "lightMode": "Mode Clair",
+
   "Navigation": {
     "customers": "Clients",
     "details": "Détails",
@@ -227,6 +225,7 @@
     "customerDescription": "Sous-titre / Emplacement Marché",
     "save": "Enregistrer",
     "cancel": "Annuler",
-    "close": "Fermer"
+    "close": "Fermer",
+    "PdfExport": { "cashBookReport": "Rapport des transactions de caisse", "customerLedgerStatement": "Relevé du compte client", "ledgerStatement": "RELEVÉ DU COMPTE", "generatedOn": "Généré le", "statementDate": "DATE DU RELEVÉ", "businessName": "Nom de l'entreprise", "customerName": "Nom du client", "dateRange": "Période", "serialTime": "N° / Heure", "customerExchange": "Client / Change", "customer": "Client", "type": "Type", "amount": "Montant", "currency": "Devise", "memo": "Mémo", "number": "N°", "date": "Date", "description": "Description", "title": "Titre", "tag": "Étiquette", "notes": "Notes", "credit": "Crédit (+)", "debit": "Débit", "balance": "Solde", "cashIn": "Encaissement", "cashOut": "Décaissement", "exchange": "Change", "totalTransactions": "Total des transactions", "totalCredit": "Total crédit (+)", "totalDebit": "Total débit (-)", "netBalance": "Solde net" }
   }
 }

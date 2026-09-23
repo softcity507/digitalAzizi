@@ -227,6 +227,7 @@
     "customerDescription": "توضیحات / بازار موقعیت",
     "save": "خوندي کړئ",
     "cancel": "لغوه",
-    "close": "بندول"
+    "close": "بندول",
+    "PdfExport": { "cashBookReport": "د کیش بک د معاملو راپور", "customerLedgerStatement": "د پیرودونکي لیجر بیان", "ledgerStatement": "د لیجر حساب بیان", "generatedOn": "د جوړېدو نېټه", "statementDate": "د بیان نېټه", "businessName": "د سوداګرۍ نوم", "customerName": "د پیرودونکي نوم", "dateRange": "د نېټې موده", "serialTime": "سریال / وخت", "customerExchange": "د پیرودونکي نوم / تبادله", "customer": "پیرودونکی", "type": "ډول", "amount": "مبلغ", "currency": "اسعار", "memo": "یادښت", "number": "شمېره", "date": "نېټه", "description": "تفصیل", "title": "عنوان", "tag": "ټګ", "notes": "یادښتونه", "credit": "کریډیټ (+)", "debit": "ډیبیټ", "balance": "بیلانس", "cashIn": "نغد ترلاسه کول", "cashOut": "نغد ورکول", "exchange": "تبادله", "totalTransactions": "ټولې معاملې", "totalCredit": "ټول کریډیټ (+)", "totalDebit": "ټول ډیبیټ (-)", "netBalance": "خالص بیلانس" }
   }
 }
