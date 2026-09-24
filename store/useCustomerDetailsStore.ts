@@ -3,10 +3,11 @@ import { CustomerTransaction, CurrencyCode } from '@/types/customer';
 import { DEFAULT_CUSTOMER_TRANSACTIONS } from '@/data/customerData';
 
 export type CustomerDetailsModalType = 'edit' | 'delete' | null;
+export type CustomerCurrencySelection = CurrencyCode | 'ALL';
 
 interface CustomerDetailsState {
   selectedCustomerId: string;
-  selectedCurrency: CurrencyCode;
+  selectedCurrency: CustomerCurrencySelection;
   searchQuery: string;
   dateFilter: string;
   sortAscending: boolean;
@@ -16,7 +17,7 @@ interface CustomerDetailsState {
   deletingTransactionId: string | null;
 
   setSelectedCustomerId: (id: string) => void;
-  setSelectedCurrency: (curr: CurrencyCode) => void;
+  setSelectedCurrency: (curr: CustomerCurrencySelection) => void;
   setSearchQuery: (query: string) => void;
   setDateFilter: (filter: string) => void;
   toggleSortOrder: () => void;
@@ -72,7 +73,7 @@ export const useCustomerDetailsStore = create<CustomerDetailsState>((set, get) =
     return transactions
       .filter((tx) => {
         if (tx.customerId !== selectedCustomerId) return false;
-        if (tx.currency !== selectedCurrency) return false;
+        if (selectedCurrency !== 'ALL' && tx.currency !== selectedCurrency) return false;
         if (!query) return true;
         return (
           tx.title.toLowerCase().includes(query) ||

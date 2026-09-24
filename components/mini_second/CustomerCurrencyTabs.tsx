@@ -3,18 +3,19 @@
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { CurrencyCode } from '@/types/customer';
-import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
+import { CustomerCurrencySelection, useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 
 interface CurrencyTabConfig {
-  code: CurrencyCode;
+  code: CustomerCurrencySelection;
   label: string;
 }
 
 const CURRENCY_CONFIG: CurrencyTabConfig[] = [
-  { code: 'AFN', label: 'AFN (؋)' },
-  { code: 'USD', label: 'USD ($)' },
-  { code: 'PKR', label: 'PKR (Rs)' },
+  { code: 'ALL', label: 'ALL' },
+  { code: 'AFN', label: 'AFN' },
+  { code: 'USD', label: 'USD' },
+  { code: 'PKR', label: 'PKR' },
 ];
 
 export default function CustomerCurrencyTabs() {
@@ -63,10 +64,23 @@ export default function CustomerCurrencyTabs() {
     };
   };
 
+  const getAllCurrenciesSummary = () => {
+    const matchingTx = transactions.filter((tx) => tx.customerId === selectedCustomerId);
+    const net = matchingTx.reduce((total, tx) => total + (tx.isCredit ? tx.amount : -tx.amount), 0);
+
+    return {
+      amountFormatted: `${net >= 0 ? '+' : ''}${net.toLocaleString()}`,
+      isPositive: net >= 0,
+      dotColor: net > 0 ? 'bg-emerald-400' : net < 0 ? 'bg-rose-400' : 'bg-slate-400',
+    };
+  };
+
   // Handler to send remaining balance details via WhatsApp
   const handleSendWhatsApp = () => {
     const targetNumber = customer.phone || "03471881624"; // Uses customer phone if available, falls back to default
-    const currentSummary = getCurrencySummary(selectedCurrency);
+    const currentSummary = selectedCurrency === 'ALL'
+      ? getAllCurrenciesSummary()
+      : getCurrencySummary(selectedCurrency);
 
     const message = `Hello ${customer.name},\n\nHere is your account statement summary for ${selectedCurrency}:\n- Remaining Balance: ${currentSummary.amountFormatted} ${selectedCurrency}\n\nThank you,\nAl-Rahman Company`;
 
@@ -101,27 +115,31 @@ export default function CustomerCurrencyTabs() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
         {CURRENCY_CONFIG.map((item) => {
           const isActive = selectedCurrency === item.code;
-          const summary = getCurrencySummary(item.code);
+          const summary = item.code === 'ALL' ? getAllCurrenciesSummary() : getCurrencySummary(item.code);
 
           return (
             <button
               key={item.code}
               type="button"
               onClick={() => setSelectedCurrency(item.code)}
-              className={`p-3 sm:p-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between ${isActive
-                ? 'bg-surface border-brand shadow-sm ring-1 ring-brand/40'
+              className={`min-w-0 p-2 sm:p-2.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between ${isActive
+                ? 'bg-brand border-brand text-brand-foreground shadow-sm ring-1 ring-brand/40'
                 : 'bg-surface/60 border-surface-border hover:bg-surface hover:border-surface-border/80'
                 }`}
             >
               <div className="flex items-center justify-between w-full">
-                <span className="text-xs font-bold text-content-primary">{item.label}</span>
-                <span className={`w-2 h-2 rounded-full ${summary.dotColor}`} />
+                <span className={`text-[10px] sm:text-xs font-bold ${isActive ? 'text-brand-foreground' : 'text-content-primary'}`}>
+                  {item.label}
+                </span>
+                <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-brand-foreground' : summary.dotColor}`} />
               </div>
               <span
-                className={`text-xs sm:text-sm font-bold font-mono mt-1.5 ${summary.isPositive ? 'text-emerald-400' : 'text-rose-400'
+                className={`min-w-0 w-full truncate text-[10px] sm:text-xs font-bold font-mono mt-1.5 ${isActive
+                  ? 'text-brand-foreground'
+                  : summary.isPositive ? 'text-emerald-400' : 'text-rose-400'
                   }`}
               >
                 {summary.amountFormatted}
