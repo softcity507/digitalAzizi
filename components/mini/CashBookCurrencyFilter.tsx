@@ -28,7 +28,7 @@ export default function CashBookCurrencyFilter() {
               className={`flex-1 sm:flex-initial px-3 sm:px-4 py-1.5 rounded-xl text-xs md:text-sm font-bold transition-all duration-200 text-center ${
                 isActive
                   ? 'bg-[#38bdf8] text-black shadow-glow-brand font-extrabold'
-                  : 'text-slate-300 hover:text-white hover:bg-surface-hover'
+                  : 'text-content-muted hover:text-content-primary hover:bg-surface-hover'
               }`}
             >
               {item.label}

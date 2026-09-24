@@ -33,7 +33,7 @@ export default function CashBookSearch() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={t('searchPlaceholder')}
-          className="w-full h-12 pl-12 pr-10 rtl:pl-10 rtl:pr-12 rounded-2xl bg-surface-input/90 border border-surface-border text-slate-100 placeholder:text-slate-400 text-sm focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all shadow-inner"
+          className="w-full h-12 pl-12 pr-10 rtl:pl-10 rtl:pr-12 rounded-2xl bg-surface-input/90 border border-surface-border text-content-primary placeholder:text-content-muted text-sm focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all shadow-inner"
         />
 
         {/* Clear Button */}
@@ -43,7 +43,7 @@ export default function CashBookSearch() {
             onClick={() => setSearchQuery('')}
             aria-label={t('clearSearch')}
             title={t('clearSearch')}
-            className="absolute right-3.5 rtl:right-auto rtl:left-3.5 p-1 rounded-full text-slate-400 hover:text-white hover:bg-surface-hover transition-colors"
+            className="absolute right-3.5 rtl:right-auto rtl:left-3.5 p-1 rounded-full text-content-muted hover:text-content-primary hover:bg-surface-hover transition-colors"
           >
             <svg
               className="w-4 h-4"

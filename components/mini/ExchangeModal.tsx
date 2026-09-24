@@ -162,7 +162,7 @@ export default function ExchangeModal() {
                   value={fromCustomer}
                   onChange={(e) => handleFromCustomerChange(e.target.value)}
                   placeholder={t('senderPlaceholder')}
-                  className="w-full h-11 px-3 rounded-xl bg-surface-input border border-[#fda4af]/30 focus:border-[#fda4af] text-white text-xs sm:text-sm font-semibold focus:outline-none transition-colors"
+                  className="w-full h-11 px-3 rounded-xl bg-surface-input border border-[#fda4af]/30 focus:border-[#fda4af] text-content-primary text-xs sm:text-sm font-semibold focus:outline-none transition-colors"
                 />
                 <datalist id="customers-list-from">
                   {customers.map((c) => (
@@ -186,7 +186,7 @@ export default function ExchangeModal() {
                   value={toCustomer}
                   onChange={(e) => setToCustomer(e.target.value)}
                   placeholder={t('receiverPlaceholder')}
-                  className="w-full h-11 px-3 rounded-xl bg-surface-input border border-[#34d399]/30 focus:border-[#34d399] text-white text-xs sm:text-sm font-semibold focus:outline-none transition-colors"
+                  className="w-full h-11 px-3 rounded-xl bg-surface-input border border-[#34d399]/30 focus:border-[#34d399] text-content-primary text-xs sm:text-sm font-semibold focus:outline-none transition-colors"
                 />
                 <datalist id="customers-list-to">
                   {customers.map((c) => (
@@ -211,7 +211,7 @@ export default function ExchangeModal() {
                   value={fromAmount}
                   onChange={(e) => setFromAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-[#fda4af]/30 focus:border-[#fda4af] text-white text-sm font-mono focus:outline-none transition-colors"
+                  className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-[#fda4af]/30 focus:border-[#fda4af] text-content-primary placeholder:text-content-muted text-sm font-mono focus:outline-none transition-colors"
                 />
               </div>
               <div>
@@ -221,7 +221,7 @@ export default function ExchangeModal() {
                 <select
                   value={fromCurrency}
                   onChange={(e) => setFromCurrency(e.target.value as CurrencyCode)}
-                  className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm font-semibold focus:outline-none focus:border-brand"
+                  className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-content-primary text-sm font-semibold focus:outline-none focus:border-brand"
                 >
                   {availableCurrencies.map((availableCurrency) => (
                     <option key={availableCurrency} value={availableCurrency}>{availableCurrency}</option>
@@ -242,7 +242,7 @@ export default function ExchangeModal() {
                 required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-white text-xs focus:outline-none focus:border-brand"
+                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-content-primary text-xs focus:outline-none focus:border-brand"
               />
             </div>
             <div>
@@ -253,7 +253,7 @@ export default function ExchangeModal() {
                 type="text"
                 value={serialNo}
                 onChange={(e) => setSerialNo(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-white text-xs font-mono focus:outline-none focus:border-brand"
+                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-content-primary placeholder:text-content-muted text-xs font-mono focus:outline-none focus:border-brand"
               />
             </div>
           </div>
@@ -268,7 +268,7 @@ export default function ExchangeModal() {
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
               placeholder={`${fromCustomer} ➔ ${toCustomer} transfer record`}
-              className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm focus:outline-none focus:border-brand"
+              className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-content-primary placeholder:text-content-muted text-sm focus:outline-none focus:border-brand"
             />
           </div>
 

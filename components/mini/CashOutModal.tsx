@@ -93,7 +93,7 @@ export default function CashOutModal() {
               value={customerName}
               onChange={(e) => handleCustomerChange(e.target.value)}
               placeholder={t('beneficiaryPlaceholder')}
-              className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm focus:outline-none focus:border-brand"
+              className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-content-primary placeholder:text-content-muted text-sm focus:outline-none focus:border-brand"
             />
             <datalist id="customers-list-out">
               {customers.map((c) => (
@@ -115,7 +115,7 @@ export default function CashOutModal() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm font-mono focus:outline-none focus:border-brand"
+                className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-content-primary placeholder:text-content-muted text-sm font-mono focus:outline-none focus:border-brand"
               />
             </div>
             <div>
@@ -125,7 +125,7 @@ export default function CashOutModal() {
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
-                className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm font-semibold focus:outline-none focus:border-brand"
+                className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-content-primary text-sm font-semibold focus:outline-none focus:border-brand"
               >
                 {availableCurrencies.map((availableCurrency) => (
                   <option key={availableCurrency} value={availableCurrency}>{availableCurrency}</option>
@@ -145,7 +145,7 @@ export default function CashOutModal() {
                 required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-white text-xs focus:outline-none focus:border-brand"
+                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-content-primary text-xs focus:outline-none focus:border-brand"
               />
             </div>
             <div>
@@ -156,7 +156,7 @@ export default function CashOutModal() {
                 type="text"
                 value={serialNo}
                 onChange={(e) => setSerialNo(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-white text-xs font-mono focus:outline-none focus:border-brand"
+                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-content-primary placeholder:text-content-muted text-xs font-mono focus:outline-none focus:border-brand"
               />
             </div>
           </div>
@@ -171,7 +171,7 @@ export default function CashOutModal() {
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
               placeholder={t('memoCashOutPlaceholder')}
-              className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-white text-sm focus:outline-none focus:border-brand"
+              className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-content-primary placeholder:text-content-muted text-sm focus:outline-none focus:border-brand"
             />
           </div>
 

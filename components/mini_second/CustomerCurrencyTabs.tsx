@@ -5,18 +5,12 @@ import { useTranslations } from 'next-intl';
 import { CurrencyCode } from '@/types/customer';
 import { CustomerCurrencySelection, useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import jsPDF from 'jspdf';
 
 interface CurrencyTabConfig {
   code: CustomerCurrencySelection;
   label: string;
 }
-
-const CURRENCY_CONFIG: CurrencyTabConfig[] = [
-  { code: 'ALL', label: 'ALL' },
-  { code: 'AFN', label: 'AFN' },
-  { code: 'USD', label: 'USD' },
-  { code: 'PKR', label: 'PKR' },
-];
 
 export default function CustomerCurrencyTabs() {
   const t = useTranslations('CustomerDetails');
@@ -27,6 +21,22 @@ export default function CustomerCurrencyTabs() {
   const customer = useMemo(() => {
     return customers.find((c) => c.id === selectedCustomerId) || customers[1] || customers[0];
   }, [customers, selectedCustomerId]);
+
+  const currencyConfig = useMemo<CurrencyTabConfig[]>(() => {
+    const customerCurrencies = new Set<CurrencyCode>([
+      ...customer.balances.map((balance) => balance.currency),
+      ...transactions
+        .filter((tx) => tx.customerId === selectedCustomerId)
+        .map((tx) => tx.currency),
+    ]);
+    const preferredOrder: CurrencyCode[] = ['AFN', 'USD', 'PKR'];
+    const currencies = [
+      ...preferredOrder.filter((code) => customerCurrencies.has(code)),
+      ...Array.from(customerCurrencies).filter((code) => !preferredOrder.includes(code)),
+    ];
+
+    return [{ code: 'ALL', label: 'ALL' }, ...currencies.map((code) => ({ code, label: code }))];
+  }, [customer.balances, selectedCustomerId, transactions]);
 
   const getCurrencySummary = (code: CurrencyCode) => {
     // 1. Check if matching ledger transactions exist
@@ -64,30 +74,89 @@ export default function CustomerCurrencyTabs() {
     };
   };
 
-  const getAllCurrenciesSummary = () => {
-    const matchingTx = transactions.filter((tx) => tx.customerId === selectedCustomerId);
-    const net = matchingTx.reduce((total, tx) => total + (tx.isCredit ? tx.amount : -tx.amount), 0);
+  const getAllCurrenciesSummary = () => ({
+    amountFormatted: `${currencyConfig.length - 1} currencies`,
+    isPositive: true,
+    dotColor: 'bg-slate-400',
+  });
 
-    return {
-      amountFormatted: `${net >= 0 ? '+' : ''}${net.toLocaleString()}`,
-      isPositive: net >= 0,
-      dotColor: net > 0 ? 'bg-emerald-400' : net < 0 ? 'bg-rose-400' : 'bg-slate-400',
-    };
-  };
+  const getBalanceSummaries = () => currencyConfig
+    .filter((item) => item.code !== 'ALL')
+    .map((item) => {
+      const currency = item.code as CurrencyCode;
+      const matchingTx = transactions.filter(
+        (tx) => tx.customerId === selectedCustomerId && tx.currency === currency
+      );
+      let credit = 0;
+      let debit = 0;
+
+      if (matchingTx.length > 0) {
+        for (const tx of matchingTx) {
+          if (tx.isCredit) credit += tx.amount;
+          else debit += tx.amount;
+        }
+      } else {
+        const balance = customer.balances.find((entry) => entry.currency === currency);
+        if (balance) {
+          if (balance.isCredit) credit = Number(balance.amount) || 0;
+          else debit = Number(balance.amount) || 0;
+        }
+      }
+
+      return { currency, credit, debit, net: credit - debit };
+    });
+
+  const getBalanceLines = () => getBalanceSummaries().map(({ currency, credit, debit, net }) =>
+    `${currency}: Credit ${credit.toLocaleString()} ${currency} | Debit ${debit.toLocaleString()} ${currency} | Net ${net >= 0 ? '+' : ''}${net.toLocaleString()} ${currency}`
+  );
 
   // Handler to send remaining balance details via WhatsApp
   const handleSendWhatsApp = () => {
     const targetNumber = customer.phone || "03471881624"; // Uses customer phone if available, falls back to default
-    const currentSummary = selectedCurrency === 'ALL'
-      ? getAllCurrenciesSummary()
-      : getCurrencySummary(selectedCurrency);
-
-    const message = `Hello ${customer.name},\n\nHere is your account statement summary for ${selectedCurrency}:\n- Remaining Balance: ${currentSummary.amountFormatted} ${selectedCurrency}\n\nThank you,\nAl-Rahman Company`;
+    const message = `Hello ${customer.name},\n\nHere is your remaining balance statement:\n\n${getBalanceLines().join('\n')}\n\nThank you,\nAl-Rahman Company`;
 
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${targetNumber.replace(/[^0-9]/g, '')}?text=${encodedMessage}`;
 
     window.open(whatsappUrl, '_blank');
+  };
+
+  const handleDownloadBalancePdf = () => {
+    const doc = new jsPDF();
+    const generatedAt = new Date();
+
+    doc.setFontSize(16);
+    doc.setTextColor(30, 30, 30);
+    doc.text('Customer Remaining Balance Notice', 14, 20);
+    doc.setFontSize(10);
+    doc.setTextColor(90, 90, 90);
+    doc.text(`Customer: ${customer.name}`, 14, 28);
+    doc.text(`Date: ${generatedAt.toISOString().slice(0, 16).replace('T', ' ')}`, 14, 34);
+
+    doc.setDrawColor(210, 214, 220);
+    doc.line(14, 40, 196, 40);
+    doc.setFontSize(11);
+    doc.setTextColor(30, 30, 30);
+    doc.text('Remaining Balance by Currency', 14, 49);
+
+    doc.setFontSize(9);
+    getBalanceSummaries().forEach(({ currency, credit, debit, net }, index) => {
+      const y = 59 + index * 10;
+      doc.setTextColor(30, 30, 30);
+      doc.text(currency, 20, y);
+      doc.setTextColor(5, 150, 105);
+      doc.text(`Credit: ${credit.toLocaleString()}`, 45, y);
+      doc.setTextColor(220, 38, 38);
+      doc.text(`Debit: ${debit.toLocaleString()}`, 95, y);
+      doc.setTextColor(net >= 0 ? 5 : 220, net >= 0 ? 150 : 38, net >= 0 ? 105 : 38);
+      doc.text(`Net: ${net >= 0 ? '+' : ''}${net.toLocaleString()}`, 145, y);
+    });
+
+    const summaryBottom = 67 + (currencyConfig.length - 2) * 10;
+    doc.line(14, summaryBottom, 196, summaryBottom);
+    doc.setFontSize(9);
+    doc.text('Thank you for your business.', 14, summaryBottom + 10);
+    doc.save(`balance_${customer.name.replace(/\s+/g, '_')}_${generatedAt.toISOString().slice(0, 10)}.pdf`);
   };
 
   return (
@@ -104,7 +173,7 @@ export default function CustomerCurrencyTabs() {
           <button
             type="button"
             onClick={handleSendWhatsApp}
-            title="Send Balance via WhatsApp"
+            title="Send all currency balances via WhatsApp"
             className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-bold transition-colors cursor-pointer shadow-sm"
           >
             <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
@@ -112,11 +181,22 @@ export default function CustomerCurrencyTabs() {
             </svg>
             <span>WhatsApp</span>
           </button>
+          <button
+            type="button"
+            onClick={handleDownloadBalancePdf}
+            title="Download all currency balances as PDF"
+            className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-brand hover:bg-brand-hover text-brand-foreground text-[10px] font-bold transition-colors cursor-pointer shadow-sm"
+          >
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span>PDF</span>
+          </button>
         </div>
       </div>
 
       <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
-        {CURRENCY_CONFIG.map((item) => {
+        {currencyConfig.map((item) => {
           const isActive = selectedCurrency === item.code;
           const summary = item.code === 'ALL' ? getAllCurrenciesSummary() : getCurrencySummary(item.code);
 

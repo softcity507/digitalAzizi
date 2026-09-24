@@ -38,7 +38,7 @@ export default function CashBookDateBar() {
         onClick={prevDay}
         aria-label={t('previousDay')}
         title={t('previousDay')}
-        className="w-11 sm:w-12 h-11 flex items-center justify-center rounded-2xl bg-surface hover:bg-surface-hover active:bg-surface-active border border-surface-border text-slate-300 hover:text-white transition-all shadow-sm shrink-0 rtl:rotate-180"
+        className="w-11 sm:w-12 h-11 flex items-center justify-center rounded-2xl bg-surface hover:bg-surface-hover active:bg-surface-active border border-surface-border text-content-muted hover:text-content-primary transition-all shadow-sm shrink-0 rtl:rotate-180"
       >
         <svg
           className="w-5 h-5"
@@ -60,7 +60,7 @@ export default function CashBookDateBar() {
         <button
           type="button"
           onClick={() => dateInputRef.current?.showPicker?.() || dateInputRef.current?.click()}
-          className="w-full h-11 px-3 sm:px-5 rounded-2xl bg-surface hover:bg-surface-hover active:bg-surface-active border border-surface-border/80 text-center flex items-center justify-center gap-2 text-xs sm:text-sm md:text-base font-semibold text-slate-100 transition-all shadow-sm group"
+          className="w-full h-11 px-3 sm:px-5 rounded-2xl bg-surface hover:bg-surface-hover active:bg-surface-active border border-surface-border/80 text-center flex items-center justify-center gap-2 text-xs sm:text-sm md:text-base font-semibold text-content-primary transition-all shadow-sm group"
         >
           <svg className="w-4 h-4 text-[#38bdf8] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -76,7 +76,7 @@ export default function CashBookDateBar() {
           onChange={(e) => {
             if (e.target.value) setSelectedDate(e.target.value);
           }}
-          className="absolute inset-0 opacity-0 pointer-events-none w-full h-full"
+          className="absolute inset-0 opacity-0 pointer-events-none w-full h-full text-content-primary"
         />
       </div>
 
@@ -97,7 +97,7 @@ export default function CashBookDateBar() {
         onClick={nextDay}
         aria-label={t('nextDay')}
         title={t('nextDay')}
-        className="w-11 sm:w-12 h-11 flex items-center justify-center rounded-2xl bg-surface hover:bg-surface-hover active:bg-surface-active border border-surface-border text-slate-300 hover:text-white transition-all shadow-sm shrink-0 rtl:rotate-180"
+        className="w-11 sm:w-12 h-11 flex items-center justify-center rounded-2xl bg-surface hover:bg-surface-hover active:bg-surface-active border border-surface-border text-content-muted hover:text-content-primary transition-all shadow-sm shrink-0 rtl:rotate-180"
       >
         <svg
           className="w-5 h-5"
