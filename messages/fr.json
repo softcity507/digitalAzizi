@@ -1,8 +1,11 @@
- {
+{
+  "Header": {
+    "subtitle": "HAWALA ET MULTI-DEVISES",
     "notifications": "Notifications",
     "noNotifications": "Aucune nouvelle notification",
     "darkMode": "Mode Sombre",
-    "lightMode": "Mode Clair",
+    "lightMode": "Mode Clair"
+  },
 
   "Navigation": {
     "customers": "Clients",
