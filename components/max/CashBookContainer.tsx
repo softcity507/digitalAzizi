@@ -14,6 +14,7 @@ import CashOutModal from '@/components/mini/CashOutModal';
 import ExchangeModal from '@/components/mini/ExchangeModal';
 import EditTransactionModal from '@/components/mini/EditTransactionModal';
 import DeleteConfirmModal from '@/components/mini/DeleteConfirmModal';
+import AddCustomerModal from '@/components/mini_second/AddCustomerModal';
 import { useCashBookStore } from '@/store/useCashBookStore';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -213,6 +214,7 @@ export default function CashBookContainer() {
       <ExchangeModal />
       <EditTransactionModal key={editingTransaction?.id || 'idle'} />
       <DeleteConfirmModal />
+      <AddCustomerModal />
     </div>
   );
 }
