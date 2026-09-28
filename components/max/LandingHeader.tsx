@@ -21,12 +21,8 @@ export default function LandingHeader({
     <header
       className={`w-full max-w-xl mx-auto flex items-center justify-between gap-3 px-4 py-4 sm:py-6 select-none ${className}`}
     >
-      {/* Brand Logo with Shield Icon */}
-      <Logo
-        variant="shield"
-        subtitle={t('subtitle')}
-        size="md"
-      />
+      {/* Brand Logo */}
+      <Logo size="md" />
 
       {/* Right side: Status Badge + Theme/Language Controls */}
       <div className="flex items-center gap-2">
