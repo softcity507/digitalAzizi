@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { ExchangeDeskEntry } from '@/types/exchange';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 interface ExchangeRecentItemProps {
   entry: ExchangeDeskEntry;
@@ -11,18 +12,30 @@ interface ExchangeRecentItemProps {
 export default function ExchangeRecentItem({ entry }: ExchangeRecentItemProps) {
   const t = useTranslations('ExchangeDesk');
   const { openEditModal, openDeleteModal } = useExchangeDeskStore();
+  const customers = useSettingsStore((state) => state.customers);
+
+  const matchedCustomer = customers.find((c) => c.id === entry.customerId);
+  const customerName = entry.customerName || matchedCustomer?.name || 'Customer';
 
   const { ledgerImpact } = entry;
 
   return (
     <div className="w-full p-4 rounded-3xl bg-surface border border-surface-border hover:border-brand/40 transition-all duration-200 shadow-sm space-y-3">
-      {/* Top Header: Title, Timestamp, Actions */}
+      {/* Top Header: Customer Avatar & Name, Exchange Rate & Amount, Timestamp, Actions */}
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 truncate">
-          <span className="text-sm sm:text-base font-black font-mono text-slate-900 dark:text-white truncate">
-            {entry.giveAmount.toLocaleString()} {entry.giveCurrency} ➔ {entry.getCurrency} @{' '}
-            {entry.exchangeRate}
-          </span>
+        <div className="flex items-center gap-2.5 truncate min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-brand/15 border border-brand/30 flex items-center justify-center text-brand font-bold text-xs shrink-0">
+            {customerName.charAt(0)}
+          </div>
+          <div className="truncate min-w-0">
+            <span className="block text-xs font-bold text-brand truncate">
+              {customerName}
+            </span>
+            <span className="block text-xs sm:text-sm font-black font-mono text-slate-900 dark:text-white truncate">
+              {entry.giveAmount.toLocaleString()} {entry.giveCurrency} ➔ {entry.getAmount ? entry.getAmount.toLocaleString() : ''} {entry.getCurrency} @{' '}
+              {entry.exchangeRate}
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
@@ -72,8 +85,8 @@ export default function ExchangeRecentItem({ entry }: ExchangeRecentItemProps) {
       <div className="grid grid-cols-2 gap-3 pt-1 text-xs sm:text-sm font-mono font-black border-t border-surface-border/60">
         {/* Customer Ledger */}
         <div className="space-y-1">
-          <span className="block text-[10px] font-black tracking-wider uppercase text-slate-500 dark:text-slate-400">
-            {t('customer')}
+          <span className="block text-[10px] font-black tracking-wider uppercase text-slate-500 dark:text-slate-400 truncate">
+            {customerName}
           </span>
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
             <span className="text-emerald-600 dark:text-emerald-400">
