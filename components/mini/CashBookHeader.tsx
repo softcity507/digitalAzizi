@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 interface CashBookHeaderProps {
   companyName?: string;
@@ -13,9 +14,11 @@ export default function CashBookHeader({
 }: CashBookHeaderProps) {
   const t = useTranslations('CashBook');
   const tNav = useTranslations('Navigation');
+  const businesses = useSettingsStore((state) => state.businesses);
+  const activeBusiness = businesses.find((b) => b.isActive) || businesses[0];
 
-  const displaySubtitle = companySubtitle || t('subtitle');
-  const displayCompanyName = companyName || t('companyName');
+  const displaySubtitle = companySubtitle || activeBusiness?.subtitle || t('subtitle');
+  const displayCompanyName = companyName || activeBusiness?.name || t('companyName');
 
   return (
     <div className="w-full space-y-3 pt-1">

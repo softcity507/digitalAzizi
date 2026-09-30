@@ -5,12 +5,13 @@ import { useTranslations } from 'next-intl';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { CurrencyCode } from '@/types/customer';
 
-const AVAILABLE_CURRENCIES: CurrencyCode[] = ['AFN', 'USD', 'PKR', 'IRR', 'INR', 'AED', 'EUR', 'GBP', 'CNY', 'TRY'];
 const DEFAULT_CURRENCIES: CurrencyCode[] = ['AFN', 'USD', 'PKR'];
 
 export default function AddBussinessModal() {
   const t = useTranslations('Settings');
-  const { activeModal, closeModal, addUser } = useSettingsStore();
+  const { activeModal, closeModal, addUser, businesses } = useSettingsStore();
+  const activeBusiness = businesses.find((business) => business.isActive) || businesses[0];
+  const businessCurrencies = activeBusiness?.supportedCurrencies ?? DEFAULT_CURRENCIES;
 
   // Initial State: First Name, Last Name, Phone, Address
   const [firstName, setFirstName] = useState('');
@@ -56,9 +57,7 @@ export default function AddBussinessModal() {
     }
 
     // Default supported currencies around the selected amount currency
-    const finalCurrencies = Array.from(
-      new Set([amountCurrency, ...DEFAULT_CURRENCIES])
-    ).slice(0, 3) as CurrencyCode[];
+    const finalCurrencies = businessCurrencies;
 
     const trimmedNotes = amountDescription.trim() || 'Opening balance';
 
@@ -166,7 +165,7 @@ export default function AddBussinessModal() {
                   onChange={(e) => setAmountCurrency(e.target.value as CurrencyCode)}
                   className="w-full h-[38px] px-2.5 rounded-xl bg-surface border border-surface-border text-sm font-bold text-content-primary focus:outline-none focus:ring-1 focus:ring-brand uppercase cursor-pointer"
                 >
-                  {AVAILABLE_CURRENCIES.map((c) => (
+                  {businessCurrencies.map((c) => (
                     <option key={c} value={c}>
                       {c}
                     </option>

@@ -1,11 +1,30 @@
 import { create } from 'zustand';
 import { BusinessProfile, AppAdminProfile, RegisteredUser, AuditLogItem } from '@/types/settings';
 import { CustomerAccount, CurrencyCode } from '@/types/customer';
-import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 import { useCustomerDetailsStore } from './useCustomerDetailsStore';
 import { useExchangeDeskStore } from './useExchangeDeskStore';
 import { useCashBookStore } from './useCashBookStore';
 import { SupportedLocale } from '@/i18n/languages';
+import seedData from './AllJs.json';
+
+const seedBusinesses = seedData[0].businesses;
+const jsonBusinesses: BusinessProfile[] = seedBusinesses.map((business) => ({
+  id: business.id,
+  name: business.name,
+  subtitle: business.description,
+  isActive: business.id === seedData[0].current_business_id,
+  supportedCurrencies: business.active_currencies as CurrencyCode[],
+}));
+const jsonCustomers: CustomerAccount[] = seedBusinesses.flatMap((business) => business.customers.map((customer) => ({
+  id: `${business.id}_${customer.id}`,
+  name: `${customer.first_name} ${customer.last_name}`.trim(),
+  phone: customer.phone,
+  subtitle: customer.address,
+  businessId: business.id,
+  balances: customer.customer_currencies
+    .filter((balance) => business.active_currencies.includes(balance.type))
+    .map((balance) => ({ currency: balance.type as CurrencyCode, amount: String(balance.amount), isCredit: balance.amount >= 0 })),
+})));
 
 export type SettingsModalType = 'add_customer' | 'edit_business' | 'audit_log' | 'backup_success' | 'restore_success' | null;
 
@@ -53,22 +72,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     email: 'azizullah0703@gmail.com',
     badge: 'Super Admin / Manager',
   },
-  businesses: [
-    {
-      id: 'al-rehman',
-      name: 'Al-Rehman Co',
-      subtitle: 'Primary Ledger & Vault',
-      isActive: true,
-      supportedCurrencies: ['AFN', 'USD', 'PKR'],
-    },
-    {
-      id: 'kabul-express',
-      name: 'Kabul Express Hawala',
-      subtitle: 'Secondary Settlement Hub',
-      isActive: false,
-      supportedCurrencies: ['AFN', 'USD', 'PKR'],
-    },
-  ],
+  businesses: jsonBusinesses,
   users: [
     {
       id: 'aziz-khan',
@@ -92,7 +96,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       isDefault: false,
     },
   ],
-  customers: CUSTOMER_ACCOUNTS,
+  customers: jsonCustomers,
   auditLogs: [
     {
       id: 'log-1',
@@ -121,7 +125,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     set((s) => {
       const updatedBusinesses = s.businesses.map((b) => ({ ...b, isActive: b.id === id }));
       // Sync customer details and exchange desk if there is a matching customer for this business
-      const matchedCustomer = s.customers.find((c) => c.businessId === id) || s.customers.find((c) => c.id === id) || s.customers[0];
+      const matchedCustomer = s.customers.find((c) => c.businessId === id);
       if (matchedCustomer) {
         useCustomerDetailsStore.getState().setSelectedCustomerId(matchedCustomer.id);
         useExchangeDeskStore.getState().setCustomerId(matchedCustomer.id);
@@ -133,8 +137,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     const { businesses, customers } = get();
     const activeBiz = businesses.find((b) => b.isActive) || businesses[0];
     if (!activeBiz) return customers;
-    const filtered = customers.filter((c) => c.businessId === activeBiz.id);
-    return filtered.length > 0 ? filtered : customers.filter((c) => !c.businessId);
+    return customers.filter((c) => c.businessId === activeBiz.id);
   },
 
   setDefaultUser: (id) => {
@@ -152,51 +155,28 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   },
 
   addBusiness: (name, subtitle, supportedCurrencies, descriptionLocale = 'en') => {
-    const slugId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `biz-${Date.now()}`;
-    const currencies: CurrencyCode[] = supportedCurrencies.length > 0 ? supportedCurrencies : ['AFN', 'USD', 'PKR'];
+    const baseId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'business';
+    const slugId = `${baseId}-${Date.now().toString(36)}`;
+    const currencies: CurrencyCode[] = [...new Set(supportedCurrencies)].slice(0, 3);
+    if (currencies.length !== 3) return;
 
     const newBiz: BusinessProfile = {
       id: slugId,
       name,
       subtitle,
       descriptionLocale,
-      isActive: false,
+      isActive: get().businesses.length === 0,
       supportedCurrencies: currencies,
     };
 
-    const newCustomer: CustomerAccount = {
-      id: slugId,
-      name,
-      subtitle,
-      descriptionLocale,
-      businessId: slugId,
-      balances: currencies.map((curr) => ({
-        currency: curr,
-        amount: '0.00',
-        isCredit: true,
-      })),
-    };
-
-    useExchangeDeskStore.getState().registerCustomer(slugId, name, currencies);
-
     set((s) => ({
       businesses: [...s.businesses, newBiz],
-      customers: [...s.customers, newCustomer],
-      users: [
-        ...s.users,
-        {
-          id: slugId,
-          name,
-          subtitle,
-          roleTag: 'Business',
-          isDefault: false,
-        },
-      ],
     }));
   },
 
   addUser: (name, subtitle, currencies, roleTag = 'Customer', openingBalances = {}, descriptionLocale = 'en', notes = '') => {
-    const slugId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `user-${Date.now()}`;
+    const baseId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'customer';
+    const slugId = `${baseId}-${Date.now().toString(36)}`;
     useExchangeDeskStore.getState().registerCustomer(slugId, name, currencies);
 
     const normalizedOpeningBalances = Object.fromEntries(currencies.map((currency) => {
@@ -227,7 +207,9 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }
 
     const activeBiz = get().businesses.find((b) => b.isActive) || get().businesses[0];
-    const currentBizId = activeBiz?.id || 'al-rehman';
+    const currentBizId = activeBiz?.id;
+    const businessCurrencies = activeBiz?.supportedCurrencies ?? currencies;
+    const validCurrencies = currencies.filter((currency) => businessCurrencies.includes(currency));
 
     set((s) => ({
       users: [
@@ -250,19 +232,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
           descriptionLocale,
           businessId: currentBizId,
           balances: [
-            ...currencies.map((currency) => ({ currency, amount: String(normalizedOpeningBalances[currency] ?? 0), isCredit: true })),
+            ...validCurrencies.map((currency) => ({ currency, amount: String(normalizedOpeningBalances[currency] ?? 0), isCredit: true })),
           ],
-        },
-      ],
-      businesses: [
-        ...s.businesses,
-        {
-          id: slugId,
-          name,
-          subtitle,
-          descriptionLocale,
-          isActive: false,
-          supportedCurrencies: currencies,
         },
       ],
       activeModal: null,

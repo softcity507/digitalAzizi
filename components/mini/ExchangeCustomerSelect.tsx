@@ -21,20 +21,24 @@ export default function ExchangeCustomerSelect() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [appliedSearchQuery, setAppliedSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [filteredCustomers, setFilteredCustomers] = useState(customers);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const selectedCustomer =
     customers.find((c) => c.id === customerId) || customers[0] || allCustomers[0];
 
-  // Sync filteredCustomers when customers change and search is empty
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredCustomers(customers);
-    }
-  }, [customers, searchQuery]);
+  const filteredCustomers = useMemo(() => {
+    if (!appliedSearchQuery.trim()) return customers;
+    const q = appliedSearchQuery.trim().toLowerCase();
+    return customers.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        (c.subtitle && c.subtitle.toLowerCase().includes(q)) ||
+        (c.phone && c.phone.toLowerCase().includes(q))
+    );
+  }, [customers, appliedSearchQuery]);
 
   // Search input handler with 2-second loading simulation
   const handleSearchChange = (value: string) => {
@@ -45,20 +49,13 @@ export default function ExchangeCustomerSelect() {
 
     if (!value.trim()) {
       setIsSearching(false);
-      setFilteredCustomers(customers);
+      setAppliedSearchQuery('');
       return;
     }
 
     setIsSearching(true);
     searchTimerRef.current = setTimeout(() => {
-      const q = value.trim().toLowerCase();
-      const matched = customers.filter(
-        (c) =>
-          c.name.toLowerCase().includes(q) ||
-          (c.subtitle && c.subtitle.toLowerCase().includes(q)) ||
-          (c.phone && c.phone.toLowerCase().includes(q))
-      );
-      setFilteredCustomers(matched);
+      setAppliedSearchQuery(value);
       setIsSearching(false);
     }, 2000);
   };

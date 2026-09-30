@@ -1,11 +1,11 @@
 'use client';
 
-import CashBookHeader from '@/components/mini/CashBookHeader';
+// import CashBookHeader from '@/components/mini/CashBookHeader';
 import CashBookDateBar from '@/components/mini/CashBookDateBar';
 import CashBookCurrencyFilter from '@/components/mini/CashBookCurrencyFilter';
 import CashSummaryCard from '@/components/mini/CashSummaryCard';
 import TodayCashInOutSummary from '@/components/mini/TodayCashInOutSummary';
-import CashBookSearch from '@/components/mini/CashBookSearch';
+// import CashBookSearch from '@/components/mini/CashBookSearch';
 import TransactionCounterBadge from '@/components/mini/TransactionCounterBadge';
 import CashBookTransactionList from '@/components/mini/CashBookTransactionList';
 import CashBookOperations from '@/components/mini/CashBookOperations';
@@ -158,7 +158,7 @@ export default function CashBookContainer() {
   return (
     <div className="w-full max-w-7xl 2xl:max-w-[1500px] mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 space-y-5 sm:space-y-6 pb-28 sm:pb-20">
       {/* 1. Header (Company Title, Subtitle, Notifications & Page Heading) */}
-      <CashBookHeader />
+      {/* <CashBookHeader /> */}
 
       {/* 2. Responsive Dashboard Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
@@ -185,7 +185,7 @@ export default function CashBookContainer() {
         {/* Right Column: Search & Transactions Details Feed */}
         <div className="lg:col-span-7 xl:col-span-8 space-y-4">
           {/* Search Bar (Customer, Memo, Serial...) */}
-          <CashBookSearch />
+          {/* <CashBookSearch /> */}
 
           {/* Transactions Count, Status Header & Compact PDF Export Button */}
           <div className="flex items-center justify-between gap-2 px-1 py-1">

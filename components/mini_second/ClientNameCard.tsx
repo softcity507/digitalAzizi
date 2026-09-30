@@ -16,7 +16,7 @@ export default function ClientNameCard() {
   const activeCustomers = useMemo(() => {
     if (!activeBusiness) return allCustomers;
     const filtered = allCustomers.filter((c) => c.businessId === activeBusiness.id);
-    return filtered.length > 0 ? filtered : allCustomers.filter((c) => !c.businessId);
+    return filtered;
   }, [allCustomers, activeBusiness]);
 
   const currentCustomer = useMemo(() => {

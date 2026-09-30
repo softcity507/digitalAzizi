@@ -73,11 +73,10 @@ export const useCreateBussines = create<CreateBusinessState>((set, get) => ({
 
     const trimmedDetails = details.trim() || 'Business Account';
 
-    useSettingsStore.getState().addUser(
+    useSettingsStore.getState().addBusiness(
       trimmedName,
       trimmedDetails,
-      selectedCurrencies,
-      'Business'
+      selectedCurrencies
     );
 
     get().resetForm();

@@ -14,6 +14,8 @@ export interface ExchangeData {
 
 export interface CashBookEntry {
   id: string;
+  businessId?: string;
+  customerId?: string;
   customerName: string;
   fromCustomer?: string;
   toCustomer?: string;

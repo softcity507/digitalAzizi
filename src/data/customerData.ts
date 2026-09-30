@@ -1,281 +1,72 @@
-import { CurrencySummary, BookEntry, CustomerAccount } from '@/types/customer';
+import { CurrencySummary, BookEntry, CustomerAccount, CurrencyCode, TransactionCategory } from '@/types/customer';
+import seedData from '@/store/AllJs.json';
 
-export const CURRENCY_SUMMARIES: CurrencySummary[] = [
-  {
-    currency: 'AFN',
-    badge: 'Net Cr',
-    total: '+9,229,800',
-    customerBalance: '+9,229,800',
-    deskBalance: '-9,229,800',
-    isPositive: true,
-  },
-  {
-    currency: 'USD',
-    badge: 'Net Cr',
-    total: '+$12,400',
-    customerBalance: '+$12,400',
-    deskBalance: '-$12,400',
-    isPositive: true,
-  },
-  {
-    currency: 'PKR',
-    badge: 'Net Cr',
-    total: '+165,000',
-    customerBalance: '+165,000',
-    deskBalance: '-165,000',
-    isPositive: true,
-  },
-];
+interface SeedCustomerCurrency {
+  type: string;
+  amount: number;
+}
 
-export const DOUBLE_ENTRY_BOOKS: BookEntry[] = [
-  {
-    currency: 'AFN',
-    cr: '+9,229,800',
-    dr: '-9,229,800',
-    net: '0.00',
-    status: 'Balanced',
-  },
-  {
-    currency: 'USD',
-    cr: '+$12,400',
-    dr: '-$12,400',
-    net: '0.00',
-    status: 'Balanced',
-  },
-  {
-    currency: 'PKR',
-    cr: '+165,000',
-    dr: '-165,000',
-    net: '0.00',
-    status: 'Balanced',
-  },
-];
+interface SeedCashBookTx {
+  transaction_id: string;
+  customer_id?: string;
+  from_customer_id?: string;
+  to_customer_id?: string;
+  currency: string;
+  amount: number;
+  type: string;
+  mode?: string;
+  date?: string;
+  description?: string;
+  details?: {
+    memo?: string;
+    ref_no?: string;
+  };
+}
 
-export const CUSTOMER_ACCOUNTS: CustomerAccount[] = [
-  {
-    id: 'exchange',
-    name: 'Exchange',
-    badge: 'System Default',
-    isSystemDefault: true,
-    businessId: 'al-rehman',
-    subtitle: 'Default Exchange',
-    balances: [
-      { currency: 'AFN', amount: '+1,440,000', isCredit: true },
-      { currency: 'USD', amount: '-$5,000', isCredit: false },
-      { currency: 'PKR', amount: '-1,440,000', isCredit: false },
-    ],
-  },
-  {
-    id: 'aziz-khan',
-    name: 'Aziz Khan',
-    businessId: 'al-rehman',
-    subtitle: 'Wholesaler, Kabul Market',
-    phone: '+93 70 526 9096',
-    balances: [
-      { currency: 'AFN', amount: '+8,449,800', isCredit: true },
-      { currency: 'USD', amount: '+$5,000', isCredit: true },
-      { currency: 'PKR', amount: '-785,000', isCredit: false },
-    ],
-  },
-  {
-    id: 'salam-jan',
-    name: 'Salam Jan',
-    businessId: 'al-rehman',
-    subtitle: 'Sarraf, Herat Bazaar',
-    phone: '+93 70 526 9096',
-    balances: [
-      { currency: 'AFN', amount: '+1,200,000', isCredit: true },
-      { currency: 'USD', amount: '-$5,000', isCredit: false },
-      { currency: 'PKR', amount: '+950,000', isCredit: true },
-    ],
-  },
-  {
-    id: 'haji-noorullah',
-    name: 'Haji Noorullah',
-    businessId: 'kabul-express',
-    subtitle: 'Fruit Exporter, Kandahar',
-    phone: '+93 70 526 9096',
-    balances: [
-      { currency: 'AFN', amount: '-420,000', isCredit: false },
-      { currency: 'USD', amount: '+$12,400', isCredit: true },
-      { currency: 'PKR', amount: '+340,000', isCredit: true },
-    ],
-  },
-  {
-    id: 'wahid-sarraf',
-    name: 'Wahid Sarraf',
-    businessId: 'kabul-express',
-    subtitle: 'Currency Trader, Kabul Gate',
-    phone: '+93 79 123 4567',
-    balances: [
-      { currency: 'AFN', amount: '+2,150,000', isCredit: true },
-      { currency: 'USD', amount: '+$8,500', isCredit: true },
-      { currency: 'PKR', amount: '-120,000', isCredit: false },
-    ],
-  },
-  {
-    id: 'ahmad-shah',
-    name: 'Ahmad Shah',
-    businessId: 'kabul-express',
-    subtitle: 'Gold & Hawala Merchant',
-    phone: '+93 78 987 6543',
-    balances: [
-      { currency: 'AFN', amount: '+500,000', isCredit: true },
-      { currency: 'USD', amount: '-$2,000', isCredit: false },
-      { currency: 'PKR', amount: '+450,000', isCredit: true },
-    ],
-  },
-];
+interface SeedExchangeTx {
+  exchange_id: string;
+  customer_id: string;
+  from_currency: string;
+  to_currency: string;
+  from_amount: number;
+  to_amount: number;
+  exchange_rate: number;
+  date?: string;
+  description?: string;
+  details?: {
+    ref_no?: string;
+    memo?: string;
+  };
+}
 
-export const DEFAULT_CUSTOMER_TRANSACTIONS = [
-  {
-    id: 'tx-1',
-    customerId: 'aziz-khan',
-    title: 'Cash Deposit',
-    tag: 'Cash In',
-    category: 'cash_in' as const,
-    amount: 8954000,
-    currency: 'AFN' as const,
-    isCredit: true,
-    date: '2025-02-24',
-    refNo: 'CD-8841',
-    notes: 'Kabul Market Cash Inflow',
-  },
-  {
-    id: 'tx-2',
-    customerId: 'aziz-khan',
-    title: 'Buy 5,000 USD',
-    tag: 'Exchange',
-    category: 'exchange' as const,
-    amount: 356000,
-    currency: 'AFN' as const,
-    isCredit: false,
-    date: '2025-02-23',
-    refNo: 'EX-9012',
-    notes: 'Bought 5,000 USD @ 71.20',
-  },
-  {
-    id: 'tx-3',
-    customerId: 'aziz-khan',
-    title: 'Bank Wire Transfer',
-    tag: 'Bank',
-    category: 'bank' as const,
-    amount: 790000,
-    currency: 'AFN' as const,
-    isCredit: false,
-    date: '2025-02-22',
-    refNo: 'WT-3301',
-    notes: 'Azizi Bank Wire Settlement',
-  },
-  {
-    id: 'tx-4',
-    customerId: 'aziz-khan',
-    title: 'Opening Balance',
-    tag: 'Initial',
-    category: 'initial' as const,
-    amount: 641800,
-    currency: 'AFN' as const,
-    isCredit: true,
-    date: '2025-02-20',
-    refNo: 'OB-001',
-    notes: 'Initial Ledger Balance',
-  },
-  {
-    id: 'tx-5',
-    customerId: 'aziz-khan',
-    title: 'USD Currency Inflow',
-    tag: 'Exchange',
-    category: 'exchange' as const,
-    amount: 5000,
-    currency: 'USD' as const,
-    isCredit: true,
-    date: '2025-02-23',
-    refNo: 'EX-9012',
-    notes: 'USD exchange credit receipt',
-  },
-  {
-    id: 'tx-6',
-    customerId: 'aziz-khan',
-    title: 'PKR Hawala Settlement',
-    tag: 'Bank',
-    category: 'bank' as const,
-    amount: 785000,
-    currency: 'PKR' as const,
-    isCredit: false,
-    date: '2025-02-21',
-    refNo: 'PK-4091',
-    notes: 'Peshawar branch payout debit',
-  },
-  {
-    id: 'tx-7',
-    customerId: 'salam-jan',
-    title: 'Herat Bazaar Settlement',
-    tag: 'Cash In',
-    category: 'cash_in' as const,
-    amount: 1200000,
-    currency: 'AFN' as const,
-    isCredit: true,
-    date: '2025-02-24',
-    refNo: 'HB-7721',
-    notes: 'Herat currency desk deposit',
-  },
-  {
-    id: 'tx-8',
-    customerId: 'salam-jan',
-    title: 'Sell 2,500 USD',
-    tag: 'Exchange',
-    category: 'exchange' as const,
-    amount: 5000,
-    currency: 'USD' as const,
-    isCredit: false,
-    date: '2025-02-23',
-    refNo: 'EX-9102',
-    notes: 'USD sold to vault',
-  },
-  {
-    id: 'tx-9',
-    customerId: 'salam-jan',
-    title: 'Lahore Remittance Credit',
-    tag: 'Bank',
-    category: 'bank' as const,
-    amount: 950000,
-    currency: 'PKR' as const,
-    isCredit: true,
-    date: '2025-02-22',
-    refNo: 'LR-4491',
-    notes: 'PKR remittance receipt',
-  },
-  {
-    id: 'tx-10',
-    customerId: 'haji-noorullah',
-    title: 'Kandahar Fruit Export Advance',
-    tag: 'Bank',
-    category: 'bank' as const,
-    amount: 420000,
-    currency: 'AFN' as const,
-    isCredit: false,
-    date: '2025-02-24',
-    refNo: 'KF-2201',
-    notes: 'Transport payment advance',
-  },
-  {
-    id: 'tx-11',
-    customerId: 'haji-noorullah',
-    title: 'Dubai Trade USD Receipt',
-    tag: 'Exchange',
-    category: 'exchange' as const,
-    amount: 12400,
-    currency: 'USD' as const,
-    isCredit: true,
-    date: '2025-02-23',
-    refNo: 'DB-8812',
-    notes: 'Dubai trade wire settlement',
-  },
-];
+const seedBusinesses = seedData[0].businesses;
+const initialBusiness = seedBusinesses.find((b) => b.id === seedData[0].current_business_id) || seedBusinesses[0];
 
-export type CurrencyCode = 'AFN' | 'USD' | 'PKR';
-
-export type TransactionCategory = 'cash_in' | 'cash_out' | 'exchange' | 'bank' | 'initial';
+export const CUSTOMER_ACCOUNTS: CustomerAccount[] = seedBusinesses.flatMap((business) =>
+  business.customers.map((customer) => {
+    const fullName = `${customer.first_name} ${customer.last_name}`.trim();
+    return {
+      id: `${business.id}_${customer.id}`,
+      name: fullName,
+      phone: customer.phone,
+      subtitle: customer.address,
+      businessId: business.id,
+      balances: customer.customer_currencies
+        .filter((balance: SeedCustomerCurrency) => business.active_currencies.includes(balance.type))
+        .map((balance: SeedCustomerCurrency) => {
+          const isCredit = balance.amount >= 0;
+          const formatted = Math.abs(balance.amount).toLocaleString('en-US');
+          const prefix = isCredit ? '+' : '-';
+          const symbol = balance.type === 'USD' ? '$' : '';
+          return {
+            currency: balance.type as CurrencyCode,
+            amount: `${prefix}${symbol}${formatted}`,
+            isCredit,
+          };
+        }),
+    };
+  })
+);
 
 export interface LedgerTransaction {
   id: string;
@@ -290,3 +81,122 @@ export interface LedgerTransaction {
   refNo: string;
   notes?: string;
 }
+
+export const DEFAULT_CUSTOMER_TRANSACTIONS: LedgerTransaction[] = seedBusinesses.flatMap((biz) => {
+  const customerMap = new Map<string, string>();
+  (biz.customers || []).forEach((c) => {
+    customerMap.set(c.id, `${c.first_name} ${c.last_name}`.trim());
+  });
+
+  const cashBookTxs: LedgerTransaction[] = (biz.cash_book || []).flatMap((tx: SeedCashBookTx) => {
+    const list: LedgerTransaction[] = [];
+    if (tx.type === 'customer_transfer') {
+      if (tx.from_customer_id) {
+        const toName = (tx.to_customer_id ? customerMap.get(tx.to_customer_id) : undefined) || tx.to_customer_id || 'customer';
+        list.push({
+          id: `${tx.transaction_id}_from`,
+          customerId: `${biz.id}_${tx.from_customer_id}`,
+          title: `Transfer to ${toName}`,
+          tag: 'Transfer',
+          category: 'cash_out' as TransactionCategory,
+          amount: tx.amount,
+          currency: tx.currency as CurrencyCode,
+          isCredit: false,
+          date: (tx.date || '').slice(0, 10) || '2025-02-24',
+          refNo: tx.details?.ref_no || tx.transaction_id,
+          notes: tx.description || tx.details?.memo || '',
+        });
+      }
+      if (tx.to_customer_id) {
+        const fromName = (tx.from_customer_id ? customerMap.get(tx.from_customer_id) : undefined) || tx.from_customer_id || 'customer';
+        list.push({
+          id: `${tx.transaction_id}_to`,
+          customerId: `${biz.id}_${tx.to_customer_id}`,
+          title: `Transfer from ${fromName}`,
+          tag: 'Transfer',
+          category: 'cash_in' as TransactionCategory,
+          amount: tx.amount,
+          currency: tx.currency as CurrencyCode,
+          isCredit: true,
+          date: (tx.date || '').slice(0, 10) || '2025-02-24',
+          refNo: tx.details?.ref_no || tx.transaction_id,
+          notes: tx.description || tx.details?.memo || '',
+        });
+      }
+    } else {
+      const isCredit = tx.type === 'cash_in';
+      list.push({
+        id: tx.transaction_id,
+        customerId: `${biz.id}_${tx.customer_id || 'cust'}`,
+        title: isCredit ? 'Cash Deposit' : 'Cash Disbursement',
+        tag: isCredit ? 'Cash In' : 'Cash Out',
+        category: (isCredit ? 'cash_in' : 'cash_out') as TransactionCategory,
+        amount: tx.amount,
+        currency: tx.currency as CurrencyCode,
+        isCredit,
+        date: (tx.date || '').slice(0, 10) || '2025-02-24',
+        refNo: tx.details?.ref_no || tx.transaction_id,
+        notes: tx.description || tx.details?.memo || '',
+      });
+    }
+    return list;
+  });
+
+  const exchangeTxs: LedgerTransaction[] = (biz.exchanges || []).map((exc: SeedExchangeTx) => ({
+    id: exc.exchange_id,
+    customerId: `${biz.id}_${exc.customer_id}`,
+    title: `Exchange ${exc.from_amount?.toLocaleString()} ${exc.from_currency} -> ${exc.to_amount?.toLocaleString()} ${exc.to_currency}`,
+    tag: 'Exchange',
+    category: 'exchange' as TransactionCategory,
+    amount: exc.from_amount,
+    currency: exc.from_currency as CurrencyCode,
+    isCredit: false,
+    date: (exc.date || '').slice(0, 10) || '2025-02-23',
+    refNo: exc.details?.ref_no || exc.exchange_id,
+    notes: `${exc.description || ''} @ rate ${exc.exchange_rate}`,
+  }));
+
+  return [...cashBookTxs, ...exchangeTxs];
+});
+
+// Compute currency totals from initial active business customers in AllJs.json
+const activeCurrencies = (initialBusiness?.active_currencies || ['AFN', 'PKR', 'USD']) as CurrencyCode[];
+
+export const CURRENCY_SUMMARIES: CurrencySummary[] = activeCurrencies.map((curr) => {
+  let totalNet = 0;
+  (initialBusiness?.customers || []).forEach((c) => {
+    const bal = c.customer_currencies.find((cc: SeedCustomerCurrency) => cc.type === curr);
+    if (bal) totalNet += bal.amount;
+  });
+
+  const isPositive = totalNet >= 0;
+  const formatted = `${isPositive ? '+' : '-'}${curr === 'USD' ? '$' : ''}${Math.abs(totalNet).toLocaleString('en-US')}`;
+  const deskFormatted = `${!isPositive ? '+' : '-'}${curr === 'USD' ? '$' : ''}${Math.abs(totalNet).toLocaleString('en-US')}`;
+
+  return {
+    currency: curr,
+    badge: isPositive ? 'Net Cr' : 'Net Dr',
+    total: formatted,
+    customerBalance: formatted,
+    deskBalance: deskFormatted,
+    isPositive,
+  };
+});
+
+export const DOUBLE_ENTRY_BOOKS: BookEntry[] = activeCurrencies.map((curr) => {
+  let totalNet = 0;
+  (initialBusiness?.customers || []).forEach((c) => {
+    const bal = c.customer_currencies.find((cc: SeedCustomerCurrency) => cc.type === curr);
+    if (bal) totalNet += bal.amount;
+  });
+
+  const formatted = `${curr === 'USD' ? '$' : ''}${Math.abs(totalNet).toLocaleString('en-US')}`;
+
+  return {
+    currency: curr,
+    cr: `+${formatted}`,
+    dr: `-${formatted}`,
+    net: '0.00',
+    status: 'Balanced',
+  };
+});

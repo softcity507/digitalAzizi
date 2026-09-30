@@ -62,74 +62,94 @@ export function computeDoubleEntryLedger(
   }
 }
 
-const INITIAL_EXCHANGES: ExchangeDeskEntry[] = [
-  {
-    id: 'ex-1',
-    customerId: 'aziz-khan',
-    customerName: 'Aziz Khan',
-    type: 'SELL',
-    giveAmount: 5000,
-    giveCurrency: 'USD',
-    calcMode: 'multiply',
-    exchangeRate: 71.2,
-    getAmount: 356000,
-    getCurrency: 'AFN',
-    date: '2026-09-17',
-    time: '11:42 AM',
-    timeAgo: '11:42 AM',
-    ledgerImpact: {
-      customerReceives: { amount: 356000, formatted: '+356,000', currency: 'AFN' },
-      customerPays: { amount: 5000, formatted: '-5,000', currency: 'USD' },
-      exchangePays: { amount: 356000, formatted: '-356,000', currency: 'AFN' },
-      exchangeReceives: { amount: 5000, formatted: '+5,000', currency: 'USD' },
-    },
-    createdAt: Date.now() - 1000 * 60 * 30,
-  },
-  {
-    id: 'ex-2',
-    customerId: 'salam-jan',
-    customerName: 'Salam Jan',
-    type: 'SELL',
-    giveAmount: 2500,
-    giveCurrency: 'USD',
-    calcMode: 'multiply',
-    exchangeRate: 278.4,
-    getAmount: 696000,
-    getCurrency: 'PKR',
-    date: '2026-09-17',
-    time: '09:15 AM',
-    timeAgo: '09:15 AM',
-    ledgerImpact: {
-      customerReceives: { amount: 696000, formatted: '+696,000', currency: 'PKR' },
-      customerPays: { amount: 2500, formatted: '-2,500', currency: 'USD' },
-      exchangePays: { amount: 696000, formatted: '-696,000', currency: 'PKR' },
-      exchangeReceives: { amount: 2500, formatted: '+2,500', currency: 'USD' },
-    },
-    createdAt: Date.now() - 1000 * 60 * 180,
-  },
-  {
-    id: 'ex-3',
-    customerId: 'rajesh-kumar',
-    customerName: 'Rajesh Kumar & Sons',
-    type: 'SELL',
-    giveAmount: 5000,
-    giveCurrency: 'USD',
-    calcMode: 'multiply',
-    exchangeRate: 83.5,
-    getAmount: 417500,
-    getCurrency: 'INR',
-    date: '2026-09-16',
-    time: '04:20 PM',
-    timeAgo: 'Yesterday',
-    ledgerImpact: {
-      customerReceives: { amount: 417500, formatted: '+417,500', currency: 'INR' },
-      customerPays: { amount: 5000, formatted: '-5,000', currency: 'USD' },
-      exchangePays: { amount: 417500, formatted: '-417,500', currency: 'INR' },
-      exchangeReceives: { amount: 5000, formatted: '+5,000', currency: 'USD' },
-    },
-    createdAt: Date.now() - 1000 * 60 * 60 * 24,
-  },
-];
+import seedData from './AllJs.json';
+
+const seedBusinesses = seedData[0].businesses;
+const initialBusiness = seedBusinesses.find((b) => b.id === seedData[0].current_business_id) || seedBusinesses[0];
+const initialCustomerId = initialBusiness?.customers[0] ? `${initialBusiness.id}_${initialBusiness.customers[0].id}` : 'biz_001_cust_001';
+
+const seedCustomerNames: Record<string, string> = {};
+const seedCustomerCurrencies: Record<string, ExchangeCurrencyCode[]> = {};
+
+interface SeedCustomerCurrency {
+  type: string;
+  amount: number;
+}
+
+interface SeedCustomer {
+  id: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  address: string;
+  customer_currencies: SeedCustomerCurrency[];
+}
+
+interface SeedExchangeTx {
+  exchange_id: string;
+  customer_id: string;
+  from_currency: string;
+  to_currency: string;
+  from_amount: number;
+  to_amount: number;
+  exchange_rate: number;
+  date?: string;
+  description?: string;
+  details?: {
+    ref_no?: string;
+    memo?: string;
+  };
+}
+
+seedBusinesses.forEach((biz) => {
+  biz.customers.forEach((cust: SeedCustomer) => {
+    const custId = `${biz.id}_${cust.id}`;
+    seedCustomerNames[custId] = `${cust.first_name} ${cust.last_name}`.trim();
+    seedCustomerCurrencies[custId] = cust.customer_currencies
+      .filter((c: SeedCustomerCurrency) => biz.active_currencies.includes(c.type))
+      .map((c: SeedCustomerCurrency) => c.type as ExchangeCurrencyCode);
+  });
+});
+
+CUSTOMER_ACCOUNTS.forEach((customer) => {
+  if (!seedCustomerNames[customer.id]) {
+    seedCustomerNames[customer.id] = customer.name;
+    seedCustomerCurrencies[customer.id] = customer.balances.map((b) => b.currency as ExchangeCurrencyCode);
+  }
+});
+
+const jsonExchangeEntries: ExchangeDeskEntry[] = seedBusinesses.flatMap((biz) =>
+  (biz.exchanges || []).map((exc: SeedExchangeTx) => {
+    const cust = biz.customers.find((c: SeedCustomer) => c.id === exc.customer_id);
+    const customerName = cust ? `${cust.first_name} ${cust.last_name}`.trim() : exc.customer_id;
+    const customerId = `${biz.id}_${exc.customer_id}`;
+    const giveAmount = exc.from_amount;
+    const giveCurrency = exc.from_currency as ExchangeCurrencyCode;
+    const getAmount = exc.to_amount;
+    const getCurrency = exc.to_currency as ExchangeCurrencyCode;
+    const dateStr = (exc.date || '').slice(0, 10) || new Date().toISOString().slice(0, 10);
+    const timeStr = exc.date ? new Date(exc.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '12:00 PM';
+    const impact = computeDoubleEntryLedger('SELL', giveAmount, giveCurrency, getAmount, getCurrency);
+
+    return {
+      id: exc.exchange_id,
+      customerId,
+      customerName,
+      type: 'SELL',
+      giveAmount,
+      giveCurrency,
+      calcMode: 'multiply',
+      exchangeRate: exc.exchange_rate,
+      getAmount,
+      getCurrency,
+      date: dateStr,
+      time: timeStr,
+      timeAgo: 'Recently',
+      ledgerImpact: impact,
+      createdAt: new Date(exc.date || Date.now()).getTime(),
+    };
+  })
+);
 
 interface ExchangeDeskState {
   customerId: string;
@@ -173,9 +193,9 @@ interface ExchangeDeskState {
 }
 
 export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
-  customerId: 'aziz-khan',
-  customerNames: Object.fromEntries(CUSTOMER_ACCOUNTS.map((customer) => [customer.id, customer.name])),
-  customerCurrencies: Object.fromEntries(CUSTOMER_ACCOUNTS.map((customer) => [customer.id, customer.balances.map((balance) => balance.currency)])),
+  customerId: initialCustomerId,
+  customerNames: seedCustomerNames,
+  customerCurrencies: seedCustomerCurrencies,
   type: 'SELL',
   giveAmount: '5000',
   giveCurrency: 'USD',
@@ -184,7 +204,30 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
   getCurrency: 'AFN',
   memo: '',
   serialNo: '',
-  exchanges: INITIAL_EXCHANGES,
+  exchanges: jsonExchangeEntries.length > 0 ? jsonExchangeEntries : [
+    {
+      id: 'ex-1',
+      customerId: 'biz_001_cust_001',
+      customerName: 'Ahmed Khan',
+      type: 'SELL',
+      giveAmount: 5000,
+      giveCurrency: 'USD',
+      calcMode: 'multiply',
+      exchangeRate: 71.2,
+      getAmount: 356000,
+      getCurrency: 'AFN',
+      date: '2025-02-23',
+      time: '11:00 AM',
+      timeAgo: 'Recently',
+      ledgerImpact: {
+        customerReceives: { amount: 356000, formatted: '+356,000', currency: 'AFN' },
+        customerPays: { amount: 5000, formatted: '-5,000', currency: 'USD' },
+        exchangePays: { amount: 356000, formatted: '-356,000', currency: 'AFN' },
+        exchangeReceives: { amount: 5000, formatted: '+5,000', currency: 'USD' },
+      },
+      createdAt: Date.now() - 1000 * 60 * 30,
+    },
+  ],
   editingTransaction: null,
   deletingTransactionId: null,
   notificationMessage: null,

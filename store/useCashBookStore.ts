@@ -1,13 +1,149 @@
 import { create } from 'zustand';
-import { CashBookEntry } from '@/types/cashbook';
+import { CashBookEntry, CurrencyCode, TransactionType } from '@/types/cashbook';
+import { useSettingsStore } from './useSettingsStore';
+import seedData from './AllJs.json';
 
-export type CurrencyFilterType = 'ALL' | 'PKR' | 'AFN' | 'USD';
+export type CurrencyFilterType = 'ALL' | CurrencyCode;
 export type ModalType = 'cash_in' | 'cash_out' | 'exchange' | 'edit' | 'delete' | null;
+
+interface SeedCashBookTx {
+  transaction_id: string;
+  customer_id?: string;
+  from_customer_id?: string;
+  to_customer_id?: string;
+  currency: string;
+  amount: number;
+  type: string;
+  mode?: string;
+  date?: string;
+  description?: string;
+  details?: {
+    memo?: string;
+    ref_no?: string;
+  };
+}
+
+interface SeedExchangeTx {
+  exchange_id: string;
+  customer_id: string;
+  from_currency: string;
+  to_currency: string;
+  from_amount: number;
+  to_amount: number;
+  exchange_rate: number;
+  date?: string;
+  description?: string;
+  details?: {
+    ref_no?: string;
+    memo?: string;
+  };
+}
+
+const seedBusinesses = seedData[0].businesses;
+
+const jsonCashBookEntries: CashBookEntry[] = seedBusinesses.flatMap((biz) => {
+  const customerMap = new Map<string, string>();
+  (biz.customers || []).forEach((c) => {
+    customerMap.set(c.id, `${c.first_name} ${c.last_name}`.trim());
+  });
+
+  const cashBookList: CashBookEntry[] = (biz.cash_book || []).map((tx: SeedCashBookTx) => {
+    const rawDate = tx.date || '2025-02-24T07:36:00Z';
+    const date = rawDate.slice(0, 10);
+    const dateObj = new Date(rawDate);
+    const time = isNaN(dateObj.getTime())
+      ? '12:00 PM'
+      : dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+    if (tx.type === 'customer_transfer') {
+      const fromName = (tx.from_customer_id ? customerMap.get(tx.from_customer_id) : undefined) || tx.from_customer_id || 'Customer';
+      const toName = (tx.to_customer_id ? customerMap.get(tx.to_customer_id) : undefined) || tx.to_customer_id || 'Customer';
+      return {
+        id: tx.transaction_id,
+        businessId: biz.id,
+        customerId: tx.from_customer_id ? `${biz.id}_${tx.from_customer_id}` : undefined,
+        customerName: `${fromName} ➔ ${toName}`,
+        fromCustomer: fromName,
+        toCustomer: toName,
+        type: 'exchange' as TransactionType,
+        amount: tx.amount,
+        currency: tx.currency as CurrencyCode,
+        date,
+        time,
+        memo: tx.description || tx.details?.memo || `${fromName} transfer to ${toName}`,
+        serialNo: tx.details?.ref_no || tx.transaction_id,
+        exchangeDetails: {
+          fromUser: fromName,
+          toUser: toName,
+          fromCurrency: tx.currency as CurrencyCode,
+          fromAmount: tx.amount,
+          toCurrency: tx.currency as CurrencyCode,
+          toAmount: tx.amount,
+          rate: 1,
+        },
+        createdAt: dateObj.getTime() || Date.now(),
+      };
+    }
+
+    const custName = (tx.customer_id ? customerMap.get(tx.customer_id) : undefined) || tx.customer_id || 'Customer';
+    return {
+      id: tx.transaction_id,
+      businessId: biz.id,
+      customerId: tx.customer_id ? `${biz.id}_${tx.customer_id}` : undefined,
+      customerName: custName,
+      type: tx.type as TransactionType,
+      amount: tx.amount,
+      currency: tx.currency as CurrencyCode,
+      date,
+      time,
+      memo: tx.description || tx.details?.memo || '',
+      serialNo: tx.details?.ref_no || tx.transaction_id,
+      createdAt: dateObj.getTime() || Date.now(),
+    };
+  });
+
+  const exchangeList: CashBookEntry[] = (biz.exchanges || []).map((exc: SeedExchangeTx) => {
+    const rawDate = exc.date || '2025-02-23T11:00:00Z';
+    const date = rawDate.slice(0, 10);
+    const dateObj = new Date(rawDate);
+    const time = isNaN(dateObj.getTime())
+      ? '12:00 PM'
+      : dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    const custName = customerMap.get(exc.customer_id) || exc.customer_id || 'Customer';
+
+    return {
+      id: exc.exchange_id,
+      businessId: biz.id,
+      customerId: exc.customer_id ? `${biz.id}_${exc.customer_id}` : undefined,
+      customerName: custName,
+      type: 'exchange' as TransactionType,
+      amount: exc.from_amount,
+      currency: exc.from_currency as CurrencyCode,
+      date,
+      time,
+      memo: `${exc.description || 'Forex Exchange'} @ rate ${exc.exchange_rate}`,
+      serialNo: exc.details?.ref_no || exc.exchange_id,
+      exchangeDetails: {
+        fromUser: custName,
+        toUser: custName,
+        fromCurrency: exc.from_currency as CurrencyCode,
+        fromAmount: exc.from_amount,
+        toCurrency: exc.to_currency as CurrencyCode,
+        toAmount: exc.to_amount,
+        rate: exc.exchange_rate,
+      },
+      createdAt: dateObj.getTime() || Date.now(),
+    };
+  });
+
+  return [...cashBookList, ...exchangeList];
+});
 
 interface CashBookState {
   // Filters & Navigation
   selectedDate: string; // YYYY-MM-DD format
   filterCurrency: CurrencyFilterType;
+  selectedCustomerId: string | null;
   searchQuery: string;
 
   // Transactions State
@@ -31,6 +167,7 @@ interface CashBookState {
   nextDay: () => void;
   setToday: () => void;
   setFilterCurrency: (currency: CurrencyFilterType) => void;
+  setSelectedCustomerId: (id: string | null) => void;
   setSearchQuery: (query: string) => void;
   addOpeningBalance: (currency: 'PKR' | 'AFN' | 'USD', amount: number) => void;
 
@@ -61,111 +198,12 @@ interface CashBookState {
   };
 }
 
-const INITIAL_TRANSACTIONS: CashBookEntry[] = [
-  {
-    id: 'tx-1',
-    customerName: 'Aziz Khan',
-    type: 'cash_in',
-    amount: 8954000,
-    currency: 'PKR',
-    date: '2026-09-01',
-    time: '07:36 PM',
-    memo: 'Cash receipt for trade clearance',
-    serialNo: 'CB-8821',
-    createdAt: 1788284160000,
-  },
-  {
-    id: 'tx-2',
-    customerName: 'Salam Jan',
-    type: 'cash_in',
-    amount: 645800,
-    currency: 'PKR',
-    date: '2026-09-01',
-    time: '07:35 PM',
-    memo: 'Partial Hawala settlement',
-    serialNo: 'CB-8820',
-    createdAt: 1788284100000,
-  },
-  {
-    id: 'tx-3',
-    customerName: 'Haji Noorullah',
-    type: 'cash_out',
-    amount: 5000,
-    currency: 'AFN',
-    date: '2026-09-01',
-    time: '07:26 PM',
-    memo: 'Cash payout for customer debit',
-    serialNo: 'CB-8819',
-    createdAt: 1788283560000,
-  },
-  {
-    id: 'tx-4',
-    customerName: 'Exchange Wahid',
-    type: 'cash_out',
-    amount: 250000,
-    currency: 'PKR',
-    date: '2026-09-01',
-    time: '07:25 PM',
-    memo: 'Forex inter-desk handover',
-    serialNo: 'CB-8818',
-    createdAt: 1788283500000,
-  },
-  // Extra seed items for previous today cash summary matching
-  {
-    id: 'tx-5',
-    customerName: 'Kabul Forex Corp',
-    type: 'cash_in',
-    amount: 5000,
-    currency: 'AFN',
-    date: '2026-09-01',
-    time: '04:15 PM',
-    memo: 'Branch settlement in AFN',
-    serialNo: 'CB-8810',
-    createdAt: 1788272100000,
-  },
-  {
-    id: 'tx-6',
-    customerName: 'Dubai Express',
-    type: 'cash_in',
-    amount: 500,
-    currency: 'USD',
-    date: '2026-09-01',
-    time: '02:10 PM',
-    memo: 'USD remittance intake',
-    serialNo: 'CB-8805',
-    createdAt: 1788264600000,
-  },
-  {
-    id: 'tx-7',
-    customerName: 'Quetta Transport Co',
-    type: 'cash_out',
-    amount: 1150000,
-    currency: 'PKR',
-    date: '2026-09-01',
-    time: '01:30 PM',
-    memo: 'Logistics cargo cash disbursement',
-    serialNo: 'CB-8802',
-    createdAt: 1788262200000,
-  },
-  {
-    id: 'tx-8',
-    customerName: 'Sher Khan Trading',
-    type: 'cash_out',
-    amount: 780000,
-    currency: 'AFN',
-    date: '2026-09-01',
-    time: '11:45 AM',
-    memo: 'AFN withdrawal for supplier',
-    serialNo: 'CB-8798',
-    createdAt: 1788255900000,
-  },
-];
-
 export const useCashBookStore = create<CashBookState>((set, get) => ({
-  selectedDate: '2026-09-01',
+  selectedDate: '2025-02-24',
   filterCurrency: 'ALL',
+  selectedCustomerId: null,
   searchQuery: '',
-  transactions: INITIAL_TRANSACTIONS,
+  transactions: jsonCashBookEntries,
   openingBalances: {
     pkr: 0,
     afn: 0,
@@ -198,6 +236,8 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
 
   setFilterCurrency: (currency: CurrencyFilterType) => set({ filterCurrency: currency }),
 
+  setSelectedCustomerId: (id: string | null) => set({ selectedCustomerId: id }),
+
   setSearchQuery: (query: string) => set({ searchQuery: query }),
 
   addOpeningBalance: (currency, amount) => {
@@ -225,8 +265,10 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
     }),
 
   addTransaction: (data) => {
+    const activeBusiness = useSettingsStore.getState().businesses.find((business) => business.isActive) || useSettingsStore.getState().businesses[0];
     const newEntry: CashBookEntry = {
       ...data,
+      businessId: data.businessId ?? activeBusiness?.id,
       id: `tx-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
       createdAt: Date.now(),
     };
@@ -255,22 +297,40 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
   },
 
   getFilteredTransactions: () => {
-    const { transactions, selectedDate, filterCurrency, searchQuery } = get();
+    const { transactions, selectedDate, filterCurrency, searchQuery, selectedCustomerId } = get();
+    const activeBusiness = useSettingsStore.getState().businesses.find((business) => business.isActive) || useSettingsStore.getState().businesses[0];
+    const allCustomers = useSettingsStore.getState().customers;
+    const targetCustomer = selectedCustomerId ? allCustomers.find((c) => c.id === selectedCustomerId) : null;
+
     return transactions.filter((tx) => {
-      // 1. Date filter (match date)
+      // 1. Business filter
+      if (activeBusiness && tx.businessId && tx.businessId !== activeBusiness.id) return false;
+
+      // 2. Specific Business Customer filter
+      if (selectedCustomerId && targetCustomer) {
+        const matchId = tx.customerId === selectedCustomerId;
+        const targetName = targetCustomer.name.toLowerCase();
+        const matchName = tx.customerName.toLowerCase().includes(targetName) ||
+          (tx.fromCustomer && tx.fromCustomer.toLowerCase().includes(targetName)) ||
+          (tx.toCustomer && tx.toCustomer.toLowerCase().includes(targetName));
+        if (!matchId && !matchName) return false;
+      }
+
+      // 3. Date filter
       if (tx.date !== selectedDate) return false;
 
-      // 2. Currency filter
+      // 4. Currency filter
       if (filterCurrency !== 'ALL' && tx.currency !== filterCurrency) return false;
 
-      // 3. Search query filter
+      // 5. Search query filter
       if (searchQuery.trim() !== '') {
         const q = searchQuery.toLowerCase();
         const matchesName = tx.customerName.toLowerCase().includes(q);
         const matchesMemo = tx.memo ? tx.memo.toLowerCase().includes(q) : false;
         const matchesSerial = tx.serialNo ? tx.serialNo.toLowerCase().includes(q) : false;
         const matchesAmount = tx.amount.toString().includes(q);
-        if (!matchesName && !matchesMemo && !matchesSerial && !matchesAmount) {
+        const matchesCurrency = tx.currency.toLowerCase().includes(q);
+        if (!matchesName && !matchesMemo && !matchesSerial && !matchesAmount && !matchesCurrency) {
           return false;
         }
       }
@@ -280,8 +340,23 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
   },
 
   getTodaySummary: () => {
-    const { transactions, selectedDate } = get();
-    const dayTransactions = transactions.filter((tx) => tx.date === selectedDate);
+    const { transactions, selectedDate, selectedCustomerId } = get();
+    const activeBusiness = useSettingsStore.getState().businesses.find((business) => business.isActive) || useSettingsStore.getState().businesses[0];
+    const allCustomers = useSettingsStore.getState().customers;
+    const targetCustomer = selectedCustomerId ? allCustomers.find((c) => c.id === selectedCustomerId) : null;
+
+    const dayTransactions = transactions.filter((tx) => {
+      if (activeBusiness && tx.businessId && tx.businessId !== activeBusiness.id) return false;
+      if (selectedCustomerId && targetCustomer) {
+        const matchId = tx.customerId === selectedCustomerId;
+        const targetName = targetCustomer.name.toLowerCase();
+        const matchName = tx.customerName.toLowerCase().includes(targetName) ||
+          (tx.fromCustomer && tx.fromCustomer.toLowerCase().includes(targetName)) ||
+          (tx.toCustomer && tx.toCustomer.toLowerCase().includes(targetName));
+        if (!matchId && !matchName) return false;
+      }
+      return tx.date === selectedDate;
+    });
 
     const summary = {
       cashIn: { pkr: 0, afn: 0, usd: 0 },
@@ -298,7 +373,6 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
         if (tx.currency === 'AFN') summary.cashOut.afn += tx.amount;
         if (tx.currency === 'USD') summary.cashOut.usd += tx.amount;
       } else if (tx.type === 'exchange' && tx.exchangeDetails) {
-        // From is cash out, To is cash in
         const { fromCurrency, fromAmount, toCurrency, toAmount } = tx.exchangeDetails;
         if (fromCurrency === 'PKR') summary.cashOut.pkr += fromAmount;
         if (fromCurrency === 'AFN') summary.cashOut.afn += fromAmount;

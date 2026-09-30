@@ -8,14 +8,18 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function ExchangeModal() {
   const t = useTranslations('CashBook');
-  const { activeModal, closeModal, addTransaction, selectedDate } = useCashBookStore();
+  const { activeModal, closeModal, addTransaction, selectedDate, selectedCustomerId } = useCashBookStore();
   const businesses = useSettingsStore((state) => state.businesses);
   const allCustomers = useSettingsStore((state) => state.customers);
   const activeBusiness = businesses.find((b) => b.isActive) || businesses[0];
   const customers = activeBusiness ? allCustomers.filter((c) => c.businessId === activeBusiness.id) : allCustomers;
 
-  const [fromCustomer, setFromCustomer] = useState(() => customers[0]?.name || 'Aziz Khan');
-  const [toCustomer, setToCustomer] = useState(() => customers[1]?.name || customers[0]?.name || 'Haji Noorullah');
+  const activeCustomer = customers.find((c) => c.id === selectedCustomerId);
+  const [fromCustomer, setFromCustomer] = useState(() => activeCustomer?.name || customers[0]?.name || 'Ahmed Khan');
+  const [toCustomer, setToCustomer] = useState(() => {
+    const other = customers.find((c) => c.name !== (activeCustomer?.name || customers[0]?.name));
+    return other?.name || customers[0]?.name || 'Ali Khan';
+  });
   const [fromCurrency, setFromCurrency] = useState<CurrencyCode>('USD');
   const [fromAmount, setFromAmount] = useState('1000');
   const [memo, setMemo] = useState('');

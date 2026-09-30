@@ -8,13 +8,14 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function CashOutModal() {
   const t = useTranslations('CashBook');
-  const { activeModal, closeModal, addTransaction, selectedDate } = useCashBookStore();
+  const { activeModal, closeModal, addTransaction, selectedDate, selectedCustomerId } = useCashBookStore();
   const businesses = useSettingsStore((state) => state.businesses);
   const allCustomers = useSettingsStore((state) => state.customers);
   const activeBusiness = businesses.find((b) => b.isActive) || businesses[0];
   const customers = activeBusiness ? allCustomers.filter((c) => c.businessId === activeBusiness.id) : allCustomers;
 
-  const [customerName, setCustomerName] = useState('');
+  const activeCustomer = customers.find((c) => c.id === selectedCustomerId);
+  const [customerName, setCustomerName] = useState(() => activeCustomer?.name || '');
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState<CurrencyCode>('PKR');
   const [memo, setMemo] = useState('');

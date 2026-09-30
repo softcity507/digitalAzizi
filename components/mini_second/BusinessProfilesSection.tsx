@@ -22,7 +22,7 @@ const AVAILABLE_CURRENCIES: CurrencyCode[] = [
 
 export default function BusinessProfilesSection() {
   const t = useTranslations('Settings');
-  const { businesses, setActiveBusiness, addBusiness, updateBusiness, deleteBusiness } = useSettingsStore();
+  const { businesses, customers, setActiveBusiness, addBusiness, updateBusiness, deleteBusiness } = useSettingsStore();
 
   // State for adding a new business
   const [isAdding, setIsAdding] = useState(false);
@@ -317,9 +317,14 @@ export default function BusinessProfilesSection() {
               </div>
 
               <div className="pt-2 border-t border-surface-border/60 flex items-center justify-between gap-2 flex-wrap">
-                <span className="text-[10px] font-bold tracking-wider uppercase text-content-muted">
-                  {t('currenciesSupported')}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold tracking-wider uppercase text-content-muted">
+                    {t('currenciesSupported')}
+                  </span>
+                  <span className="text-[10px] font-bold text-sky-400 bg-sky-400/10 px-2 py-0.5 rounded-md border border-sky-400/20">
+                    {customers.filter((c) => c.businessId === b.id).length} Customers
+                  </span>
+                </div>
                 <div className="flex items-center gap-1.5">
                   {b.supportedCurrencies.map((c) => (
                     <span

@@ -2,16 +2,16 @@
 
 import { useTranslations } from 'next-intl';
 import { useCashBookStore, CurrencyFilterType } from '@/store/useCashBookStore';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function CashBookCurrencyFilter() {
   const t = useTranslations('CashBook');
   const { filterCurrency, setFilterCurrency } = useCashBookStore();
+  const activeBusiness = useSettingsStore((state) => state.businesses.find((business) => business.isActive));
 
   const currencies: { label: string; value: CurrencyFilterType }[] = [
     { label: t('allCurrencies'), value: 'ALL' },
-    { label: 'PKR', value: 'PKR' },
-    { label: 'AFN', value: 'AFN' },
-    { label: 'USD', value: 'USD' },
+    ...(activeBusiness?.supportedCurrencies ?? ['PKR', 'AFN', 'USD']).map((currency) => ({ label: currency, value: currency as CurrencyFilterType })),
   ];
 
   return (
