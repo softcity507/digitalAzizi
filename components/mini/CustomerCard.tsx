@@ -3,6 +3,9 @@
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { CustomerAccount } from '@/types/customer';
+import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
+import { useSettingsStore } from '@/store/useSettingsStore';
+import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 
 interface CustomerCardProps {
   customer: CustomerAccount;
@@ -15,9 +18,19 @@ export default function CustomerCard({
 }: CustomerCardProps) {
   const locale = useLocale();
 
+  const handleCardClick = () => {
+    useCustomerDetailsStore.getState().setSelectedCustomerId(customer.id);
+    useSettingsStore.getState().setDefaultUser(customer.id);
+    useExchangeDeskStore.getState().setCustomerId(customer.id);
+    if (customer.businessId) {
+      useSettingsStore.getState().setActiveBusiness(customer.businessId);
+    }
+  };
+
   return (
     <Link
       href={`/${locale}/details?id=${customer.id}`}
+      onClick={handleCardClick}
       className={`group flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-surface border border-surface-border shadow-sm hover:border-brand/40 hover:bg-surface-hover/50 transition-all duration-200 cursor-pointer ${className}`}
     >
       {/* Left Column: Customer Details */}

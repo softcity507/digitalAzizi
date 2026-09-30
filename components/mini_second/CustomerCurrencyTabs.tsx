@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { CurrencyCode } from '@/types/customer';
 import { CustomerCurrencySelection, useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
@@ -14,20 +15,31 @@ interface CurrencyTabConfig {
 
 export default function CustomerCurrencyTabs() {
   const t = useTranslations('CustomerDetails');
+  const searchParams = useSearchParams();
+  const urlParamId = searchParams.get('id');
+
   const { selectedCurrency, setSelectedCurrency, selectedCustomerId, transactions } =
     useCustomerDetailsStore();
     
   const customers = useSettingsStore((state) => state.customers);
+  const businesses = useSettingsStore((state) => state.businesses);
+  const activeBusiness = useMemo(() => businesses.find((b) => b.isActive) || businesses[0], [businesses]);
+
+  const effectiveCustomerId = urlParamId || selectedCustomerId;
 
   const customer = useMemo(() => {
-    return customers.find((c) => c.id === selectedCustomerId) || customers[1] || customers[0];
-  }, [customers, selectedCustomerId]);
+    return customers.find((c) => c.id === effectiveCustomerId) || customers[0] || {
+      id: 'cust_001',
+      name: 'Customer',
+      balances: [],
+    };
+  }, [customers, effectiveCustomerId]);
 
   const currencyConfig = useMemo<CurrencyTabConfig[]>(() => {
     const customerCurrencies = new Set<CurrencyCode>([
-      ...customer.balances.map((balance) => balance.currency),
+      ...(customer?.balances?.map((balance) => balance.currency) || []),
       ...transactions
-        .filter((tx) => tx.customerId === selectedCustomerId)
+        .filter((tx) => tx.customerId === effectiveCustomerId)
         .map((tx) => tx.currency),
     ]);
     const preferredOrder: CurrencyCode[] = ['AFN', 'USD', 'PKR'];
@@ -37,12 +49,12 @@ export default function CustomerCurrencyTabs() {
     ];
 
     return [{ code: 'ALL', label: 'ALL' }, ...currencies.map((code) => ({ code, label: code }))];
-  }, [customer.balances, selectedCustomerId, transactions]);
+  }, [customer, effectiveCustomerId, transactions]);
 
   const getCurrencySummary = (code: CurrencyCode) => {
     // 1. Check if matching ledger transactions exist
     const matchingTx = transactions.filter(
-      (tx) => tx.customerId === selectedCustomerId && tx.currency === code
+      (tx) => tx.customerId === effectiveCustomerId && tx.currency === code
     );
 
     if (matchingTx.length > 0) {
@@ -59,7 +71,7 @@ export default function CustomerCurrencyTabs() {
     }
 
     // 2. Fallback to customer default balances
-    const bal = customer.balances.find((b) => b.currency === code);
+    const bal = customer.balances?.find((b) => b.currency === code);
     if (bal) {
       return {
         amountFormatted: bal.amount,
@@ -86,7 +98,7 @@ export default function CustomerCurrencyTabs() {
     .map((item) => {
       const currency = item.code as CurrencyCode;
       const matchingTx = transactions.filter(
-        (tx) => tx.customerId === selectedCustomerId && tx.currency === currency
+        (tx) => tx.customerId === effectiveCustomerId && tx.currency === currency
       );
       let credit = 0;
       let debit = 0;
@@ -97,10 +109,11 @@ export default function CustomerCurrencyTabs() {
           else debit += tx.amount;
         }
       } else {
-        const balance = customer.balances.find((entry) => entry.currency === currency);
+        const balance = customer.balances?.find((entry) => entry.currency === currency);
         if (balance) {
-          if (balance.isCredit) credit = Number(balance.amount) || 0;
-          else debit = Number(balance.amount) || 0;
+          const amt = parseFloat(String(balance.amount).replace(/[^0-9.-]+/g, '')) || 0;
+          if (balance.isCredit) credit = amt;
+          else debit = amt;
         }
       }
 
@@ -113,8 +126,9 @@ export default function CustomerCurrencyTabs() {
 
   // Handler to send remaining balance details via WhatsApp
   const handleSendWhatsApp = () => {
-    const targetNumber = customer.phone || "03471881624"; // Uses customer phone if available, falls back to default
-    const message = `Hello ${customer.name},\n\nHere is your remaining balance statement:\n\n${getBalanceLines().join('\n')}\n\nThank you,\nAl-Rahman Company`;
+    const targetNumber = customer.phone || "03471881624";
+    const companyName = activeBusiness?.name || "Digital Azizi";
+    const message = `Hello ${customer.name},\n\nHere is your remaining balance statement:\n\n${getBalanceLines().join('\n')}\n\nThank you,\n${companyName}`;
 
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${targetNumber.replace(/[^0-9]/g, '')}?text=${encodedMessage}`;

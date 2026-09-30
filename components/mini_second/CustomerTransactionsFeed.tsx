@@ -1,5 +1,7 @@
 'use client';
 
+import { useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 import { LedgerTransaction } from '@/data/customerData';
@@ -16,14 +18,37 @@ interface HandleExportProps {
 
 export default function CustomerTransactionsFeed() {
   const t = useTranslations('CustomerDetails');
-  const { getFilteredTransactions, selectedCurrency, selectedCustomerId } = useCustomerDetailsStore();
+  const searchParams = useSearchParams();
+  const urlParamId = searchParams.get('id');
+
+  const { selectedCurrency, selectedCustomerId, searchQuery, sortAscending, transactions: storeTransactions } = useCustomerDetailsStore();
   const customers = useSettingsStore((state) => state.customers);
 
-  const transactions = getFilteredTransactions() as LedgerTransaction[];
+  const effectiveCustomerId = urlParamId || selectedCustomerId;
 
   // Find current customer name for the export
-  const currentCustomer = customers.find((c) => c.id === selectedCustomerId);
+  const currentCustomer = customers.find((c) => c.id === effectiveCustomerId);
   const customerName = currentCustomer ? currentCustomer.name : 'Customer';
+
+  const transactions = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return (storeTransactions as LedgerTransaction[])
+      .filter((tx) => {
+        if (tx.customerId !== effectiveCustomerId) return false;
+        if (selectedCurrency !== 'ALL' && tx.currency !== selectedCurrency) return false;
+        if (!query) return true;
+        return (
+          tx.title.toLowerCase().includes(query) ||
+          tx.tag.toLowerCase().includes(query) ||
+          (tx.refNo && tx.refNo.toLowerCase().includes(query)) ||
+          (tx.notes && tx.notes.toLowerCase().includes(query))
+        );
+      })
+      .sort((a, b) => {
+        const diff = new Date(b.date).getTime() - new Date(a.date).getTime();
+        return sortAscending ? -diff : diff;
+      });
+  }, [storeTransactions, effectiveCustomerId, selectedCurrency, searchQuery, sortAscending]);
 
   const handleExport = ({ transactions, selectedCurrency, customerName }: HandleExportProps) => {
     try {
@@ -134,6 +159,7 @@ export default function CustomerTransactionsFeed() {
       console.error('Error generating PDF:', error);
     }
   };
+
   return (
     <div className="w-full space-y-3">
       {/* Header with Title, Count Badge, and Export Button */}

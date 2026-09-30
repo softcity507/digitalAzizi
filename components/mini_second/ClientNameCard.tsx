@@ -1,13 +1,20 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useLocale } from 'next-intl';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 
 export default function ClientNameCard() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const locale = useLocale();
+  const urlParamId = searchParams.get('id');
+
   const { selectedCustomerId, setSelectedCustomerId } = useCustomerDetailsStore();
-  const { setDefaultUser } = useSettingsStore();
+  const { setDefaultUser, setActiveBusiness } = useSettingsStore();
   const { setCustomerId } = useExchangeDeskStore();
   const businesses = useSettingsStore((state) => state.businesses);
   const allCustomers = useSettingsStore((state) => state.customers);
@@ -16,30 +23,54 @@ export default function ClientNameCard() {
   const activeCustomers = useMemo(() => {
     if (!activeBusiness) return allCustomers;
     const filtered = allCustomers.filter((c) => c.businessId === activeBusiness.id);
-    return filtered;
+    return filtered.length > 0 ? filtered : allCustomers;
   }, [allCustomers, activeBusiness]);
 
+  const effectiveCustomerId = urlParamId || selectedCustomerId;
+
   const currentCustomer = useMemo(() => {
-    return activeCustomers.find((c) => c.id === selectedCustomerId) || activeCustomers[0] || allCustomers[0];
-  }, [activeCustomers, selectedCustomerId, allCustomers]);
+    return (
+      allCustomers.find((c) => c.id === effectiveCustomerId) ||
+      activeCustomers[0] ||
+      allCustomers[0]
+    );
+  }, [allCustomers, effectiveCustomerId, activeCustomers]);
+
+  // Synchronize store with URL parameter
+  useEffect(() => {
+    if (urlParamId && urlParamId !== selectedCustomerId) {
+      setSelectedCustomerId(urlParamId);
+      setDefaultUser(urlParamId);
+      setCustomerId(urlParamId);
+      const targetCustomer = allCustomers.find((c) => c.id === urlParamId);
+      if (targetCustomer?.businessId && targetCustomer.businessId !== activeBusiness?.id) {
+        setActiveBusiness(targetCustomer.businessId);
+      }
+    }
+  }, [urlParamId, selectedCustomerId, allCustomers, activeBusiness, setSelectedCustomerId, setDefaultUser, setCustomerId, setActiveBusiness]);
 
   const handleSelectCustomer = (newId: string) => {
     setSelectedCustomerId(newId);
     setDefaultUser(newId);
     setCustomerId(newId);
+    const targetCustomer = allCustomers.find((c) => c.id === newId);
+    if (targetCustomer?.businessId && targetCustomer.businessId !== activeBusiness?.id) {
+      setActiveBusiness(targetCustomer.businessId);
+    }
+    router.replace(`/${locale}/details?id=${newId}`);
   };
 
   return (
     <div className="w-full bg-surface border border-surface-border rounded-2xl p-4 sm:p-5 flex items-center justify-between shadow-sm transition-all">
       <div className="flex items-center gap-3.5">
         <div className="w-11 h-11 rounded-xl bg-surface-subtle border border-surface-border flex items-center justify-center text-lg font-bold text-content-primary">
-          {currentCustomer.name.charAt(0)}
+          {currentCustomer?.name ? currentCustomer.name.charAt(0) : 'C'}
         </div>
         <div>
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-content-primary">
-            {currentCustomer.name}
+            {currentCustomer?.name || 'Customer'}
           </h1>
-          {currentCustomer.subtitle && (
+          {currentCustomer?.subtitle && (
             <p className="text-xs text-content-muted">{currentCustomer.subtitle}</p>
           )}
         </div>
@@ -47,7 +78,7 @@ export default function ClientNameCard() {
 
       <div className="flex items-center gap-2">
         <select
-          value={selectedCustomerId}
+          value={currentCustomer?.id || effectiveCustomerId}
           onChange={(e) => handleSelectCustomer(e.target.value)}
           aria-label="Select Customer"
           className="bg-surface-subtle border border-surface-border text-xs font-semibold rounded-xl px-3 py-2 text-content-primary focus:outline-none focus:ring-1 focus:ring-brand cursor-pointer"

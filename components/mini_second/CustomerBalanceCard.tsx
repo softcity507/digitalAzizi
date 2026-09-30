@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { CurrencyCode } from '@/types/customer';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
@@ -8,19 +9,24 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function CustomerBalanceCard() {
   const t = useTranslations('CustomerDetails');
+  const searchParams = useSearchParams();
+  const urlParamId = searchParams.get('id');
+
   const { selectedCurrency, setSelectedCurrency, selectedCustomerId, transactions, getActiveBalances } =
     useCustomerDetailsStore();
   const customers = useSettingsStore((state) => state.customers);
 
+  const effectiveCustomerId = urlParamId || selectedCustomerId;
+
   const customer = useMemo(() => {
-    return customers.find((c) => c.id === selectedCustomerId) || customers[1] || customers[0];
-  }, [customers, selectedCustomerId]);
+    return customers.find((c) => c.id === effectiveCustomerId) || customers[0];
+  }, [customers, effectiveCustomerId]);
 
   const allCurrencySummaries = useMemo(() => {
     const customerCurrencies = new Set<CurrencyCode>([
       ...(customer?.balances?.map((b) => b.currency) || []),
       ...transactions
-        .filter((tx) => tx.customerId === selectedCustomerId)
+        .filter((tx) => tx.customerId === effectiveCustomerId)
         .map((tx) => tx.currency),
     ]);
     const preferredOrder: CurrencyCode[] = ['AFN', 'USD', 'PKR'];
@@ -32,7 +38,7 @@ export default function CustomerBalanceCard() {
 
     return targetCurrencies.map((currency) => {
       const matchingTx = transactions.filter(
-        (tx) => tx.customerId === selectedCustomerId && tx.currency === currency
+        (tx) => tx.customerId === effectiveCustomerId && tx.currency === currency
       );
       let credit = 0;
       let debit = 0;
@@ -54,7 +60,7 @@ export default function CustomerBalanceCard() {
       const net = credit - debit;
       return { currency, credit, debit, net, isPositive: net >= 0 };
     });
-  }, [customer, selectedCustomerId, transactions]);
+  }, [customer, effectiveCustomerId, transactions]);
 
   // If ALL currencies are selected, show balance for all currencies
   if (selectedCurrency === 'ALL') {
