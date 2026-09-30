@@ -1,3 +1,5 @@
+import type { SupportedLocale } from '@/i18n/languages';
+
 export type CurrencyCode = 'AFN' | 'USD' | 'PKR' | 'INR' | 'IRR' | 'EUR' | 'GBP' | 'AED' | 'CNY' | 'TRY';
 
 export interface CurrencySummary {
@@ -27,6 +29,7 @@ export interface CustomerAccount {
   id: string;
   name: string;
   subtitle?: string;
+  descriptionLocale?: SupportedLocale;
   phone?: string;
   badge?: string;
   isSystemDefault?: boolean;

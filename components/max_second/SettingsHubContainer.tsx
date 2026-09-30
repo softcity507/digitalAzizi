@@ -7,7 +7,7 @@ import RegisteredUsersSection from '@/components/mini_second/RegisteredUsersSect
 import PreferencesSection from '@/components/mini_second/PreferencesSection';
 // import CloudBackupSection from '@/components/mini_second/CloudBackupSection';
 import SignOutSection from '@/components/mini_second/SignOutSection';
-import AddCustomerModal from '@/components/mini_second/AddCustomerModal';
+import AddCustomerModal from '@/components/mini_second/AddCustomerModal'
 import AuditLogModal from '@/components/mini_second/AuditLogModal';
 
 export default function SettingsHubContainer() {
@@ -19,7 +19,7 @@ export default function SettingsHubContainer() {
       {/* 2. Responsive Dashboard Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
         {/* Left Column: Admin Profile & Business Books (Sticky on Desktop/Laptop) */}
-        <div className="lg:col-span-5 xl:col-span-4 border space-y-4 lg:sticky lg:top-20">
+        <div className="lg:col-span-5 xl:col-span-4 space-y-4 lg:sticky lg:top-20">
           <AdminProfileCard />
           <BusinessProfilesSection />
         </div>

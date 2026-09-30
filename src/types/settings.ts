@@ -1,9 +1,11 @@
 import { CurrencyCode } from './customer';
+import type { SupportedLocale } from '@/i18n/languages';
 
 export interface BusinessProfile {
   id: string;
   name: string;
   subtitle: string;
+  descriptionLocale?: SupportedLocale;
   isActive: boolean;
   supportedCurrencies: CurrencyCode[];
 }

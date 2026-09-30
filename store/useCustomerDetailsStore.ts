@@ -23,6 +23,7 @@ interface CustomerDetailsState {
   toggleSortOrder: () => void;
   openModal: (type: CustomerDetailsModalType, tx?: CustomerTransaction | null, id?: string | null) => void;
   closeModal: () => void;
+  addTransaction: (data: Omit<CustomerTransaction, 'id'>) => void;
   updateTransaction: (id: string, data: Partial<CustomerTransaction>) => void;
   deleteTransaction: (id: string) => void;
   getFilteredTransactions: () => CustomerTransaction[];
@@ -51,6 +52,14 @@ export const useCustomerDetailsStore = create<CustomerDetailsState>((set, get) =
 
   closeModal: () =>
     set({ activeModal: null, editingTransaction: null, deletingTransactionId: null }),
+
+  addTransaction: (data) =>
+    set((s) => ({
+      transactions: [
+        { ...data, id: `ledger-${Date.now()}-${Math.random().toString(36).slice(2, 7)}` },
+        ...s.transactions,
+      ],
+    })),
 
   updateTransaction: (id, data) =>
     set((s) => ({

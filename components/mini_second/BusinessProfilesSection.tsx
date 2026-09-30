@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { Pencil, Trash2, Check, X, ArrowRightLeft, AlertTriangle } from 'lucide-react';
+import { LANGUAGES } from '@/i18n/languages';
 
 export default function BusinessProfilesSection() {
   const t = useTranslations('Settings');
@@ -97,6 +98,11 @@ export default function BusinessProfilesSection() {
                         )}
                       </div>
                       <p className="text-xs text-content-muted mt-0.5">{b.subtitle}</p>
+                      {b.descriptionLocale && (
+                        <p className="text-[11px] text-content-muted mt-1">
+                          Description language: {LANGUAGES.find((language) => language.code === b.descriptionLocale)?.nativeName ?? b.descriptionLocale}
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>

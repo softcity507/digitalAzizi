@@ -5,11 +5,13 @@ import { useTranslations } from 'next-intl';
 import { useCashBookStore } from '@/store/useCashBookStore';
 import { CurrencyCode } from '@/types/cashbook';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 
 export default function CashInModal() {
   const t = useTranslations('CashBook');
   const { activeModal, closeModal, addTransaction, selectedDate } = useCashBookStore();
   const customers = useSettingsStore((state) => state.customers);
+  const addCustomerLedgerTransaction = useCustomerDetailsStore((state) => state.addTransaction);
 
   const [customerName, setCustomerName] = useState('');
   const [amount, setAmount] = useState('');
@@ -54,6 +56,21 @@ export default function CashInModal() {
       memo: memo.trim() || undefined,
       serialNo: serialNo.trim() || undefined,
     });
+
+    if (selectedCustomer) {
+      addCustomerLedgerTransaction({
+        customerId: selectedCustomer.id,
+        title: 'Cash In',
+        tag: 'Cash In',
+        category: 'cash_in',
+        amount: numAmount,
+        currency,
+        isCredit: true,
+        date,
+        refNo: serialNo.trim() || undefined,
+        notes: memo.trim() || undefined,
+      });
+    }
   };
 
   return (

@@ -5,6 +5,7 @@ import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 import { useCustomerDetailsStore } from './useCustomerDetailsStore';
 import { useExchangeDeskStore } from './useExchangeDeskStore';
 import { useCashBookStore } from './useCashBookStore';
+import { SupportedLocale } from '@/i18n/languages';
 
 export type SettingsModalType = 'add_customer' | 'edit_business' | 'audit_log' | 'backup_success' | 'restore_success' | null;
 
@@ -20,7 +21,15 @@ interface SettingsState {
 
   setActiveBusiness: (id: string) => void;
   setDefaultUser: (id: string) => void;
-  addUser: (name: string, subtitle: string, currencies: CurrencyCode[], roleTag?: string, openingAmount?: number) => void;
+  addUser: (
+    name: string,
+    subtitle: string,
+    currencies: CurrencyCode[],
+    roleTag?: string,
+    openingBalances?: Partial<Record<CurrencyCode, number>>,
+    descriptionLocale?: SupportedLocale,
+    notes?: string
+  ) => void;
   updateBusiness: (id: string, name: string, subtitle: string) => void;
   deleteBusiness: (id: string) => void;
   openEditBusiness: (business: BusinessProfile) => void;
@@ -120,15 +129,38 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     useExchangeDeskStore.getState().setCustomerId(id);
   },
 
-  addUser: (name, subtitle, currencies, roleTag = 'Customer', openingAmount = 0) => {
+  addUser: (name, subtitle, currencies, roleTag = 'Customer', openingBalances = {}, descriptionLocale = 'en', notes = '') => {
     const slugId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `user-${Date.now()}`;
     useExchangeDeskStore.getState().registerCustomer(slugId, name, currencies);
-    const initialCurrency = currencies[0];
-    const normalizedOpeningAmount = Number.isFinite(openingAmount) ? openingAmount : 0;
 
-    if (initialCurrency === 'PKR' || initialCurrency === 'AFN' || initialCurrency === 'USD') {
-      useCashBookStore.getState().addOpeningBalance(initialCurrency, normalizedOpeningAmount);
+    const normalizedOpeningBalances = Object.fromEntries(currencies.map((currency) => {
+      const amount = openingBalances[currency] ?? 0;
+      return [currency, Number.isFinite(amount) && amount > 0 ? amount : 0];
+    })) as Partial<Record<CurrencyCode, number>>;
+
+    for (const currency of currencies) {
+      const amount = normalizedOpeningBalances[currency] ?? 0;
+      if (currency === 'PKR' || currency === 'AFN' || currency === 'USD') {
+        useCashBookStore.getState().addOpeningBalance(currency, amount);
+      }
+
+      if (amount > 0) {
+        useCustomerDetailsStore.getState().addTransaction({
+          customerId: slugId,
+          title: 'Opening Balance',
+          tag: 'Initial',
+          category: 'initial',
+          amount,
+          currency,
+          isCredit: true,
+          date: new Date().toISOString().slice(0, 10),
+          refNo: `OB-${Date.now()}-${currency}`,
+          notes: notes || subtitle || 'Initial opening balance',
+        });
+      }
     }
+
+    useCustomerDetailsStore.getState().setSelectedCustomerId(slugId);
 
     set((s) => ({
       users: [
@@ -137,6 +169,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
           id: slugId,
           name,
           subtitle,
+          descriptionLocale,
           roleTag,
           isDefault: false,
         },
@@ -147,12 +180,9 @@ export const useSettingsStore = create<SettingsState>((set) => ({
           id: slugId,
           name,
           subtitle,
+          descriptionLocale,
           balances: [
-            ...currencies.map((currency) => ({
-              currency,
-              amount: currency === initialCurrency ? String(normalizedOpeningAmount) : '0',
-              isCredit: true,
-            })),
+            ...currencies.map((currency) => ({ currency, amount: String(normalizedOpeningBalances[currency] ?? 0), isCredit: true })),
           ],
         },
       ],
@@ -162,6 +192,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
           id: slugId,
           name,
           subtitle,
+          descriptionLocale,
           isActive: false,
           supportedCurrencies: currencies,
         },
