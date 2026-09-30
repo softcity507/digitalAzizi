@@ -8,12 +8,20 @@ import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 export default function ClientNameCard() {
   const { selectedCustomerId, setSelectedCustomerId } = useCustomerDetailsStore();
   const { setDefaultUser } = useSettingsStore();
-  const customers = useSettingsStore((state) => state.customers);
   const { setCustomerId } = useExchangeDeskStore();
+  const businesses = useSettingsStore((state) => state.businesses);
+  const allCustomers = useSettingsStore((state) => state.customers);
+  const activeBusiness = useMemo(() => businesses.find((b) => b.isActive) || businesses[0], [businesses]);
+
+  const activeCustomers = useMemo(() => {
+    if (!activeBusiness) return allCustomers;
+    const filtered = allCustomers.filter((c) => c.businessId === activeBusiness.id);
+    return filtered.length > 0 ? filtered : allCustomers.filter((c) => !c.businessId);
+  }, [allCustomers, activeBusiness]);
 
   const currentCustomer = useMemo(() => {
-    return customers.find((c) => c.id === selectedCustomerId) || customers[1] || customers[0];
-  }, [customers, selectedCustomerId]);
+    return activeCustomers.find((c) => c.id === selectedCustomerId) || activeCustomers[0] || allCustomers[0];
+  }, [activeCustomers, selectedCustomerId, allCustomers]);
 
   const handleSelectCustomer = (newId: string) => {
     setSelectedCustomerId(newId);
@@ -44,7 +52,7 @@ export default function ClientNameCard() {
           aria-label="Select Customer"
           className="bg-surface-subtle border border-surface-border text-xs font-semibold rounded-xl px-3 py-2 text-content-primary focus:outline-none focus:ring-1 focus:ring-brand cursor-pointer"
         >
-          {customers.map((customer) => (
+          {activeCustomers.map((customer) => (
             <option key={customer.id} value={customer.id}>
               {customer.name}
             </option>

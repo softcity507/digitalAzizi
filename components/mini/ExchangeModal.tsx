@@ -9,10 +9,13 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 export default function ExchangeModal() {
   const t = useTranslations('CashBook');
   const { activeModal, closeModal, addTransaction, selectedDate } = useCashBookStore();
-  const customers = useSettingsStore((state) => state.customers);
+  const businesses = useSettingsStore((state) => state.businesses);
+  const allCustomers = useSettingsStore((state) => state.customers);
+  const activeBusiness = businesses.find((b) => b.isActive) || businesses[0];
+  const customers = activeBusiness ? allCustomers.filter((c) => c.businessId === activeBusiness.id) : allCustomers;
 
-  const [fromCustomer, setFromCustomer] = useState('Aziz Khan');
-  const [toCustomer, setToCustomer] = useState('Haji Noorullah');
+  const [fromCustomer, setFromCustomer] = useState(() => customers[0]?.name || 'Aziz Khan');
+  const [toCustomer, setToCustomer] = useState(() => customers[1]?.name || customers[0]?.name || 'Haji Noorullah');
   const [fromCurrency, setFromCurrency] = useState<CurrencyCode>('USD');
   const [fromAmount, setFromAmount] = useState('1000');
   const [memo, setMemo] = useState('');

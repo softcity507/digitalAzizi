@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
@@ -9,7 +9,16 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 export default function ExchangeCustomerSelect() {
   const t = useTranslations('ExchangeDesk');
   const { customerId, setCustomerId } = useExchangeDeskStore();
-  const customers = useSettingsStore((state) => state.customers);
+  const businesses = useSettingsStore((state) => state.businesses);
+  const allCustomers = useSettingsStore((state) => state.customers);
+  const activeBusiness = useMemo(() => businesses.find((b) => b.isActive) || businesses[0], [businesses]);
+
+  const customers = useMemo(() => {
+    if (!activeBusiness) return allCustomers;
+    const filtered = allCustomers.filter((c) => c.businessId === activeBusiness.id);
+    return filtered.length > 0 ? filtered : allCustomers.filter((c) => !c.businessId);
+  }, [allCustomers, activeBusiness]);
+
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -18,7 +27,7 @@ export default function ExchangeCustomerSelect() {
   const searchTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const selectedCustomer =
-    customers.find((c) => c.id === customerId) || customers[1] || customers[0];
+    customers.find((c) => c.id === customerId) || customers[0] || allCustomers[0];
 
   // Sync filteredCustomers when customers change and search is empty
   useEffect(() => {

@@ -57,6 +57,7 @@ export const CUSTOMER_ACCOUNTS: CustomerAccount[] = [
     name: 'Exchange',
     badge: 'System Default',
     isSystemDefault: true,
+    businessId: 'al-rehman',
     subtitle: 'Default Exchange',
     balances: [
       { currency: 'AFN', amount: '+1,440,000', isCredit: true },
@@ -67,6 +68,7 @@ export const CUSTOMER_ACCOUNTS: CustomerAccount[] = [
   {
     id: 'aziz-khan',
     name: 'Aziz Khan',
+    businessId: 'al-rehman',
     subtitle: 'Wholesaler, Kabul Market',
     phone: '+93 70 526 9096',
     balances: [
@@ -78,6 +80,7 @@ export const CUSTOMER_ACCOUNTS: CustomerAccount[] = [
   {
     id: 'salam-jan',
     name: 'Salam Jan',
+    businessId: 'al-rehman',
     subtitle: 'Sarraf, Herat Bazaar',
     phone: '+93 70 526 9096',
     balances: [
@@ -89,11 +92,37 @@ export const CUSTOMER_ACCOUNTS: CustomerAccount[] = [
   {
     id: 'haji-noorullah',
     name: 'Haji Noorullah',
+    businessId: 'kabul-express',
     subtitle: 'Fruit Exporter, Kandahar',
     phone: '+93 70 526 9096',
     balances: [
       { currency: 'AFN', amount: '-420,000', isCredit: false },
       { currency: 'USD', amount: '+$12,400', isCredit: true },
+      { currency: 'PKR', amount: '+340,000', isCredit: true },
+    ],
+  },
+  {
+    id: 'wahid-sarraf',
+    name: 'Wahid Sarraf',
+    businessId: 'kabul-express',
+    subtitle: 'Currency Trader, Kabul Gate',
+    phone: '+93 79 123 4567',
+    balances: [
+      { currency: 'AFN', amount: '+2,150,000', isCredit: true },
+      { currency: 'USD', amount: '+$8,500', isCredit: true },
+      { currency: 'PKR', amount: '-120,000', isCredit: false },
+    ],
+  },
+  {
+    id: 'ahmad-shah',
+    name: 'Ahmad Shah',
+    businessId: 'kabul-express',
+    subtitle: 'Gold & Hawala Merchant',
+    phone: '+93 78 987 6543',
+    balances: [
+      { currency: 'AFN', amount: '+500,000', isCredit: true },
+      { currency: 'USD', amount: '-$2,000', isCredit: false },
+      { currency: 'PKR', amount: '+450,000', isCredit: true },
     ],
   },
 ];

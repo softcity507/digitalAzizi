@@ -1,0 +1,243 @@
+[
+  {
+    "current_business_id": "biz_001",
+    "businesses": [
+      { 
+        "id": "biz_001",
+        "name": "Khyber Traders",
+        "description": "General trading across borders",
+        "active_currencies": ["PKR", "AFN", "IRR"],
+        "default_currency": "PKR",
+        "customers": [
+          {
+            "id": "cust_001",
+            "first_name": "Ahmed",
+            "last_name": "Khan",
+            "phone": "0300-1122334",
+            "address": "Kabul, Afghanistan",
+            "customer_currencies": [{"type":"AFN", "amount": 8449800}, {"type":"PKR", "amount": -785000}, {"type":"USD", "amount": 5000}]
+          },
+          {
+            "id": "cust_002",
+            "first_name": "Ali",
+            "last_name": "Khan",
+            "phone": "0300-1122335",
+            "address": "Tehran, Iran",
+            "customer_currencies": [{"type":"AFN", "amount": 15000}, {"type":"IRR", "amount": 35000}, {"type":"PKR", "amount": 500000}]
+          }
+        ],
+        "cash_book": [
+          {
+            "transaction_id": "tx_001",
+            "customer_id": "cust_001",
+            "currency": "AFN",
+            "amount": 8954000,
+            "type": "cash_in",
+            "mode": "cash_receipt",
+            "date": "2025-02-24T07:36:00Z",
+            "description": "Cash receipt for trade clearance[cite: 3]",
+            "details": { "memo": "Cash receipt for trade clearance" }
+          },
+          {
+            "transaction_id": "tx_002",
+            "customer_id": "cust_001",
+            "currency": "PKR",
+            "amount": 785000,
+            "type": "cash_out",
+            "mode": "hawala_settlement",
+            "date": "2025-02-21T10:00:00Z",
+            "description": "PKR Hawala Settlement[cite: 2]",
+            "details": { "ref_no": "PK-409" }
+          },
+          {
+            "transaction_id": "tx_003",
+            "from_customer_id": "cust_001",
+            "to_customer_id": "cust_002",
+            "currency": "AFN",
+            "amount": 1200000,
+            "type": "customer_transfer",
+            "mode": "transfer",
+            "date": "2025-02-24T12:00:00Z",
+            "description": "Herat Bazaar Settlement transfer between customers[cite: 2]",
+            "details": { "ref_no": "HB-772" }
+          },
+          {
+            "transaction_id": "tx_004",
+            "customer_id": "cust_002",
+            "currency": "PKR",
+            "amount": 1150000,
+            "type": "cash_out",
+            "mode": "disbursement",
+            "date": "2025-02-20T01:30:00Z",
+            "description": "Logistics cargo cash disbursement[cite: 3]",
+            "details": { "memo": "Quetta Transport Co" }
+          }
+        ],
+        "exchanges": [
+          {
+            "exchange_id": "exc_001",
+            "customer_id": "cust_001",
+            "from_currency": "AFN",
+            "to_currency": "USD",
+            "from_amount": 356000,
+            "to_amount": 5000,
+            "exchange_rate": 71.2,
+            "date": "2025-02-23T11:00:00Z",
+            "description": "Buy 5,000 USD (Exchange)[cite: 2]",
+            "details": { "ref_no": "EX901" }
+          },
+          {
+            "exchange_id": "exc_002",
+            "customer_id": "cust_001",
+            "from_currency": "USD",
+            "to_currency": "AFN",
+            "from_amount": 2500,
+            "to_amount": 178000,
+            "exchange_rate": 71.2,
+            "date": "2025-02-23T14:00:00Z",
+            "description": "Sell 2,500 USD (Exchange)[cite: 2]",
+            "details": { "ref_no": "EX-910" }
+          },
+          {
+            "exchange_id": "exc_003",
+            "customer_id": "cust_002",
+            "from_currency": "USD",
+            "to_currency": "PKR",
+            "from_amount": 500,
+            "to_amount": 140000,
+            "exchange_rate": 280.0,
+            "date": "2025-02-22T02:10:00Z",
+            "description": "USD remittance intake exchange[cite: 3]",
+            "details": { "ref_no": "EX-915" }
+          }
+        ]
+      },
+      { 
+        "id": "biz_002",
+        "name": "New business",
+        "description": "General trading across borders",
+        "active_currencies": ["PKR", "AFN", "USD"],
+        "default_currency": "USD",
+        "customers": [
+          {
+            "id": "cust_001",
+            "first_name": "Ahmed 2",
+            "last_name": "Khan",
+            "phone": "0300-1122334",
+            "address": "Kabul, Afghanistan",
+            "customer_currencies": [{"type":"AFN", "amount": 15000}, {"type":"PKR", "amount": 35000}]
+          },
+          {
+            "id": "cust_002",
+            "first_name": "Ali 2",
+            "last_name": "Khan",
+            "phone": "0300-1122334",
+            "address": "Kabul, Afghanistan",
+            "customer_currencies": [{"type":"AFN", "amount": 15000}, {"type":"PKR", "amount": 35000}, {"type":"USD", "amount": 1000}]
+          },
+          {
+            "id": "cust_003",
+            "first_name": "Muhammad",
+            "last_name": "Khan",
+            "phone": "0300-1122334",
+            "address": "Kabul, Afghanistan",
+            "customer_currencies": [{"type":"AFN", "amount": 15000}, {"type":"PKR", "amount": 35000}]
+          },
+          {
+            "id": "cust_004",
+            "first_name": "Muhammad",
+            "last_name": "Khan",
+            "phone": "0300-1122334",
+            "address": "Kabul, Afghanistan",
+            "customer_currencies": [{"type":"USD", "amount": 15000}, {"type":"PKR", "amount": 35000}]
+          }
+        ],
+        "cash_book": [
+          {
+            "transaction_id": "tx_201",
+            "customer_id": "cust_001",
+            "currency": "PKR",
+            "amount": 950000,
+            "type": "cash_in",
+            "mode": "bank_remittance",
+            "date": "2025-02-22T10:00:00Z",
+            "description": "Lahore Remittance Credit[cite: 2]",
+            "details": { "ref_no": "LR-449" }
+          },
+          {
+            "transaction_id": "tx_202",
+            "customer_id": "cust_002",
+            "currency": "AFN",
+            "amount": 420000,
+            "type": "cash_out",
+            "mode": "bank_export",
+            "date": "2025-02-24T11:00:00Z",
+            "description": "Kandahar Fruit Export Advance[cite: 2]",
+            "details": { "ref_no": "KF-220" }
+          },
+          {
+            "transaction_id": "tx_203",
+            "from_customer_id": "cust_001",
+            "to_customer_id": "cust_003",
+            "currency": "USD",
+            "amount": 500,
+            "type": "customer_transfer",
+            "mode": "transfer",
+            "date": "2025-02-23T02:10:00Z",
+            "description": "Dubai Express remittance transfer between customers[cite: 3]",
+            "details": { "memo": "Inter-customer USD move" }
+          },
+          {
+            "transaction_id": "tx_204",
+            "customer_id": "cust_004",
+            "currency": "PKR",
+            "amount": 780000,
+            "type": "cash_out",
+            "mode": "withdrawal",
+            "date": "2025-02-25T11:45:00Z",
+            "description": "AFN/PKR withdrawal for supplier[cite: 3]",
+            "details": { "memo": "Sher Khan Trading" }
+          }
+        ],
+        "exchanges": [
+          {
+            "exchange_id": "exc_201",
+            "customer_id": "cust_002",
+            "from_currency": "PKR",
+            "to_currency": "USD",
+            "from_amount": 280000,
+            "to_amount": 1000,
+            "exchange_rate": 280.0,
+            "date": "2025-02-23T08:00:00Z",
+            "description": "Inter-desk forex conversion[cite: 3]",
+            "details": { "ref_no": "EX-201" }
+          },
+          {
+            "exchange_id": "exc_202",
+            "customer_id": "cust_004",
+            "from_currency": "USD",
+            "to_currency": "PKR",
+            "from_amount": 12400,
+            "to_amount": 3472000,
+            "exchange_rate": 280.0,
+            "date": "2025-02-23T09:30:00Z",
+            "description": "Dubai Trade USD Receipt conversion[cite: 2]",
+            "details": { "ref_no": "DB-881" }
+          },
+          {
+            "exchange_id": "exc_203",
+            "customer_id": "cust_003",
+            "from_currency": "AFN",
+            "to_currency": "PKR",
+            "from_amount": 100000,
+            "to_amount": 250000,
+            "exchange_rate": 2.5,
+            "date": "2025-02-24T14:15:00Z",
+            "description": "Cross border currency adjustment[cite: 3]",
+            "details": { "ref_no": "EX-203" }
+          }
+        ]
+      }
+    ]
+  }
+]

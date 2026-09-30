@@ -33,6 +33,7 @@ export interface CustomerAccount {
   phone?: string;
   badge?: string;
   isSystemDefault?: boolean;
+  businessId?: string;
   balances: CustomerBalance[];
 }
 

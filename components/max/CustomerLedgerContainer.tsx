@@ -17,10 +17,18 @@ export default function CustomerLedgerContainer() {
   const t = useTranslations('CustomerBook');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<AccountFilterType>('all');
-  const customers = useSettingsStore((state) => state.customers);
+  const businesses = useSettingsStore((state) => state.businesses);
+  const allCustomers = useSettingsStore((state) => state.customers);
+
+  const activeBusiness = useMemo(() => businesses.find((b) => b.isActive) || businesses[0], [businesses]);
+
+  const activeBusinessCustomers = useMemo(() => {
+    if (!activeBusiness) return allCustomers;
+    return allCustomers.filter((c) => c.businessId === activeBusiness.id);
+  }, [allCustomers, activeBusiness]);
 
   const filteredCustomers = useMemo(() => {
-    return customers.filter((customer) => {
+    return activeBusinessCustomers.filter((customer) => {
       // 1. Search filter matching name, subtitle, or phone
       const matchesSearch =
         customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -39,7 +47,7 @@ export default function CustomerLedgerContainer() {
 
       return true;
     });
-  }, [customers, searchQuery, activeFilter]);
+  }, [activeBusinessCustomers, searchQuery, activeFilter]);
 
   return (
     <div className="w-full max-w-7xl 2xl:max-w-[1500px] mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 space-y-5 sm:space-y-6 pb-28 sm:pb-20 transition-colors duration-200">
@@ -61,7 +69,7 @@ export default function CustomerLedgerContainer() {
             <AccountFilterTabs
               currentFilter={activeFilter}
               onSelect={setActiveFilter}
-              totalAccounts={customers.length}
+              totalAccounts={activeBusinessCustomers.length}
             />
           </div>
         </div>
@@ -75,7 +83,7 @@ export default function CustomerLedgerContainer() {
             </div>
             {/* PDF Export Component Button */}
             <div className="w-full sm:w-auto shrink-0 flex justify-end">
-              <CustomerPdfExport customers={customers} transactions={DEFAULT_CUSTOMER_TRANSACTIONS} />
+              <CustomerPdfExport customers={activeBusinessCustomers} transactions={DEFAULT_CUSTOMER_TRANSACTIONS} />
             </div>
           </div>
 
@@ -85,7 +93,7 @@ export default function CustomerLedgerContainer() {
               {t('allAccounts')}
             </h2>
             <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-surface-subtle border border-surface-border text-slate-600 dark:text-slate-400">
-              {filteredCustomers.length} / {customers.length}
+              {filteredCustomers.length} / {activeBusinessCustomers.length}
             </span>
           </div>
 
@@ -94,6 +102,6 @@ export default function CustomerLedgerContainer() {
         </div>
       </div>
 
-      </div>
+    </div>
   );
 }

@@ -10,7 +10,10 @@ export default function EditTransactionModal() {
   const t = useTranslations('CashBook');
   const { activeModal, closeModal, updateTransaction, editingTransaction } =
     useCashBookStore();
-  const customers = useSettingsStore((state) => state.customers);
+  const businesses = useSettingsStore((state) => state.businesses);
+  const allCustomers = useSettingsStore((state) => state.customers);
+  const activeBusiness = businesses.find((b) => b.isActive) || businesses[0];
+  const customers = activeBusiness ? allCustomers.filter((c) => c.businessId === activeBusiness.id) : allCustomers;
 
   // Initialize state directly from editingTransaction using fallback values
   const [customerName, setCustomerName] = useState(() => editingTransaction?.customerName || '');

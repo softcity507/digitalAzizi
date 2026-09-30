@@ -10,7 +10,10 @@ import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 export default function CashInModal() {
   const t = useTranslations('CashBook');
   const { activeModal, closeModal, addTransaction, selectedDate } = useCashBookStore();
-  const customers = useSettingsStore((state) => state.customers);
+  const businesses = useSettingsStore((state) => state.businesses);
+  const allCustomers = useSettingsStore((state) => state.customers);
+  const activeBusiness = businesses.find((b) => b.isActive) || businesses[0];
+  const customers = activeBusiness ? allCustomers.filter((c) => c.businessId === activeBusiness.id) : allCustomers;
   const addCustomerLedgerTransaction = useCustomerDetailsStore((state) => state.addTransaction);
 
   const [customerName, setCustomerName] = useState('');

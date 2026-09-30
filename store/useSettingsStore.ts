@@ -20,7 +20,14 @@ interface SettingsState {
   editingBusiness: BusinessProfile | null;
 
   setActiveBusiness: (id: string) => void;
+  getActiveCustomers: () => CustomerAccount[];
   setDefaultUser: (id: string) => void;
+  addBusiness: (
+    name: string,
+    subtitle: string,
+    supportedCurrencies: CurrencyCode[],
+    descriptionLocale?: SupportedLocale
+  ) => void;
   addUser: (
     name: string,
     subtitle: string,
@@ -39,7 +46,7 @@ interface SettingsState {
   closeModal: () => void;
 }
 
-export const useSettingsStore = create<SettingsState>((set) => ({
+export const useSettingsStore = create<SettingsState>((set, get) => ({
   admin: {
     name: 'Azizullah',
     title: 'System Manager',
@@ -111,9 +118,24 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   editingBusiness: null,
 
   setActiveBusiness: (id) =>
-    set((s) => ({
-      businesses: s.businesses.map((b) => ({ ...b, isActive: b.id === id })),
-    })),
+    set((s) => {
+      const updatedBusinesses = s.businesses.map((b) => ({ ...b, isActive: b.id === id }));
+      // Sync customer details and exchange desk if there is a matching customer for this business
+      const matchedCustomer = s.customers.find((c) => c.businessId === id) || s.customers.find((c) => c.id === id) || s.customers[0];
+      if (matchedCustomer) {
+        useCustomerDetailsStore.getState().setSelectedCustomerId(matchedCustomer.id);
+        useExchangeDeskStore.getState().setCustomerId(matchedCustomer.id);
+      }
+      return { businesses: updatedBusinesses };
+    }),
+
+  getActiveCustomers: () => {
+    const { businesses, customers } = get();
+    const activeBiz = businesses.find((b) => b.isActive) || businesses[0];
+    if (!activeBiz) return customers;
+    const filtered = customers.filter((c) => c.businessId === activeBiz.id);
+    return filtered.length > 0 ? filtered : customers.filter((c) => !c.businessId);
+  },
 
   setDefaultUser: (id) => {
     set((s) => ({
@@ -127,6 +149,50 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     useCustomerDetailsStore.getState().setSelectedCustomerId(id);
     // Sync with Exchange Desk Page
     useExchangeDeskStore.getState().setCustomerId(id);
+  },
+
+  addBusiness: (name, subtitle, supportedCurrencies, descriptionLocale = 'en') => {
+    const slugId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `biz-${Date.now()}`;
+    const currencies: CurrencyCode[] = supportedCurrencies.length > 0 ? supportedCurrencies : ['AFN', 'USD', 'PKR'];
+
+    const newBiz: BusinessProfile = {
+      id: slugId,
+      name,
+      subtitle,
+      descriptionLocale,
+      isActive: false,
+      supportedCurrencies: currencies,
+    };
+
+    const newCustomer: CustomerAccount = {
+      id: slugId,
+      name,
+      subtitle,
+      descriptionLocale,
+      businessId: slugId,
+      balances: currencies.map((curr) => ({
+        currency: curr,
+        amount: '0.00',
+        isCredit: true,
+      })),
+    };
+
+    useExchangeDeskStore.getState().registerCustomer(slugId, name, currencies);
+
+    set((s) => ({
+      businesses: [...s.businesses, newBiz],
+      customers: [...s.customers, newCustomer],
+      users: [
+        ...s.users,
+        {
+          id: slugId,
+          name,
+          subtitle,
+          roleTag: 'Business',
+          isDefault: false,
+        },
+      ],
+    }));
   },
 
   addUser: (name, subtitle, currencies, roleTag = 'Customer', openingBalances = {}, descriptionLocale = 'en', notes = '') => {
@@ -160,7 +226,8 @@ export const useSettingsStore = create<SettingsState>((set) => ({
       }
     }
 
-    useCustomerDetailsStore.getState().setSelectedCustomerId(slugId);
+    const activeBiz = get().businesses.find((b) => b.isActive) || get().businesses[0];
+    const currentBizId = activeBiz?.id || 'al-rehman';
 
     set((s) => ({
       users: [
@@ -181,6 +248,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
           name,
           subtitle,
           descriptionLocale,
+          businessId: currentBizId,
           balances: [
             ...currencies.map((currency) => ({ currency, amount: String(normalizedOpeningBalances[currency] ?? 0), isCredit: true })),
           ],
