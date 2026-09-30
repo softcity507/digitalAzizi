@@ -4,8 +4,9 @@ import { CustomerAccount, CurrencyCode } from '@/types/customer';
 import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
 import { useCustomerDetailsStore } from './useCustomerDetailsStore';
 import { useExchangeDeskStore } from './useExchangeDeskStore';
+import { useCashBookStore } from './useCashBookStore';
 
-export type SettingsModalType = 'add_customer' | 'audit_log' | 'backup_success' | 'restore_success' | null;
+export type SettingsModalType = 'add_customer' | 'edit_business' | 'audit_log' | 'backup_success' | 'restore_success' | null;
 
 interface SettingsState {
   admin: AppAdminProfile;
@@ -15,10 +16,14 @@ interface SettingsState {
   auditLogs: AuditLogItem[];
   lastSynced: string;
   activeModal: SettingsModalType;
+  editingBusiness: BusinessProfile | null;
 
   setActiveBusiness: (id: string) => void;
   setDefaultUser: (id: string) => void;
-  addUser: (name: string, subtitle: string, currencies: CurrencyCode[], roleTag?: string) => void;
+  addUser: (name: string, subtitle: string, currencies: CurrencyCode[], roleTag?: string, openingAmount?: number) => void;
+  updateBusiness: (id: string, name: string, subtitle: string) => void;
+  deleteBusiness: (id: string) => void;
+  openEditBusiness: (business: BusinessProfile) => void;
   triggerBackup: () => void;
   triggerRestore: () => void;
   openModal: (type: SettingsModalType) => void;
@@ -94,6 +99,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   ],
   lastSynced: 'Synced 4 minutes ago',
   activeModal: null,
+  editingBusiness: null,
 
   setActiveBusiness: (id) =>
     set((s) => ({
@@ -114,9 +120,16 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     useExchangeDeskStore.getState().setCustomerId(id);
   },
 
-  addUser: (name, subtitle, currencies, roleTag = 'Customer') => {
+  addUser: (name, subtitle, currencies, roleTag = 'Customer', openingAmount = 0) => {
     const slugId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `user-${Date.now()}`;
     useExchangeDeskStore.getState().registerCustomer(slugId, name, currencies);
+    const initialCurrency = currencies[0];
+    const normalizedOpeningAmount = Number.isFinite(openingAmount) ? openingAmount : 0;
+
+    if (initialCurrency === 'PKR' || initialCurrency === 'AFN' || initialCurrency === 'USD') {
+      useCashBookStore.getState().addOpeningBalance(initialCurrency, normalizedOpeningAmount);
+    }
+
     set((s) => ({
       users: [
         ...s.users,
@@ -135,12 +148,80 @@ export const useSettingsStore = create<SettingsState>((set) => ({
           name,
           subtitle,
           balances: [
-            ...currencies.map((currency) => ({ currency, amount: '0', isCredit: true })),
+            ...currencies.map((currency) => ({
+              currency,
+              amount: currency === initialCurrency ? String(normalizedOpeningAmount) : '0',
+              isCredit: true,
+            })),
           ],
         },
       ],
+      businesses: [
+        ...s.businesses,
+        {
+          id: slugId,
+          name,
+          subtitle,
+          isActive: false,
+          supportedCurrencies: currencies,
+        },
+      ],
       activeModal: null,
+      editingBusiness: null,
     }));
+  },
+
+  updateBusiness: (id, name, subtitle) => {
+    set((s) => ({
+      businesses: s.businesses.map((b) =>
+        b.id === id ? { ...b, name, subtitle } : b
+      ),
+      users: s.users.map((u) =>
+        u.id === id ? { ...u, name, subtitle } : u
+      ),
+      customers: s.customers.map((c) =>
+        c.id === id ? { ...c, name, subtitle } : c
+      ),
+      activeModal: null,
+      editingBusiness: null,
+    }));
+  },
+
+  deleteBusiness: (id) => {
+    set((s) => {
+      const nextBusinesses = s.businesses.filter((b) => b.id !== id);
+      const nextUsers = s.users.filter((u) => u.id !== id);
+      const nextCustomers = s.customers.filter((c) => c.id !== id);
+
+      // If active business deleted, set first available as active
+      const hasActive = nextBusinesses.some((b) => b.isActive);
+      if (!hasActive && nextBusinesses.length > 0) {
+        nextBusinesses[0].isActive = true;
+      }
+
+      // If default user deleted, set first available as default
+      const hasDefault = nextUsers.some((u) => u.isDefault);
+      if (!hasDefault && nextUsers.length > 0) {
+        nextUsers[0].isDefault = true;
+        useCustomerDetailsStore.getState().setSelectedCustomerId(nextUsers[0].id);
+        useExchangeDeskStore.getState().setCustomerId(nextUsers[0].id);
+      }
+
+      return {
+        businesses: nextBusinesses,
+        users: nextUsers,
+        customers: nextCustomers,
+        activeModal: null,
+        editingBusiness: null,
+      };
+    });
+  },
+
+  openEditBusiness: (business) => {
+    set({
+      editingBusiness: business,
+      activeModal: 'edit_business',
+    });
   },
 
   triggerBackup: () =>
@@ -155,6 +236,6 @@ export const useSettingsStore = create<SettingsState>((set) => ({
       activeModal: 'restore_success',
     }),
 
-  openModal: (activeModal) => set({ activeModal }),
-  closeModal: () => set({ activeModal: null }),
+  openModal: (activeModal) => set({ activeModal, editingBusiness: activeModal === 'add_customer' ? null : undefined }),
+  closeModal: () => set({ activeModal: null, editingBusiness: null }),
 }));

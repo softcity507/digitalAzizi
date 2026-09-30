@@ -16,6 +16,7 @@ export default function CustomerCurrencyTabs() {
   const t = useTranslations('CustomerDetails');
   const { selectedCurrency, setSelectedCurrency, selectedCustomerId, transactions } =
     useCustomerDetailsStore();
+    
   const customers = useSettingsStore((state) => state.customers);
 
   const customer = useMemo(() => {

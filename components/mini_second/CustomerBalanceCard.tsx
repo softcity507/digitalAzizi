@@ -130,7 +130,11 @@ export default function CustomerBalanceCard() {
   }
 
   // Single Currency View
-  const { net, totalCredit, totalDebit } = getActiveBalances();
+  const selectedSummary = allCurrencySummaries.find((item) => item.currency === selectedCurrency);
+  const activeBalances = getActiveBalances();
+  const net = selectedSummary?.net ?? activeBalances.net;
+  const totalCredit = selectedSummary?.credit ?? activeBalances.totalCredit;
+  const totalDebit = selectedSummary?.debit ?? activeBalances.totalDebit;
   const isNetPositive = net >= 0;
   const formattedNet = `${isNetPositive ? '+' : ''}${net.toLocaleString()} ${selectedCurrency}`;
 

@@ -32,6 +32,7 @@ interface CashBookState {
   setToday: () => void;
   setFilterCurrency: (currency: CurrencyFilterType) => void;
   setSearchQuery: (query: string) => void;
+  addOpeningBalance: (currency: 'PKR' | 'AFN' | 'USD', amount: number) => void;
 
   // Modal Actions
   openModal: (type: ModalType, transaction?: CashBookEntry | null, deleteId?: string | null) => void;
@@ -198,6 +199,16 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
   setFilterCurrency: (currency: CurrencyFilterType) => set({ filterCurrency: currency }),
 
   setSearchQuery: (query: string) => set({ searchQuery: query }),
+
+  addOpeningBalance: (currency, amount) => {
+    const balanceKey = currency.toLowerCase() as 'pkr' | 'afn' | 'usd';
+    set((state) => ({
+      openingBalances: {
+        ...state.openingBalances,
+        [balanceKey]: state.openingBalances[balanceKey] + amount,
+      },
+    }));
+  },
 
   openModal: (type: ModalType, transaction: CashBookEntry | null = null, deleteId: string | null = null) =>
     set({
