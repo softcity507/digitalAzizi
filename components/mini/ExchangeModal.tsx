@@ -13,6 +13,7 @@ export default function ExchangeModal() {
   const allCustomers = useSettingsStore((state) => state.customers);
   const activeBusiness = businesses.find((b) => b.isActive) || businesses[0];
   const customers = activeBusiness ? allCustomers.filter((c) => c.businessId === activeBusiness.id) : allCustomers;
+  const availableCurrencies: CurrencyCode[] = activeBusiness?.supportedCurrencies ?? [];
 
   const activeCustomer = customers.find((c) => c.id === selectedCustomerId);
   const [fromCustomer, setFromCustomer] = useState(() => activeCustomer?.name || customers[0]?.name || 'Ahmed Khan');
@@ -20,19 +21,15 @@ export default function ExchangeModal() {
     const other = customers.find((c) => c.name !== (activeCustomer?.name || customers[0]?.name));
     return other?.name || customers[0]?.name || 'Ali Khan';
   });
-  const [fromCurrency, setFromCurrency] = useState<CurrencyCode>('USD');
+  const [fromCurrency, setFromCurrency] = useState<CurrencyCode>(() => availableCurrencies[0] ?? 'PKR');
   const [fromAmount, setFromAmount] = useState('1000');
   const [memo, setMemo] = useState('');
   const [serialNo, setSerialNo] = useState(() => `EX-${Math.floor(1000 + Math.random() * 9000)}`);
   const [date, setDate] = useState(selectedDate);
-  const sender = customers.find((customer) => customer.name === fromCustomer);
-  const availableCurrencies = sender?.balances.map((balance) => balance.currency) || ['AFN', 'USD', 'PKR'];
+  const selectedCurrency = availableCurrencies.includes(fromCurrency) ? fromCurrency : availableCurrencies[0];
 
   const handleFromCustomerChange = (value: string) => {
     setFromCustomer(value);
-    const customer = customers.find((item) => item.name === value);
-    const currencies = customer?.balances.map((balance) => balance.currency) || ['AFN', 'USD', 'PKR'];
-    if (!currencies.includes(fromCurrency)) setFromCurrency(currencies[0] as CurrencyCode);
   };
 
   if (activeModal !== 'exchange') return null;
@@ -64,6 +61,10 @@ export default function ExchangeModal() {
       alert(t('exchangeValidationError'));
       return;
     }
+    if (!selectedCurrency) {
+      alert(t('exchangeValidationError'));
+      return;
+    }
 
     const now = new Date();
     const timeStr = now.toLocaleTimeString('en-US', {
@@ -73,7 +74,7 @@ export default function ExchangeModal() {
     });
 
     const combinedCustomerLabel = `${fromCustomer.trim()} ➔ ${toCustomer.trim()}`;
-    const autoMemo = `${fromCustomer.trim()} transferred ${fAmt} ${fromCurrency} to ${toCustomer.trim()}`;
+    const autoMemo = `${fromCustomer.trim()} transferred ${fAmt} ${selectedCurrency} to ${toCustomer.trim()}`;
     const transactionMemo = memo.trim() || autoMemo;
 
     addTransaction({
@@ -83,7 +84,7 @@ export default function ExchangeModal() {
       toCustomer: toCustomer.trim(),
       type: 'exchange',
       amount: fAmt,
-      currency: fromCurrency,
+      currency: selectedCurrency,
       date,
       time: timeStr,
       memo: transactionMemo,
@@ -91,9 +92,9 @@ export default function ExchangeModal() {
       exchangeDetails: {
         fromUser: fromCustomer.trim(),
         toUser: toCustomer.trim(),
-        fromCurrency,
+        fromCurrency: selectedCurrency,
         fromAmount: fAmt,
-        toCurrency: fromCurrency,
+        toCurrency: selectedCurrency,
         toAmount: fAmt,
         rate: 1,
       },
@@ -235,8 +236,9 @@ export default function ExchangeModal() {
                   {t('giveCurrency')}
                 </label>
                 <select
-                  value={fromCurrency}
+                  value={selectedCurrency ?? ''}
                   onChange={(e) => setFromCurrency(e.target.value as CurrencyCode)}
+                  disabled={availableCurrencies.length === 0}
                   className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-content-primary text-sm font-semibold focus:outline-none focus:border-brand"
                 >
                   {availableCurrencies.map((availableCurrency) => (
