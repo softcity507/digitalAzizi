@@ -23,7 +23,7 @@ export default function CashBookOperations() {
           <span className="truncate">{t('cashOutBtn')}</span>
         </button>
 
-        {/* 2. Exchange Button */}
+        {/* 2. transferBtn */}
         <button
           type="button"
           onClick={() => openModal('exchange')}

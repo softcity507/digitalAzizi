@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { CurrencyCode } from '@/types/customer';
@@ -34,22 +34,27 @@ export default function CustomerCurrencyTabs() {
       balances: [],
     };
   }, [customers, effectiveCustomerId]);
+  const customerBusiness = useMemo(
+    () => businesses.find((business) => business.id === customer.businessId) || activeBusiness,
+    [businesses, customer.businessId, activeBusiness]
+  );
+  const supportedCurrencies = useMemo(
+    () => customerBusiness?.supportedCurrencies ?? [],
+    [customerBusiness]
+  );
 
   const currencyConfig = useMemo<CurrencyTabConfig[]>(() => {
-    const customerCurrencies = new Set<CurrencyCode>([
-      ...(customer?.balances?.map((balance) => balance.currency) || []),
-      ...transactions
-        .filter((tx) => tx.customerId === effectiveCustomerId)
-        .map((tx) => tx.currency),
-    ]);
-    const preferredOrder: CurrencyCode[] = ['AFN', 'USD', 'PKR'];
-    const currencies = [
-      ...preferredOrder.filter((code) => customerCurrencies.has(code)),
-      ...Array.from(customerCurrencies).filter((code) => !preferredOrder.includes(code)),
+    return [
+      { code: 'ALL', label: 'ALL' },
+      ...supportedCurrencies.map((code) => ({ code, label: code })),
     ];
+  }, [supportedCurrencies]);
 
-    return [{ code: 'ALL', label: 'ALL' }, ...currencies.map((code) => ({ code, label: code }))];
-  }, [customer, effectiveCustomerId, transactions]);
+  useEffect(() => {
+    if (selectedCurrency !== 'ALL' && !supportedCurrencies.includes(selectedCurrency)) {
+      setSelectedCurrency('ALL');
+    }
+  }, [selectedCurrency, setSelectedCurrency, supportedCurrencies]);
 
   const getCurrencySummary = (code: CurrencyCode) => {
     // 1. Check if matching ledger transactions exist

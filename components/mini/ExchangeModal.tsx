@@ -58,6 +58,13 @@ export default function ExchangeModal() {
       return;
     }
 
+    const senderAccount = customers.find((customer) => customer.name.toLowerCase() === fromCustomer.trim().toLowerCase());
+    const receiverAccount = customers.find((customer) => customer.name.toLowerCase() === toCustomer.trim().toLowerCase());
+    if (!senderAccount || !receiverAccount || senderAccount.id === receiverAccount.id) {
+      alert(t('exchangeValidationError'));
+      return;
+    }
+
     const now = new Date();
     const timeStr = now.toLocaleTimeString('en-US', {
       hour: '2-digit',
@@ -67,8 +74,10 @@ export default function ExchangeModal() {
 
     const combinedCustomerLabel = `${fromCustomer.trim()} ➔ ${toCustomer.trim()}`;
     const autoMemo = `${fromCustomer.trim()} transferred ${fAmt} ${fromCurrency} to ${toCustomer.trim()}`;
+    const transactionMemo = memo.trim() || autoMemo;
 
     addTransaction({
+      customerId: senderAccount.id,
       customerName: combinedCustomerLabel,
       fromCustomer: fromCustomer.trim(),
       toCustomer: toCustomer.trim(),
@@ -77,7 +86,7 @@ export default function ExchangeModal() {
       currency: fromCurrency,
       date,
       time: timeStr,
-      memo: memo.trim() || autoMemo,
+      memo: transactionMemo,
       serialNo: serialNo.trim() || undefined,
       exchangeDetails: {
         fromUser: fromCustomer.trim(),

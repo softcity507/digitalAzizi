@@ -132,6 +132,7 @@ interface CustomerDetailsState {
   openModal: (type: CustomerDetailsModalType, tx?: CustomerTransaction | null, id?: string | null) => void;
   closeModal: () => void;
   addTransaction: (data: Omit<CustomerTransaction, 'id'>) => void;
+  replaceCashBookTransactions: (ids: string[], transactions: CustomerTransaction[]) => void;
   updateTransaction: (id: string, data: Partial<CustomerTransaction>) => void;
   deleteTransaction: (id: string) => void;
   getFilteredTransactions: () => CustomerTransaction[];
@@ -166,6 +167,14 @@ export const useCustomerDetailsStore = create<CustomerDetailsState>((set, get) =
       transactions: [
         { ...data, id: `ledger-${Date.now()}-${Math.random().toString(36).slice(2, 7)}` },
         ...s.transactions,
+      ],
+    })),
+
+  replaceCashBookTransactions: (ids, transactions) =>
+    set((s) => ({
+      transactions: [
+        ...transactions,
+        ...s.transactions.filter((tx) => !ids.includes(tx.id)),
       ],
     })),
 

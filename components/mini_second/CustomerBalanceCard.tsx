@@ -3,7 +3,6 @@
 import { useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { CurrencyCode } from '@/types/customer';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 
@@ -15,28 +14,22 @@ export default function CustomerBalanceCard() {
   const { selectedCurrency, setSelectedCurrency, selectedCustomerId, transactions, getActiveBalances } =
     useCustomerDetailsStore();
   const customers = useSettingsStore((state) => state.customers);
+  const businesses = useSettingsStore((state) => state.businesses);
 
   const effectiveCustomerId = urlParamId || selectedCustomerId;
 
   const customer = useMemo(() => {
     return customers.find((c) => c.id === effectiveCustomerId) || customers[0];
   }, [customers, effectiveCustomerId]);
+  const supportedCurrencies = useMemo(() => {
+    const customerBusiness = businesses.find((business) => business.id === customer?.businessId)
+      || businesses.find((business) => business.isActive)
+      || businesses[0];
+    return customerBusiness?.supportedCurrencies ?? [];
+  }, [businesses, customer?.businessId]);
 
   const allCurrencySummaries = useMemo(() => {
-    const customerCurrencies = new Set<CurrencyCode>([
-      ...(customer?.balances?.map((b) => b.currency) || []),
-      ...transactions
-        .filter((tx) => tx.customerId === effectiveCustomerId)
-        .map((tx) => tx.currency),
-    ]);
-    const preferredOrder: CurrencyCode[] = ['AFN', 'USD', 'PKR'];
-    const currencies = [
-      ...preferredOrder.filter((code) => customerCurrencies.has(code)),
-      ...Array.from(customerCurrencies).filter((code) => !preferredOrder.includes(code)),
-    ];
-    const targetCurrencies = currencies.length > 0 ? currencies : (['AFN', 'USD', 'PKR'] as CurrencyCode[]);
-
-    return targetCurrencies.map((currency) => {
+    return supportedCurrencies.map((currency) => {
       const matchingTx = transactions.filter(
         (tx) => tx.customerId === effectiveCustomerId && tx.currency === currency
       );
@@ -60,10 +53,10 @@ export default function CustomerBalanceCard() {
       const net = credit - debit;
       return { currency, credit, debit, net, isPositive: net >= 0 };
     });
-  }, [customer, effectiveCustomerId, transactions]);
+  }, [customer, effectiveCustomerId, supportedCurrencies, transactions]);
 
   // If ALL currencies are selected, show balance for all currencies
-  if (selectedCurrency === 'ALL') {
+  if (selectedCurrency === 'ALL' || !supportedCurrencies.includes(selectedCurrency)) {
     return (
       <div className="w-full bg-surface border border-surface-border rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-sm">
         <div className="flex items-center justify-between">

@@ -13,22 +13,20 @@ export default function CashOutModal() {
   const allCustomers = useSettingsStore((state) => state.customers);
   const activeBusiness = businesses.find((b) => b.isActive) || businesses[0];
   const customers = activeBusiness ? allCustomers.filter((c) => c.businessId === activeBusiness.id) : allCustomers;
+  const availableCurrencies: CurrencyCode[] = activeBusiness?.supportedCurrencies ?? [];
 
   const activeCustomer = customers.find((c) => c.id === selectedCustomerId);
   const [customerName, setCustomerName] = useState(() => activeCustomer?.name || '');
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState<CurrencyCode>('PKR');
+  const [currency, setCurrency] = useState<CurrencyCode>(() => availableCurrencies[0] ?? 'PKR');
   const [memo, setMemo] = useState('');
   const [serialNo, setSerialNo] = useState(() => `CB-${Math.floor(1000 + Math.random() * 9000)}`);
   const [date, setDate] = useState(selectedDate);
   const selectedCustomer = customers.find((customer) => customer.name === customerName);
-  const availableCurrencies = selectedCustomer?.balances.map((balance) => balance.currency) || ['AFN', 'USD', 'PKR'];
+  const selectedCurrency = availableCurrencies.includes(currency) ? currency : availableCurrencies[0];
 
   const handleCustomerChange = (value: string) => {
     setCustomerName(value);
-    const customer = customers.find((item) => item.name === value);
-    const currencies = customer?.balances.map((balance) => balance.currency) || ['AFN', 'USD', 'PKR'];
-    if (!currencies.includes(currency)) setCurrency(currencies[0] as CurrencyCode);
   };
 
   if (activeModal !== 'cash_out') return null;
@@ -37,6 +35,10 @@ export default function CashOutModal() {
     e.preventDefault();
     const numAmount = parseFloat(amount);
     if (!customerName.trim() || isNaN(numAmount) || numAmount <= 0) {
+      alert(t('validationError'));
+      return;
+    }
+    if (!selectedCurrency) {
       alert(t('validationError'));
       return;
     }
@@ -49,10 +51,11 @@ export default function CashOutModal() {
     });
 
     addTransaction({
+      customerId: selectedCustomer?.id,
       customerName: customerName.trim(),
       type: 'cash_out',
       amount: numAmount,
-      currency,
+      currency: selectedCurrency,
       date,
       time: timeStr,
       memo: memo.trim() || undefined,
@@ -127,7 +130,8 @@ export default function CashOutModal() {
                 {t('currency')}
               </label>
               <select
-                value={currency}
+                value={selectedCurrency ?? ''}
+                disabled={availableCurrencies.length === 0}
                 onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
                 className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-content-primary text-sm font-semibold focus:outline-none focus:border-brand"
               >

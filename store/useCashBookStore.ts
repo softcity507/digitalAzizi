@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { CashBookEntry, CurrencyCode, TransactionType } from '@/types/cashbook';
+import { CustomerTransaction } from '@/types/customer';
 import { useSettingsStore } from './useSettingsStore';
+import { useCustomerDetailsStore } from './useCustomerDetailsStore';
 import seedData from './AllJs.json';
 
 export type CurrencyFilterType = 'ALL' | CurrencyCode;
@@ -139,6 +141,92 @@ const jsonCashBookEntries: CashBookEntry[] = seedBusinesses.flatMap((biz) => {
   return [...cashBookList, ...exchangeList];
 });
 
+const toCustomerLedgerTransactions = (entry: CashBookEntry): CustomerTransaction[] => {
+  const customers = useSettingsStore.getState().customers.filter(
+    (customer) => !entry.businessId || customer.businessId === entry.businessId
+  );
+  const findCustomer = (id?: string, name?: string) =>
+    customers.find((customer) => id && customer.id === id) ||
+    customers.find((customer) => name && customer.name.toLowerCase() === name.trim().toLowerCase());
+  const details = entry.exchangeDetails;
+
+  if (entry.type === 'exchange' && entry.fromCustomer && entry.toCustomer) {
+    const sender = findCustomer(entry.customerId, entry.fromCustomer);
+    const receiver = findCustomer(undefined, entry.toCustomer);
+    const fromAmount = details?.fromAmount ?? entry.amount;
+    const fromCurrency = details?.fromCurrency ?? entry.currency;
+    const toAmount = details?.toAmount ?? entry.amount;
+    const toCurrency = details?.toCurrency ?? entry.currency;
+    const transactions: CustomerTransaction[] = [];
+
+    if (sender) {
+      transactions.push({
+        id: `${entry.id}_from`,
+        customerId: sender.id,
+        title: `Transfer to ${receiver?.name || entry.toCustomer}`,
+        tag: 'Transfer',
+        category: 'cash_out',
+        amount: fromAmount,
+        currency: fromCurrency,
+        isCredit: false,
+        date: entry.date,
+        refNo: entry.serialNo || entry.id,
+        notes: entry.memo,
+      });
+    }
+
+    if (receiver) {
+      transactions.push({
+        id: `${entry.id}_to`,
+        customerId: receiver.id,
+        title: `Transfer from ${sender?.name || entry.fromCustomer}`,
+        tag: 'Transfer',
+        category: 'cash_in',
+        amount: toAmount,
+        currency: toCurrency,
+        isCredit: true,
+        date: entry.date,
+        refNo: entry.serialNo || entry.id,
+        notes: entry.memo,
+      });
+    }
+
+    return transactions;
+  }
+
+  const customer = findCustomer(entry.customerId, entry.customerName);
+  if (!customer) return [];
+
+  const isExchange = entry.type === 'exchange' && details;
+  const isCredit = entry.type === 'cash_in';
+  const amount = isExchange ? details.fromAmount : entry.amount;
+  const currency = isExchange ? details.fromCurrency : entry.currency;
+  const title = isExchange
+    ? `Exchange ${details.fromAmount.toLocaleString()} ${details.fromCurrency} -> ${details.toAmount.toLocaleString()} ${details.toCurrency}`
+    : isCredit ? 'Cash Deposit' : 'Cash Disbursement';
+
+  return [{
+    id: entry.id,
+    customerId: customer.id,
+    title,
+    tag: isExchange ? 'Exchange' : isCredit ? 'Cash In' : 'Cash Out',
+    category: isExchange ? 'exchange' : isCredit ? 'cash_in' : 'cash_out',
+    amount,
+    currency,
+    isCredit,
+    date: entry.date,
+    refNo: entry.serialNo || entry.id,
+    notes: entry.memo,
+  }];
+};
+
+const replaceCustomerLedgerTransactions = (entry: CashBookEntry) => {
+  useCustomerDetailsStore.getState().replaceCashBookTransactions(
+    [entry.id, `${entry.id}_from`, `${entry.id}_to`],
+    toCustomerLedgerTransactions(entry)
+  );
+};
+
 interface CashBookState {
   // Filters & Navigation
   selectedDate: string; // YYYY-MM-DD format
@@ -276,9 +364,12 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
       transactions: [newEntry, ...state.transactions],
       activeModal: null,
     }));
+    replaceCustomerLedgerTransactions(newEntry);
   },
 
   updateTransaction: (id, data) => {
+    const existingEntry = get().transactions.find((tx) => tx.id === id);
+    const updatedEntry = existingEntry ? { ...existingEntry, ...data } : null;
     set((state) => ({
       transactions: state.transactions.map((tx) =>
         tx.id === id ? { ...tx, ...data } : tx
@@ -286,9 +377,14 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
       activeModal: null,
       editingTransaction: null,
     }));
+    if (updatedEntry) replaceCustomerLedgerTransactions(updatedEntry);
   },
 
   deleteTransaction: (id) => {
+    useCustomerDetailsStore.getState().replaceCashBookTransactions(
+      [id, `${id}_from`, `${id}_to`],
+      []
+    );
     set((state) => ({
       transactions: state.transactions.filter((tx) => tx.id !== id),
       activeModal: null,
