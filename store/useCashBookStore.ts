@@ -221,7 +221,7 @@ const toCustomerLedgerTransactions = (entry: CashBookEntry): CustomerTransaction
 };
 
 const replaceCustomerLedgerTransactions = (entry: CashBookEntry) => {
-  useCustomerDetailsStore.getState().replaceCashBookTransactions(
+  useCustomerDetailsStore.getState().replaceLinkedTransactions(
     [entry.id, `${entry.id}_from`, `${entry.id}_to`],
     toCustomerLedgerTransactions(entry)
   );
@@ -381,7 +381,7 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
   },
 
   deleteTransaction: (id) => {
-    useCustomerDetailsStore.getState().replaceCashBookTransactions(
+    useCustomerDetailsStore.getState().replaceLinkedTransactions(
       [id, `${id}_from`, `${id}_to`],
       []
     );

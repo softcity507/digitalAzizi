@@ -2,7 +2,9 @@
 
 import { create } from 'zustand';
 import { ExchangeCurrencyCode, ExchangeType, ExchangeDeskEntry, DoubleEntryLedgerImpact, ExchangeCalcMode } from '@/types/exchange';
+import { CurrencyCode, CustomerTransaction } from '@/types/customer';
 import { CUSTOMER_ACCOUNTS } from '@/data/customerData';
+import { useCustomerDetailsStore } from './useCustomerDetailsStore';
 
 export function computeDoubleEntryLedger(
   type: ExchangeType,
@@ -61,6 +63,44 @@ export function computeDoubleEntryLedger(
     };
   }
 }
+
+const syncCustomerLedger = (entry: ExchangeDeskEntry | null, id: string) => {
+  const transactions: CustomerTransaction[] = entry
+    ? [
+      {
+        id: `${entry.id}_give`,
+        customerId: entry.customerId,
+        title: `Exchange paid ${entry.giveAmount.toLocaleString()} ${entry.giveCurrency}`,
+        tag: 'Exchange',
+        category: 'exchange',
+        amount: entry.giveAmount,
+        currency: entry.giveCurrency as CurrencyCode,
+        isCredit: false,
+        date: entry.date,
+        refNo: entry.serialNo || entry.id,
+        notes: entry.memo,
+      },
+      {
+        id: `${entry.id}_get`,
+        customerId: entry.customerId,
+        title: `Exchange received ${entry.getAmount.toLocaleString()} ${entry.getCurrency}`,
+        tag: 'Exchange',
+        category: 'exchange',
+        amount: entry.getAmount,
+        currency: entry.getCurrency as CurrencyCode,
+        isCredit: true,
+        date: entry.date,
+        refNo: entry.serialNo || entry.id,
+        notes: entry.memo,
+      },
+    ]
+    : [];
+
+  useCustomerDetailsStore.getState().replaceLinkedTransactions(
+    [id, `${id}_give`, `${id}_get`],
+    transactions
+  );
+};
 
 import seedData from './AllJs.json';
 
@@ -326,6 +366,7 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
       exchanges: [newEntry, ...exchanges],
       notificationMessage: `Committed ${gAmt.toLocaleString()} ${giveCurrency} ${calcMode === 'multiply' ? '✖' : '➗'} ${rate} ➔ ${computedGetAmount.toLocaleString()} ${getCurrency}`,
     });
+    syncCustomerLedger(newEntry, newEntry.id);
 
     return true;
   },
@@ -334,35 +375,43 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
   closeEditModal: () => set({ editingTransaction: null }),
 
   updateTransaction: (id, updated) => {
-    set((state) => ({
-      exchanges: state.exchanges.map((ex) => {
-        if (ex.id !== id) return ex;
-        const gAmt = updated.giveAmount ?? ex.giveAmount;
-        const gCurr = updated.giveCurrency ?? ex.giveCurrency;
-        const rAmt = updated.exchangeRate ?? ex.exchangeRate;
-        const targetCurr = updated.getCurrency ?? ex.getCurrency;
-        const exType = updated.type ?? ex.type;
-        const mode = updated.calcMode ?? ex.calcMode ?? 'multiply';
-        const computedGetAmount = mode === 'multiply'
-          ? Math.round(gAmt * rAmt * 100) / 100
-          : Math.round((gAmt / rAmt) * 100) / 100;
-        const ledgerImpact = computeDoubleEntryLedger(exType, gAmt, gCurr, computedGetAmount, targetCurr);
+    const currentEntry = get().exchanges.find((entry) => entry.id === id);
+    if (!currentEntry) return;
 
-        return {
-          ...ex,
-          ...updated,
-          getAmount: computedGetAmount,
-          ledgerImpact,
-        };
-      }),
+    const giveAmount = updated.giveAmount ?? currentEntry.giveAmount;
+    const giveCurrency = updated.giveCurrency ?? currentEntry.giveCurrency;
+    const exchangeRate = updated.exchangeRate ?? currentEntry.exchangeRate;
+    const getCurrency = updated.getCurrency ?? currentEntry.getCurrency;
+    const type = updated.type ?? currentEntry.type;
+    const calcMode = updated.calcMode ?? currentEntry.calcMode ?? 'multiply';
+    const getAmount = calcMode === 'multiply'
+      ? Math.round(giveAmount * exchangeRate * 100) / 100
+      : Math.round((giveAmount / exchangeRate) * 100) / 100;
+    const updatedEntry: ExchangeDeskEntry = {
+      ...currentEntry,
+      ...updated,
+      giveAmount,
+      giveCurrency,
+      exchangeRate,
+      getCurrency,
+      type,
+      calcMode,
+      getAmount,
+      ledgerImpact: computeDoubleEntryLedger(type, giveAmount, giveCurrency, getAmount, getCurrency),
+    };
+
+    set((state) => ({
+      exchanges: state.exchanges.map((entry) => entry.id === id ? updatedEntry : entry),
       editingTransaction: null,
     }));
+    syncCustomerLedger(updatedEntry, id);
   },
 
   openDeleteModal: (id) => set({ deletingTransactionId: id }),
   closeDeleteModal: () => set({ deletingTransactionId: null }),
 
   deleteTransaction: (id) => {
+    syncCustomerLedger(null, id);
     set((state) => ({
       exchanges: state.exchanges.filter((ex) => ex.id !== id),
       deletingTransactionId: null,
