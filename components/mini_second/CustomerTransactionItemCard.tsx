@@ -17,15 +17,21 @@ export default function CustomerTransactionItemCard({ transaction }: ItemProps) 
     switch (transaction.category) {
       case 'cash_in':
         return {
-          iconBox: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
-          tagBadge: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
-          amountColor: 'text-emerald-400',
+          iconBox: 'bg-credit-subtle text-credit border-credit/20',
+          tagBadge: 'bg-credit-subtle text-credit border-credit/20',
+          amountColor: 'text-credit-text',
+        };
+      case 'cash_out':
+        return {
+          iconBox: 'bg-debit-subtle text-debit border-debit/20',
+          tagBadge: 'bg-debit-subtle text-debit border-debit/20',
+          amountColor: 'text-debit-text',
         };
       case 'exchange':
         return {
-          iconBox: 'bg-sky-500/15 text-sky-400 border-sky-500/20',
-          tagBadge: 'bg-sky-500/15 text-sky-400 border-sky-500/20',
-          amountColor: isCredit ? 'text-emerald-400' : 'text-rose-400',
+          iconBox: 'bg-exchange-subtle text-exchange border-exchange/20',
+          tagBadge: 'bg-exchange-subtle text-exchange border-exchange/20',
+          amountColor: isCredit ? 'text-credit-text' : 'text-debit-text',
         };
       case 'bank':
         return {
@@ -37,7 +43,7 @@ export default function CustomerTransactionItemCard({ transaction }: ItemProps) 
         return {
           iconBox: 'bg-surface-subtle text-slate-400 border-surface-border',
           tagBadge: 'bg-surface-subtle text-slate-400 border-surface-border',
-          amountColor: isCredit ? 'text-emerald-400' : 'text-rose-400',
+          amountColor: isCredit ? 'text-credit-text' : 'text-debit-text',
         };
     }
   };

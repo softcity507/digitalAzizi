@@ -65,6 +65,7 @@ module.exports = {
           border: 'var(--surface-border)',
           'border-subtle': 'var(--surface-border-subtle)',
         },
+        'modal-overlay': 'var(--modal-overlay)',
         brand: {
           DEFAULT: 'var(--brand)',
           hover: 'var(--brand-hover)',
@@ -123,6 +124,10 @@ module.exports = {
           800: '#991b1b',
           900: '#7f1d1d',
           950: '#450a0a',
+        },
+        exchange: {
+          DEFAULT: 'var(--exchange)',
+          subtle: 'var(--exchange-subtle)',
         },
 
         // Text & Content Semantic Colors

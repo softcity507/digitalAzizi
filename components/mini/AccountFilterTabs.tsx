@@ -25,22 +25,28 @@ export default function AccountFilterTabs({
   ];
 
   return (
-    <div className={`flex items-center justify-center gap-2 sm:gap-2.5 overflow-x-auto py-1 ${className}`}>
+    <div className={`flex flex-wrap items-center justify-center gap-2 py-1 ${className}`}>
       {tabs.map(tab => {
         const isActive = currentFilter === tab.id;
         return (
-          <button
+          <label
             key={tab.id}
-            type="button"
-            onClick={() => onSelect(tab.id)}
-            className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer active:scale-95 ${
+            className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer border ${
               isActive
-                ? 'bg-brand text-black shadow-sm font-bold'
-                : 'bg-surface hover:bg-surface-hover text-content-secondary hover:text-content-primary border border-surface-border'
+                ? 'bg-brand-subtle text-content-primary border-brand/40 font-bold'
+                : 'bg-surface hover:bg-surface-hover text-content-secondary hover:text-content-primary border-surface-border'
             }`}
           >
+            <input
+              type="radio"
+              name="account-filter"
+              value={tab.id}
+              checked={isActive}
+              onChange={() => onSelect(tab.id)}
+              className="h-4 w-4 accent-brand"
+            />
             {tab.label}
-          </button>
+          </label>
         );
       })}
     </div>

@@ -12,6 +12,7 @@
   --surface-active: #cbd5e1;
   --surface-border: #e2e8f0;
   --surface-border-subtle: #f1f5f9;
+  --modal-overlay: rgba(15, 23, 42, 0.60);
 
   --text-primary: #0f172a;
   --text-secondary: #475569;
@@ -39,6 +40,9 @@
   --debit-subtle: #fef2f2;
   --debit-foreground: #ffffff;
 
+  --exchange: #d97706;
+  --exchange-subtle: #fef3c7;
+
   /* Explicit #000 & #fff definitions */
   --color-black: #000000;
   --color-white: #ffffff;
@@ -58,6 +62,7 @@
   --surface-active: #163758;
   --surface-border: #1e3a5f;
   --surface-border-subtle: #142d48;
+  --modal-overlay: rgba(0, 0, 0, 0.72);
 
   --text-primary: #ffffff;
   --text-secondary: #94a3b8;
@@ -84,6 +89,9 @@
   --debit-hover: #f87171;
   --debit-subtle: rgba(248, 113, 113, 0.15);
   --debit-foreground: #000000;
+
+  --exchange: #facc15;
+  --exchange-subtle: rgba(250, 204, 21, 0.15);
 
   /* Explicit #000 & #fff definitions */
   --color-black: #000000;

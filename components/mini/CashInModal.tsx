@@ -64,21 +64,21 @@ export default function CashInModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-modal-overlay backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-surface border border-surface-border rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5">
         {/* Modal Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#34d399]/20 border border-[#34d399]/40 flex items-center justify-center text-[#34d399] font-bold">
+            <div className="w-8 h-8 rounded-xl bg-credit-subtle border border-credit/40 flex items-center justify-center text-credit font-bold">
               +
             </div>
-            <h2 className="text-lg font-bold text-white">{t('recordCashIn')}</h2>
+            <h2 className="text-lg font-bold text-content-primary">{t('recordCashIn')}</h2>
           </div>
           <button
             type="button"
             onClick={closeModal}
             aria-label={t('cancel')}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-surface-hover transition-colors"
+            className="p-1 rounded-lg text-content-muted hover:text-content-primary hover:bg-surface-hover transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -90,7 +90,7 @@ export default function CashInModal() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Customer Name */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">
+            <label className="block text-xs font-semibold text-content-muted mb-1">
               {t('customerName')}
             </label>
             <input
@@ -112,7 +112,7 @@ export default function CashInModal() {
           {/* Amount & Currency */}
           <div className="grid grid-cols-3 gap-2">
             <div className="col-span-2">
-              <label className="block text-xs font-semibold text-slate-400 mb-1">
+              <label className="block text-xs font-semibold text-content-muted mb-1">
                 {t('amountReceived')}
               </label>
               <input
@@ -126,7 +126,7 @@ export default function CashInModal() {
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">
+              <label className="block text-xs font-semibold text-content-muted mb-1">
                 {t('currency')}
               </label>
               <select
@@ -145,7 +145,7 @@ export default function CashInModal() {
           {/* Date & Serial */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">
+              <label className="block text-xs font-semibold text-content-muted mb-1">
                 {t('date')}
               </label>
               <input
@@ -157,7 +157,7 @@ export default function CashInModal() {
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">
+              <label className="block text-xs font-semibold text-content-muted mb-1">
                 {t('serialVoucher')}
               </label>
               <input
@@ -171,7 +171,7 @@ export default function CashInModal() {
 
           {/* Memo / Description */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">
+            <label className="block text-xs font-semibold text-content-muted mb-1">
               {t('memo')}
             </label>
             <input
@@ -188,13 +188,13 @@ export default function CashInModal() {
             <button
               type="button"
               onClick={closeModal}
-              className="w-1/2 h-11 rounded-xl bg-surface hover:bg-surface-hover border border-surface-border text-slate-300 font-semibold text-sm transition-colors cursor-pointer"
+              className="w-1/2 h-11 rounded-xl bg-surface hover:bg-surface-hover border border-surface-border text-content-secondary font-semibold text-sm transition-colors cursor-pointer"
             >
               {t('cancel')}
             </button>
             <button
               type="submit"
-              className="w-1/2 h-11 rounded-xl bg-[#34d399] hover:bg-[#10b981] text-black font-bold text-sm transition-all shadow-glow-credit cursor-pointer"
+              className="w-1/2 h-11 rounded-xl bg-credit-btn hover:bg-credit-hover text-credit-foreground font-bold text-sm transition-all shadow-glow-credit cursor-pointer"
             >
               {t('confirmCashIn')}
             </button>
