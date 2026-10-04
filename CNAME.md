@@ -26,6 +26,7 @@ digitalazizi/
 │   │   ├── CustomerDetailsContainer.tsx    # Customer details & statement container
 │   │   ├── CustomerPdfExport.tsx           # Customer ledger PDF generator & exporter
 │   │   ├── Footer.tsx                      # Application-wide footer with links & dynamic date
+│   │   ├── MaxLoader.tsx                   # Full page / global store loading overlay
 │   │   └── SettingsHubContainer.tsx        # System settings & configuration container
 │   │
 │   ├── mini/                               # Primary UI atoms, modals & widgets
@@ -86,6 +87,7 @@ digitalazizi/
 │       ├── CustomerTransactionsFeed.tsx    # Customer statement transactions feed
 │       ├── DeleteCustomerTxModal.tsx       # Delete customer transaction dialog
 │       ├── EditCustomerTxModal.tsx         # Edit customer transaction dialog
+│       ├── MiniLoader.tsx                  # Button, inline & small widget loader
 │       ├── PreferencesSection.tsx          # System preferences (Theme, Sound, Lang)
 │       ├── RegisteredUsersSection.tsx      # Authorized users & permission management
 │       ├── SettingsHeader.tsx              # Settings subpage title header
