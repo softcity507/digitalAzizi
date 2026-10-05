@@ -127,6 +127,10 @@ digitalazizi/
 │   │   ├── layout.tsx                      # Root HTML layout & fonts setup
 │   │   └── page.tsx                        # Root redirect to default locale
 │   │
+│   ├── callapi/                            # Centralized API service functions
+│   │   ├── auth.ts                         # Google authentication & session callers
+│   │   └── index.ts                        # Central callapi export index
+│   │
 │   ├── data/                               # Static Data & Configurations
 │   │   ├── customerData.ts                 # Initial demo customer accounts & transactions
 │   │   └── navigation.ts                   # Navigation menu items & icons config
@@ -134,6 +138,12 @@ digitalazizi/
 │   ├── i18n/                               # Localization logic & middleware
 │   │   ├── languages.ts                    # Supported languages list & RTL metadata
 │   │   └── request.ts                      # next-intl request configuration
+│   │
+│   ├── lib/                                # Supabase client and shared backend utilities
+│   │   ├── supabase.ts                     # Server-side Supabase client (service role)
+│   │   └── supabaseClient.ts               # Browser-side Supabase client (anon)
+│   │
+│   ├── middleware.ts                       # Private route authentication guard (Google Cookies)
 │   │
 │   └── types/                              # TypeScript Domain Interfaces & Types
 │       ├── cashbook.ts                     # Cash Book transaction interfaces

@@ -19,24 +19,26 @@ export default function AuthCard({ className = '', onSuccess }: AuthCardProps) {
       {/* Title and Subtitle */}
       <div className="text-center space-y-1">
         <h2 className="text-lg sm:text-xl font-bold text-content-primary tracking-tight">
-          {t('signInTitle')}
+          {t('signInTitle') || 'Sign In to Exchange Portal'}
         </h2>
         <p className="text-xs sm:text-sm text-content-secondary">
-          {t('signInSubtitle')}
+          {t('signInSubtitle') || 'Single Sign-On enabled via Google Workspace'}
         </p>
       </div>
 
       {/* Google Login CTA */}
-      <GoogleLogin
-        label={t('signInGoogle')}
-        onSuccess={onSuccess}
-        redirectTo="/cash-book"
-      />
+      <div className="w-full pt-1">
+        <GoogleLogin
+          label={t('signInGoogle') || 'Sign In with Google (Gmail)'}
+          onSuccess={onSuccess}
+          redirectTo="/cash-book"
+        />
+      </div>
 
       {/* Legacy Password Retirment Notice */}
       <NoticeCard
-        title={t('legacyNoticeTitle')}
-        description={t('legacyNoticeDesc')}
+        title={t('legacyNoticeTitle') || 'Legacy password logins retired'}
+        description={t('legacyNoticeDesc') || 'Authorized dealers authenticate strictly via Google Authentication to prevent unauthorized tampering.'}
       />
     </div>
   );
