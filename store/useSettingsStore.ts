@@ -5,7 +5,72 @@ import { useCustomerDetailsStore } from './useCustomerDetailsStore';
 import { useExchangeDeskStore } from './useExchangeDeskStore';
 import { useCashBookStore } from './useCashBookStore';
 import { SupportedLocale } from '@/i18n/languages';
+import { supabaseClient } from '@/lib/supabaseClient';
 import seedData from './AllJs.json';
+
+interface BusinessRow {
+  id: number | string;
+  name: string | null;
+  subtitle: string | null;
+  description_locale: string | null;
+  is_active: boolean | null;
+  supported_currencies: string | string[] | null;
+}
+
+const DEFAULT_BUSINESS_CURRENCIES: CurrencyCode[] = ['AFN', 'USD', 'PKR'];
+const VALID_BUSINESS_CURRENCIES = new Set<CurrencyCode>([
+  'AFN', 'USD', 'PKR', 'IRR', 'INR', 'AED', 'EUR', 'GBP', 'CNY', 'TRY',
+]);
+
+const parseBusinessCurrencies = (value: BusinessRow['supported_currencies']): CurrencyCode[] => {
+  if (Array.isArray(value)) {
+    const currencies = value.filter((currency): currency is CurrencyCode =>
+      VALID_BUSINESS_CURRENCIES.has(currency as CurrencyCode)
+    );
+    return currencies.length === 3 ? [...new Set(currencies)] : DEFAULT_BUSINESS_CURRENCIES;
+  }
+
+  if (typeof value !== 'string') return DEFAULT_BUSINESS_CURRENCIES;
+
+  let parsedValues: unknown;
+  try {
+    parsedValues = JSON.parse(value);
+  } catch {
+    let normalizedValue = value.trim().replaceAll("''", "'");
+    if (normalizedValue.startsWith('"') && normalizedValue.endsWith('"')) {
+      normalizedValue = normalizedValue.slice(1, -1);
+    }
+    if (normalizedValue.startsWith('{') && normalizedValue.endsWith('}')) {
+      normalizedValue = normalizedValue.slice(1, -1);
+    }
+    parsedValues = normalizedValue.split(',').map((currency) =>
+      currency.trim().replaceAll("'", '').replaceAll('"', '')
+    );
+  }
+
+  if (!Array.isArray(parsedValues)) return DEFAULT_BUSINESS_CURRENCIES;
+  const currencies = parsedValues.filter((currency): currency is CurrencyCode =>
+    typeof currency === 'string' && VALID_BUSINESS_CURRENCIES.has(currency as CurrencyCode)
+  );
+  const uniqueCurrencies = [...new Set(currencies)];
+  return uniqueCurrencies.length === 3 ? uniqueCurrencies : DEFAULT_BUSINESS_CURRENCIES;
+}
+
+const mapBusinessRow = (business: BusinessRow): BusinessProfile => ({
+  id: String(business.id),
+  name: business.name ?? 'My Business',
+  subtitle: business.subtitle ?? '',
+  descriptionLocale: (business.description_locale ?? 'en') as SupportedLocale,
+  isActive: Boolean(business.is_active),
+  supportedCurrencies: parseBusinessCurrencies(business.supported_currencies),
+});
+
+const getSignedInEmail = async (): Promise<string> => {
+  const { data, error } = await supabaseClient.auth.getUser();
+  const email = data.user?.email?.trim().toLowerCase();
+  if (error || !email) throw new Error('Sign in with Supabase to manage business profiles.');
+  return email;
+};
 
 const seedBusinesses = seedData[0].businesses;
 const jsonBusinesses: BusinessProfile[] = seedBusinesses.map((business) => ({
@@ -38,7 +103,9 @@ interface SettingsState {
   activeModal: SettingsModalType;
   editingBusiness: BusinessProfile | null;
 
-  setActiveBusiness: (id: string) => void;
+  setAdmin: (admin: AppAdminProfile) => void;
+  fetchBusinesses: () => Promise<void>;
+  setActiveBusiness: (id: string) => Promise<void>;
   getActiveCustomers: () => CustomerAccount[];
   setDefaultUser: (id: string) => void;
   addBusiness: (
@@ -46,7 +113,7 @@ interface SettingsState {
     subtitle: string,
     supportedCurrencies: CurrencyCode[],
     descriptionLocale?: SupportedLocale
-  ) => void;
+  ) => Promise<void>;
   addUser: (
     name: string,
     subtitle: string,
@@ -56,8 +123,8 @@ interface SettingsState {
     descriptionLocale?: SupportedLocale,
     notes?: string
   ) => void;
-  updateBusiness: (id: string, name: string, subtitle: string) => void;
-  deleteBusiness: (id: string) => void;
+  updateBusiness: (id: string, name: string, subtitle: string) => Promise<void>;
+  deleteBusiness: (id: string) => Promise<void>;
   openEditBusiness: (business: BusinessProfile) => void;
   triggerBackup: () => void;
   triggerRestore: () => void;
@@ -121,7 +188,39 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   activeModal: null,
   editingBusiness: null,
 
-  setActiveBusiness: (id) =>
+  setAdmin: (admin) => set({ admin }),
+
+  fetchBusinesses: async () => {
+    const ownerEmail = await getSignedInEmail();
+    const { data, error } = await supabaseClient
+      .from('businesses')
+      .select('id, name, subtitle, description_locale, is_active, supported_currencies')
+      .eq('owner_email', ownerEmail)
+      .order('created_at', { ascending: true });
+
+    if (error) throw new Error(error.message);
+    set({ businesses: (data ?? []).map((business) => mapBusinessRow(business as BusinessRow)) });
+  },
+
+  setActiveBusiness: async (id) => {
+    const currentBusiness = get().businesses.find((business) => business.id === id);
+    if (!currentBusiness || currentBusiness.isActive) return;
+    const ownerEmail = await getSignedInEmail();
+
+    const { error: clearError } = await supabaseClient
+      .from('businesses')
+      .update({ is_active: false })
+      .eq('owner_email', ownerEmail)
+      .eq('is_active', true);
+    if (clearError) throw new Error(clearError.message);
+
+    const { error } = await supabaseClient
+      .from('businesses')
+      .update({ is_active: true })
+      .eq('id', id)
+      .eq('owner_email', ownerEmail);
+    if (error) throw new Error(error.message);
+
     set((s) => {
       const updatedBusinesses = s.businesses.map((b) => ({ ...b, isActive: b.id === id }));
       // Sync customer details and exchange desk if there is a matching customer for this business
@@ -131,7 +230,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         useExchangeDeskStore.getState().setCustomerId(matchedCustomer.id);
       }
       return { businesses: updatedBusinesses };
-    }),
+    });
+  },
 
   getActiveCustomers: () => {
     const { businesses, customers } = get();
@@ -154,23 +254,27 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     useExchangeDeskStore.getState().setCustomerId(id);
   },
 
-  addBusiness: (name, subtitle, supportedCurrencies, descriptionLocale = 'en') => {
-    const baseId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'business';
-    const slugId = `${baseId}-${Date.now().toString(36)}`;
+  addBusiness: async (name, subtitle, supportedCurrencies, descriptionLocale = 'en') => {
     const currencies: CurrencyCode[] = [...new Set(supportedCurrencies)].slice(0, 3);
     if (currencies.length !== 3) return;
+    const ownerEmail = await getSignedInEmail();
 
-    const newBiz: BusinessProfile = {
-      id: slugId,
-      name,
-      subtitle,
-      descriptionLocale,
-      isActive: get().businesses.length === 0,
-      supportedCurrencies: currencies,
-    };
+    const { data, error } = await supabaseClient
+      .from('businesses')
+      .insert({
+        owner_email: ownerEmail,
+        name,
+        subtitle,
+        description_locale: descriptionLocale,
+        is_active: get().businesses.length === 0,
+        supported_currencies: currencies.join(', '),
+      })
+      .select('id, name, subtitle, description_locale, is_active, supported_currencies')
+      .single();
+    if (error) throw new Error(error.message);
 
     set((s) => ({
-      businesses: [...s.businesses, newBiz],
+      businesses: [...s.businesses, mapBusinessRow(data as BusinessRow)],
     }));
   },
 
@@ -241,7 +345,15 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }));
   },
 
-  updateBusiness: (id, name, subtitle) => {
+  updateBusiness: async (id, name, subtitle) => {
+    const ownerEmail = await getSignedInEmail();
+    const { error } = await supabaseClient
+      .from('businesses')
+      .update({ name: name.trim(), subtitle: subtitle.trim() })
+      .eq('id', id)
+      .eq('owner_email', ownerEmail);
+    if (error) throw new Error(error.message);
+
     set((s) => ({
       businesses: s.businesses.map((b) =>
         b.id === id ? { ...b, name, subtitle } : b
@@ -257,7 +369,15 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }));
   },
 
-  deleteBusiness: (id) => {
+  deleteBusiness: async (id) => {
+    const ownerEmail = await getSignedInEmail();
+    const { error } = await supabaseClient
+      .from('businesses')
+      .delete()
+      .eq('id', id)
+      .eq('owner_email', ownerEmail);
+    if (error) throw new Error(error.message);
+
     set((s) => {
       const nextBusinesses = s.businesses.filter((b) => b.id !== id);
       const nextUsers = s.users.filter((u) => u.id !== id);

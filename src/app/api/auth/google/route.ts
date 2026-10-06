@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { ensureDefaultBusiness } from '@/lib/ensureDefaultBusiness';
 import { AppUser, GoogleLoginPayload, UserRole } from '@/types/auth';
 
 const ADMIN_EMAIL = (
@@ -70,6 +71,7 @@ export async function POST(req: NextRequest) {
         userData.role = (data.role as UserRole) || userData.role;
         userData.subscription_days = String(data.subscription_days || userData.subscription_days);
         userData.subscription_expires_at = data.subscription_expires_at || userData.subscription_expires_at;
+        await ensureDefaultBusiness(email, name);
       }
     } catch (dbError) {
       console.error('Supabase exception:', dbError);

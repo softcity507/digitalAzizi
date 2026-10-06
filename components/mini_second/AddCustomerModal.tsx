@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useCreateBussines } from '@/store/useCreateBussines';
 
 export default function AddCustomerModal() {
   const t = useTranslations('Settings');
+  const [databaseError, setDatabaseError] = useState<string | null>(null);
   const { activeModal, closeModal } = useSettingsStore();
   const {
     name,
@@ -26,11 +28,14 @@ export default function AddCustomerModal() {
     closeModal();
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = createBusiness();
-    if (success) {
-      closeModal();
+    setDatabaseError(null);
+    try {
+      const success = await createBusiness();
+      if (success) closeModal();
+    } catch (error) {
+      setDatabaseError(error instanceof Error ? error.message : 'Unable to create business.');
     }
   };
 
@@ -49,6 +54,7 @@ export default function AddCustomerModal() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3.5">
+          {databaseError && <p role="alert" className="text-xs text-red-400">{databaseError}</p>}
           {/* Business Name */}
           <div>
             <label className="block text-xs font-semibold text-content-muted mb-1">{t('businessName')}</label>
@@ -132,4 +138,4 @@ export default function AddCustomerModal() {
       </div>
     </div>
   );
-}
+}

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { supabase as adminDb } from '@/lib/supabase';
+import { ensureDefaultBusiness } from '@/lib/ensureDefaultBusiness';
 import { UserRole } from '@/types/auth';
 
 const ADMIN_EMAIL = (
@@ -90,6 +91,12 @@ export async function GET(request: NextRequest) {
             },
             { onConflict: 'email' }
           );
+
+        try {
+          await ensureDefaultBusiness(email, name);
+        } catch (businessError) {
+          console.error('Default business creation error:', businessError);
+        }
 
         const response = NextResponse.redirect(`${origin}${next}`);
         response.cookies.set('auth_user_email', email, {

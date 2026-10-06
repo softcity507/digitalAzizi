@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { Pencil, Trash2, Check, X, ArrowRightLeft, AlertTriangle, Plus } from 'lucide-react';
@@ -22,7 +22,7 @@ const AVAILABLE_CURRENCIES: CurrencyCode[] = [
 
 export default function BusinessProfilesSection() {
   const t = useTranslations('Settings');
-  const { businesses, customers, setActiveBusiness, addBusiness, updateBusiness, deleteBusiness } = useSettingsStore();
+  const { businesses, customers, fetchBusinesses, setActiveBusiness, addBusiness, updateBusiness, deleteBusiness } = useSettingsStore();
 
   // State for adding a new business
   const [isAdding, setIsAdding] = useState(false);
@@ -37,6 +37,20 @@ export default function BusinessProfilesSection() {
 
   // Local state for delete confirmation modal
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [databaseError, setDatabaseError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isCurrent = true;
+    fetchBusinesses().catch((error: unknown) => {
+      if (isCurrent) {
+        setDatabaseError(error instanceof Error ? error.message : 'Unable to load business profiles.');
+      }
+    });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [fetchBusinesses]);
 
   const toggleNewCurrency = (curr: CurrencyCode) => {
     setNewCurrencies((prev) => {
@@ -47,14 +61,19 @@ export default function BusinessProfilesSection() {
     });
   };
 
-  const handleCreateBusiness = (e: React.FormEvent) => {
+  const handleCreateBusiness = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName.trim()) return;
-    addBusiness(newName.trim(), newSubtitle.trim(), newCurrencies);
-    setNewName('');
-    setNewSubtitle('');
-    setNewCurrencies(['AFN', 'USD', 'PKR']);
-    setIsAdding(false);
+    setDatabaseError(null);
+    try {
+      await addBusiness(newName.trim(), newSubtitle.trim(), newCurrencies);
+      setNewName('');
+      setNewSubtitle('');
+      setNewCurrencies(['AFN', 'USD', 'PKR']);
+      setIsAdding(false);
+    } catch (error) {
+      setDatabaseError(error instanceof Error ? error.message : 'Unable to create business profile.');
+    }
   };
 
   const handleStartEdit = (b: { id: string; name: string; subtitle: string }) => {
@@ -63,20 +82,39 @@ export default function BusinessProfilesSection() {
     setEditSubtitle(b.subtitle);
   };
 
-  const handleSaveEdit = (id: string) => {
+  const handleSaveEdit = async (id: string) => {
     if (!editName.trim()) return;
-    updateBusiness(id, editName, editSubtitle);
-    setEditingId(null);
+    setDatabaseError(null);
+    try {
+      await updateBusiness(id, editName, editSubtitle);
+      setEditingId(null);
+    } catch (error) {
+      setDatabaseError(error instanceof Error ? error.message : 'Unable to update business profile.');
+    }
   };
 
   const handleCancelEdit = () => {
     setEditingId(null);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deleteId) {
-      deleteBusiness(deleteId);
-      setDeleteId(null);
+      setDatabaseError(null);
+      try {
+        await deleteBusiness(deleteId);
+        setDeleteId(null);
+      } catch (error) {
+        setDatabaseError(error instanceof Error ? error.message : 'Unable to delete business profile.');
+      }
+    }
+  };
+
+  const handleSetActive = async (id: string) => {
+    setDatabaseError(null);
+    try {
+      await setActiveBusiness(id);
+    } catch (error) {
+      setDatabaseError(error instanceof Error ? error.message : 'Unable to activate business profile.');
     }
   };
 
@@ -102,6 +140,12 @@ export default function BusinessProfilesSection() {
           <span>{isAdding ? t('cancel') : 'Add Business'}</span>
         </button>
       </div>
+
+      {databaseError && (
+        <p role="alert" className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-400">
+          {databaseError}
+        </p>
+      )}
 
       {/* Add New Business Inline Card */}
       {isAdding && (
@@ -283,7 +327,7 @@ export default function BusinessProfilesSection() {
                       {!b.isActive ? (
                         <button
                           type="button"
-                          onClick={() => setActiveBusiness(b.id)}
+                          onClick={() => void handleSetActive(b.id)}
                           title="Set as Default Business"
                           className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface-subtle hover:bg-emerald-500/15 hover:text-emerald-400 hover:border-emerald-500/30 border border-surface-border text-content-secondary text-xs font-semibold transition-colors cursor-pointer"
                         >

@@ -44,7 +44,7 @@ export default function ClientNameCard() {
       setCustomerId(urlParamId);
       const targetCustomer = allCustomers.find((c) => c.id === urlParamId);
       if (targetCustomer?.businessId && targetCustomer.businessId !== activeBusiness?.id) {
-        setActiveBusiness(targetCustomer.businessId);
+        void setActiveBusiness(targetCustomer.businessId).catch((error: unknown) => console.error(error));
       }
     }
   }, [urlParamId, selectedCustomerId, allCustomers, activeBusiness, setSelectedCustomerId, setDefaultUser, setCustomerId, setActiveBusiness]);
@@ -55,7 +55,7 @@ export default function ClientNameCard() {
     setCustomerId(newId);
     const targetCustomer = allCustomers.find((c) => c.id === newId);
     if (targetCustomer?.businessId && targetCustomer.businessId !== activeBusiness?.id) {
-      setActiveBusiness(targetCustomer.businessId);
+      void setActiveBusiness(targetCustomer.businessId).catch((error: unknown) => console.error(error));
     }
     router.replace(`/${locale}/details?id=${newId}`);
   };

@@ -28,7 +28,7 @@ interface CreateBusinessState {
   setSelectedCurrencies: (currencies: CurrencyCode[]) => void;
   toggleCurrency: (currency: CurrencyCode) => void;
   resetForm: () => void;
-  createBusiness: () => boolean;
+  createBusiness: () => Promise<boolean>;
 }
 
 export const useCreateBussines = create<CreateBusinessState>((set, get) => ({
@@ -64,7 +64,7 @@ export const useCreateBussines = create<CreateBusinessState>((set, get) => ({
       selectedCurrencies: [...DEFAULT_CURRENCIES],
     }),
 
-  createBusiness: () => {
+  createBusiness: async () => {
     const { name, details, selectedCurrencies } = get();
     const trimmedName = name.trim();
     if (!trimmedName || selectedCurrencies.length !== 3) {
@@ -73,7 +73,7 @@ export const useCreateBussines = create<CreateBusinessState>((set, get) => ({
 
     const trimmedDetails = details.trim() || 'Business Account';
 
-    useSettingsStore.getState().addBusiness(
+    await useSettingsStore.getState().addBusiness(
       trimmedName,
       trimmedDetails,
       selectedCurrencies

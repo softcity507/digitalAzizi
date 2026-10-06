@@ -33,7 +33,7 @@ export default function CustomerDetailsContainer() {
           setCustomerId(targetCustomer.id);
         }
         if (targetCustomer.businessId && targetCustomer.businessId !== activeBusiness?.id) {
-          setActiveBusiness(targetCustomer.businessId);
+          void setActiveBusiness(targetCustomer.businessId).catch((error: unknown) => console.error(error));
         }
       }
     } else if (!selectedCustomerId && customers.length > 0) {

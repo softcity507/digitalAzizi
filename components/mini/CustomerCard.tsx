@@ -23,7 +23,7 @@ export default function CustomerCard({
     useSettingsStore.getState().setDefaultUser(customer.id);
     useExchangeDeskStore.getState().setCustomerId(customer.id);
     if (customer.businessId) {
-      useSettingsStore.getState().setActiveBusiness(customer.businessId);
+      void useSettingsStore.getState().setActiveBusiness(customer.businessId).catch((error: unknown) => console.error(error));
     }
   };
 
