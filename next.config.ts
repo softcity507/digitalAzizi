@@ -3,7 +3,7 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const nextConfig: NextConfig = {
     trailingSlash: true,
-    output: 'standalone'
+    output: process.env.VERCEL ? undefined : 'standalone'
 };
 
 const withNextIntl = createNextIntlPlugin();
