@@ -28,7 +28,6 @@ export default function BusinessProfilesSection() {
   const [newName, setNewName] = useState('');
   const [newSubtitle, setNewSubtitle] = useState('');
   const [newCurrencies, setNewCurrencies] = useState<CurrencyCode[]>(['AFN', 'USD', 'PKR']);
-
   // Local state for inline editing
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
@@ -65,7 +64,9 @@ export default function BusinessProfilesSection() {
     if (!newName.trim()) return;
     setDatabaseError(null);
     try {
-      await addBusiness(newName.trim(), newSubtitle.trim(), newCurrencies);
+      const res= await addBusiness(newName.trim(), newSubtitle.trim(), newCurrencies);
+
+      console.log("res.data",res)
       setNewName('');
       setNewSubtitle('');
       setNewCurrencies(['AFN', 'USD', 'PKR']);

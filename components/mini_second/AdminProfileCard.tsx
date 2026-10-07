@@ -24,6 +24,7 @@ export default function AdminProfileCard() {
           const user = response.user;
           const isAdmin = user.role === 'admin';
           setAdmin({
+            id: user.id,
             name: user.name || user.email.split('@')[0],
             title: isAdmin ? 'System Manager' : 'Business User',
             email: user.email,

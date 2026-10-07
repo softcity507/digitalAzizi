@@ -27,11 +27,37 @@ create table if not exists public.businesses (
   description_locale text default 'en',
   is_active boolean default false,
   supported_currencies text not null default 'AFN, USD, PKR',
-  name text
+  name text,
+  user_id uuid not null
 );
 
 alter table public.businesses add column if not exists updated_at timestamptz not null default now();
 alter table public.businesses add column if not exists owner_email text;
+alter table public.businesses add column if not exists user_id uuid;
+
+update public.businesses as business
+set user_id = app_user.id
+from public.users as app_user
+where business.user_id is null
+  and lower(app_user.email) = lower(business.owner_email);
+
+alter table public.businesses alter column user_id set not null;
+
+create or replace function public.current_app_user_id()
+returns uuid
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select app_user.id
+  from public.users as app_user
+  where lower(app_user.email) = lower((select auth.jwt() ->> 'email'))
+  limit 1;
+$$;
+
+revoke all on function public.current_app_user_id() from public;
+grant execute on function public.current_app_user_id() to authenticated;
 
 create index if not exists businesses_owner_email_idx
   on public.businesses (owner_email);
@@ -58,25 +84,36 @@ create trigger businesses_updated_at
 alter table public.businesses enable row level security;
 grant select, insert, update, delete on public.businesses to authenticated;
 
-drop policy if exists businesses_select_own on public.businesses;
+do $$
+declare
+  existing_policy record;
+begin
+  for existing_policy in
+    select policyname
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'businesses'
+  loop
+    execute format('drop policy %I on public.businesses', existing_policy.policyname);
+  end loop;
+end;
+$$;
+
 create policy businesses_select_own
   on public.businesses for select to authenticated
-  using (lower(owner_email) = lower((select auth.jwt() ->> 'email')));
+  using (user_id = (select public.current_app_user_id()));
 
-drop policy if exists businesses_insert_own on public.businesses;
 create policy businesses_insert_own
   on public.businesses for insert to authenticated
-  with check (lower(owner_email) = lower((select auth.jwt() ->> 'email')));
+  with check (user_id = (select public.current_app_user_id()));
 
-drop policy if exists businesses_update_own on public.businesses;
 create policy businesses_update_own
   on public.businesses for update to authenticated
-  using (lower(owner_email) = lower((select auth.jwt() ->> 'email')))
-  with check (lower(owner_email) = lower((select auth.jwt() ->> 'email')));
+  using (user_id = (select public.current_app_user_id()))
+  with check (user_id = (select public.current_app_user_id()));
 
-drop policy if exists businesses_delete_own on public.businesses;
 create policy businesses_delete_own
   on public.businesses for delete to authenticated
-  using (lower(owner_email) = lower((select auth.jwt() ->> 'email')));
+  using (user_id = (select public.current_app_user_id()));
 
 notify pgrst, 'reload schema';

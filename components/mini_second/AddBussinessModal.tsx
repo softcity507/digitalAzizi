@@ -12,8 +12,7 @@ export default function AddBussinessModal() {
   const { activeModal, closeModal, addUser, businesses } = useSettingsStore();
   const activeBusiness = businesses.find((business) => business.isActive) || businesses[0];
   const businessCurrencies = activeBusiness?.supportedCurrencies ?? DEFAULT_CURRENCIES;
-
-  // Initial State: First Name, Last Name, Phone, Address
+   // Initial State: First Name, Last Name, Phone, Address
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');

@@ -13,6 +13,7 @@ export interface AppAdminProfile {
   title: string;
   email: string;
   badge: string;
+  id: string;
 }
 
 export interface RegisteredUser {

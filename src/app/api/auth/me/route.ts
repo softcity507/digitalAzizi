@@ -27,8 +27,8 @@ export async function GET(req: NextRequest) {
       const { data } = await supabase
         .from('users')
         .select('*')
-        .eq('email', email)
-        .single();
+        .ilike('email', email)
+        .maybeSingle();
 
       if (data) {
         user = {
