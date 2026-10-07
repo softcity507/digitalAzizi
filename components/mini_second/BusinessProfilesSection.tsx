@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { Pencil, Trash2, Check, X, ArrowRightLeft, AlertTriangle, Plus } from 'lucide-react';
-import { LANGUAGES } from '@/i18n/languages';
 import { CurrencyCode } from '@/types/customer';
 
 const AVAILABLE_CURRENCIES: CurrencyCode[] = [
@@ -289,11 +288,6 @@ export default function BusinessProfilesSection() {
                         )}
                       </div>
                       <p className="text-xs text-content-muted mt-0.5">{b.subtitle}</p>
-                      {b.descriptionLocale && (
-                        <p className="text-[11px] text-content-muted mt-1">
-                          Description language: {LANGUAGES.find((language) => language.code === b.descriptionLocale)?.nativeName ?? b.descriptionLocale}
-                        </p>
-                      )}
                     </div>
                   )}
                 </div>

@@ -19,7 +19,6 @@ export async function ensureDefaultBusiness(email: string, displayName: string) 
     owner_email: ownerEmail,
     name: `${businessName}'s Business`,
     subtitle: 'Default business',
-    description_locale: 'en',
     is_active: true,
     supported_currencies: 'AFN, USD, PKR',
   });

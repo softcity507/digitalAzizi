@@ -4,7 +4,7 @@ import { CustomerAccount, CurrencyCode } from '@/types/customer';
 import { useCustomerDetailsStore } from './useCustomerDetailsStore';
 import { useExchangeDeskStore } from './useExchangeDeskStore';
 import { useCashBookStore } from './useCashBookStore';
-import { SupportedLocale } from '@/i18n/languages';
+import type { SupportedLocale } from '@/i18n/languages';
 import { supabaseClient } from '@/lib/supabaseClient';
 import seedData from './AllJs.json';
 
@@ -12,9 +12,9 @@ interface BusinessRow {
   id: number | string;
   name: string | null;
   subtitle: string | null;
-  description_locale: string | null;
   is_active: boolean | null;
   supported_currencies: string | string[] | null;
+  owner_email?: string | null;
 }
 
 const DEFAULT_BUSINESS_CURRENCIES: CurrencyCode[] = ['AFN', 'USD', 'PKR'];
@@ -60,15 +60,18 @@ const mapBusinessRow = (business: BusinessRow): BusinessProfile => ({
   id: String(business.id),
   name: business.name ?? 'My Business',
   subtitle: business.subtitle ?? '',
-  descriptionLocale: (business.description_locale ?? 'en') as SupportedLocale,
   isActive: Boolean(business.is_active),
   supportedCurrencies: parseBusinessCurrencies(business.supported_currencies),
 });
 
 const getSignedInEmail = async (): Promise<string> => {
   const { data, error } = await supabaseClient.auth.getUser();
-  const email = data.user?.email?.trim().toLowerCase();
-  if (error || !email) throw new Error('Sign in with Supabase to manage business profiles.');
+  const email = data.user?.email?.trim().toLowerCase() ?? null;
+
+  if (error || !email) {
+    throw new Error('Sign in with Supabase to manage business profiles.');
+  }
+
   return email;
 };
 
@@ -111,8 +114,7 @@ interface SettingsState {
   addBusiness: (
     name: string,
     subtitle: string,
-    supportedCurrencies: CurrencyCode[],
-    descriptionLocale?: SupportedLocale
+    supportedCurrencies: CurrencyCode[]
   ) => Promise<void>;
   addUser: (
     name: string,
@@ -194,7 +196,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     const ownerEmail = await getSignedInEmail();
     const { data, error } = await supabaseClient
       .from('businesses')
-      .select('id, name, subtitle, description_locale, is_active, supported_currencies')
+      .select('id, name, subtitle, is_active, supported_currencies, owner_email')
       .eq('owner_email', ownerEmail)
       .order('created_at', { ascending: true });
 
@@ -254,22 +256,23 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     useExchangeDeskStore.getState().setCustomerId(id);
   },
 
-  addBusiness: async (name, subtitle, supportedCurrencies, descriptionLocale = 'en') => {
+  addBusiness: async (name, subtitle, supportedCurrencies) => {
     const currencies: CurrencyCode[] = [...new Set(supportedCurrencies)].slice(0, 3);
     if (currencies.length !== 3) return;
     const ownerEmail = await getSignedInEmail();
 
+    const payload: Record<string, string | number | boolean | null> = {
+      owner_email: ownerEmail,
+      name,
+      subtitle,
+      is_active: get().businesses.length === 0,
+      supported_currencies: currencies.join(', '),
+    };
+
     const { data, error } = await supabaseClient
       .from('businesses')
-      .insert({
-        owner_email: ownerEmail,
-        name,
-        subtitle,
-        description_locale: descriptionLocale,
-        is_active: get().businesses.length === 0,
-        supported_currencies: currencies.join(', '),
-      })
-      .select('id, name, subtitle, description_locale, is_active, supported_currencies')
+      .insert(payload)
+      .select('id, name, subtitle, is_active, supported_currencies, owner_email')
       .single();
     if (error) throw new Error(error.message);
 
