@@ -321,7 +321,7 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
     }
 
     const customerName = get().customerNames[customerId] || 'Counterparty';
-    
+
     // Multiply vs Divide Calculation:
     const computedGetAmount = calcMode === 'multiply'
       ? Math.round(gAmt * rate * 100) / 100

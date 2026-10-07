@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { BusinessProfile, AppAdminProfile, RegisteredUser, AuditLogItem } from '@/types/settings';
-import { CustomerAccount, CurrencyCode } from '@/types/customer';
+import { CustomerAccount, CurrencyCode, CustomerBalance } from '@/types/customer';
 import { useCustomerDetailsStore } from './useCustomerDetailsStore';
 import { useExchangeDeskStore } from './useExchangeDeskStore';
 import { useCashBookStore } from './useCashBookStore';
@@ -16,6 +16,55 @@ interface BusinessRow {
   owner_email?: string | null;
   user_id?: string | null;
 }
+
+interface CustomerRow {
+  id: number | string;
+  name: string;
+  phone: string | null;
+  address: string | null;
+  created_at?: string;
+  firstpayment: Record<string, number> | null;
+  description: string | null;
+  business_id: number | string | null;
+}
+
+const mapCustomerRow = (row: CustomerRow): { user: RegisteredUser; customer: CustomerAccount } => {
+  const slugId = String(row.id);
+  const subtitleParts = [row.description, row.phone, row.address].filter(Boolean);
+  const subtitle = subtitleParts.join(' • ') || 'Customer Account';
+
+  const firstpayment = (typeof row.firstpayment === 'object' && row.firstpayment !== null) ? row.firstpayment : {};
+  const currencyKeys = Object.keys(firstpayment);
+  const validCurrencies = currencyKeys.filter((c): c is CurrencyCode =>
+    VALID_BUSINESS_CURRENCIES.has(c as CurrencyCode)
+  );
+  const currenciesToUse: CurrencyCode[] = validCurrencies.length > 0 ? validCurrencies : ['AFN', 'USD', 'PKR'];
+
+  const balances: CustomerBalance[] = currenciesToUse.map((currency) => ({
+    currency,
+    amount: String(firstpayment[currency] ?? 0),
+    isCredit: true,
+  }));
+
+  const user: RegisteredUser = {
+    id: slugId,
+    name: row.name,
+    subtitle,
+    isDefault: false,
+    roleTag: 'Customer',
+  };
+
+  const customer: CustomerAccount = {
+    id: slugId,
+    name: row.name,
+    subtitle,
+    phone: row.phone || undefined,
+    businessId: row.business_id ? String(row.business_id) : undefined,
+    balances,
+  };
+
+  return { user, customer };
+};
 
 const DEFAULT_BUSINESS_CURRENCIES: CurrencyCode[] = ['AFN', 'USD', 'PKR'];
 const VALID_BUSINESS_CURRENCIES = new Set<CurrencyCode>([
@@ -138,6 +187,7 @@ interface SettingsState {
 
   setAdmin: (admin: AppAdminProfile) => void;
   fetchBusinesses: () => Promise<void>;
+  fetchCustomers: () => Promise<void>;
   setActiveBusiness: (id: string) => Promise<void>;
   getActiveCustomers: () => CustomerAccount[];
   setDefaultUser: (id: string) => void;
@@ -146,6 +196,7 @@ interface SettingsState {
     subtitle: string,
     supportedCurrencies: CurrencyCode[]
   ) => Promise<BusinessProfile>;
+
   addUser: (
     name: string,
     subtitle: string,
@@ -154,7 +205,15 @@ interface SettingsState {
     openingBalances?: Partial<Record<CurrencyCode, number>>,
     descriptionLocale?: SupportedLocale,
     notes?: string
-  ) => void;
+  ) => Promise<void>;
+  updateUser: (
+    id: string,
+    name: string,
+    phone?: string,
+    address?: string,
+    description?: string
+  ) => Promise<void>;
+  deleteUser: (id: string) => Promise<void>;
   updateBusiness: (
     id: string,
     name: string,
@@ -191,11 +250,14 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     const { id: userId, email: ownerEmail } = await getSignedInUser();
 
     // Query businesses where user_id matches, or fallback to owner_email
-    let { data, error } = await supabaseClient
+    const res = await supabaseClient
       .from('businesses')
       .select('id, name, subtitle, is_active, supported_currencies, owner_email, user_id')
       .eq('user_id', userId)
       .order('created_at', { ascending: true });
+
+    let data = res.data;
+    const error = res.error;
 
     if (!error && (!data || data.length === 0)) {
       const fallback = await supabaseClient
@@ -228,14 +290,37 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }
 
     set({ businesses: mapped });
+    await get().fetchCustomers();
+  },
 
-    // Sync active business with customer details and exchange desk
-    const activeBiz = mapped.find((b) => b.isActive) || mapped[0];
+  fetchCustomers: async () => {
+    const { data, error } = await supabaseClient
+      .from('customers')
+      .select('*')
+      .order('created_at', { ascending: true });
+
+    if (error) throw new Error(error.message);
+
+    const mappedUsers: RegisteredUser[] = [];
+    const mappedCustomers: CustomerAccount[] = [];
+
+    (data ?? []).forEach((row) => {
+      const { user, customer } = mapCustomerRow(row as CustomerRow);
+      mappedUsers.push(user);
+      mappedCustomers.push(customer);
+
+      const currencies = customer.balances.map((b) => b.currency);
+      useExchangeDeskStore.getState().registerCustomer(customer.id, customer.name, currencies);
+    });
+
+    set({ users: mappedUsers, customers: mappedCustomers });
+
+    const activeBiz = get().businesses.find((b) => b.isActive) || get().businesses[0];
     if (activeBiz) {
-      const matchedCustomer = get().customers.find((c) => c.businessId === activeBiz.id);
-      if (matchedCustomer) {
-        useCustomerDetailsStore.getState().setSelectedCustomerId(matchedCustomer.id);
-        useExchangeDeskStore.getState().setCustomerId(matchedCustomer.id);
+      const matched = mappedCustomers.find((c) => c.businessId === activeBiz.id) || mappedCustomers[0];
+      if (matched) {
+        useCustomerDetailsStore.getState().setSelectedCustomerId(matched.id);
+        useExchangeDeskStore.getState().setCustomerId(matched.id);
       }
     }
   },
@@ -343,15 +428,57 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     return createdBusiness;
   },
 
-  addUser: (name, subtitle, currencies, roleTag = 'Customer', openingBalances = {}, descriptionLocale = 'en', notes = '') => {
-    const baseId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'customer';
-    const slugId = `${baseId}-${Date.now().toString(36)}`;
+  addUser: async (
+    name,
+    subtitle,
+    currencies,
+    roleTag = 'Customer',
+    openingBalances = {},
+    descriptionLocale = 'en',
+    notes = ''
+  ) => {
+    await getSignedInUser();
+
+    const activeBiz = get().businesses.find((b) => b.isActive) || get().businesses[0];
+    if (!activeBiz) {
+      throw new Error('No active business found. Please create or select a business first.');
+    }
+    const currentBizId = Number(activeBiz.id);
+
+    const parts = subtitle.split('•').map((p) => p.trim());
+    const descriptionText = parts[0] || notes;
+    const phoneText = parts.find((p) => p.startsWith('+') || /^\d[\d\s-]*$/.test(p)) || null;
+    const addressText = parts.length > 2 ? parts[2] : null;
+
+    const customerPayload = {
+      business_id: currentBizId,
+      name: name.trim(),
+      phone: phoneText,
+      address: addressText,
+      description: descriptionText,
+      firstpayment: openingBalances,
+    };
+
+    const { data, error } = await supabaseClient
+      .from('customers')
+      .insert(customerPayload)
+      .select('*')
+      .single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    const slugId = String(data.id);
+
     useExchangeDeskStore.getState().registerCustomer(slugId, name, currencies);
 
-    const normalizedOpeningBalances = Object.fromEntries(currencies.map((currency) => {
-      const amount = openingBalances[currency] ?? 0;
-      return [currency, Number.isFinite(amount) && amount > 0 ? amount : 0];
-    })) as Partial<Record<CurrencyCode, number>>;
+    const normalizedOpeningBalances = Object.fromEntries(
+      currencies.map((currency) => {
+        const amount = openingBalances[currency] ?? 0;
+        return [currency, Number.isFinite(amount) && amount > 0 ? amount : 0];
+      })
+    ) as Partial<Record<CurrencyCode, number>>;
 
     for (const currency of currencies) {
       const amount = normalizedOpeningBalances[currency] ?? 0;
@@ -366,18 +493,16 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
           tag: 'Initial',
           category: 'initial',
           amount,
-          currency,
+          currency: currency as CurrencyCode,
           isCredit: true,
           date: new Date().toISOString().slice(0, 10),
           refNo: `OB-${Date.now()}-${currency}`,
-          notes: notes || subtitle || 'Initial opening balance',
+          notes: notes || descriptionText || 'Initial opening balance',
         });
       }
     }
 
-    const activeBiz = get().businesses.find((b) => b.isActive) || get().businesses[0];
-    const currentBizId = activeBiz?.id;
-    const businessCurrencies = activeBiz?.supportedCurrencies ?? currencies;
+    const businessCurrencies = activeBiz.supportedCurrencies ?? currencies;
     const validCurrencies = currencies.filter((currency) => businessCurrencies.includes(currency));
 
     set((s) => ({
@@ -399,14 +524,64 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
           name,
           subtitle,
           descriptionLocale,
-          businessId: currentBizId,
+          businessId: activeBiz.id,
           balances: [
-            ...validCurrencies.map((currency) => ({ currency, amount: String(normalizedOpeningBalances[currency] ?? 0), isCredit: true })),
+            ...validCurrencies.map((currency) => ({
+              currency,
+              amount: String(normalizedOpeningBalances[currency] ?? 0),
+              isCredit: true,
+            })),
           ],
         },
       ],
       activeModal: null,
       editingBusiness: null,
+    }));
+  },
+
+  updateUser: async (id, name, phone, address, description) => {
+    await getSignedInUser();
+    const numericId = Number(id);
+
+    const updatePayload: Record<string, unknown> = {
+      name: name.trim(),
+    };
+    if (phone !== undefined) updatePayload.phone = phone.trim() || null;
+    if (address !== undefined) updatePayload.address = address.trim() || null;
+    if (description !== undefined) updatePayload.description = description.trim() || null;
+
+    const { error } = await supabaseClient
+      .from('customers')
+      .update(updatePayload)
+      .eq('id', isNaN(numericId) ? id : numericId);
+
+    if (error) throw new Error(error.message);
+
+    const subtitleParts = [description, phone, address].filter(Boolean);
+    const subtitle = subtitleParts.join(' • ') || 'Customer Account';
+
+    set((s) => ({
+      users: s.users.map((u) => (u.id === id ? { ...u, name: name.trim(), subtitle } : u)),
+      customers: s.customers.map((c) =>
+        c.id === id ? { ...c, name: name.trim(), subtitle, phone: phone || c.phone } : c
+      ),
+    }));
+  },
+
+  deleteUser: async (id) => {
+    await getSignedInUser();
+    const numericId = Number(id);
+
+    const { error } = await supabaseClient
+      .from('customers')
+      .delete()
+      .eq('id', isNaN(numericId) ? id : numericId);
+
+    if (error) throw new Error(error.message);
+
+    set((s) => ({
+      users: s.users.filter((u) => u.id !== id),
+      customers: s.customers.filter((c) => c.id !== id),
     }));
   },
 
@@ -468,7 +643,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       const nextUsers = s.users.filter((u) => u.id !== id);
       const nextCustomers = s.customers.filter((c) => c.businessId !== id);
 
-      // If active business deleted, set first available as active
       const hasActive = nextBusinesses.some((b) => b.isActive);
       if (!hasActive && nextBusinesses.length > 0) {
         nextBusinesses[0].isActive = true;
@@ -479,7 +653,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
           .then();
       }
 
-      // If default user deleted, set first available as default
       const hasDefault = nextUsers.some((u) => u.isDefault);
       if (!hasDefault && nextUsers.length > 0) {
         nextUsers[0].isDefault = true;
