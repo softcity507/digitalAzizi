@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSettingsStore } from '@/store/useSettingsStore';
-import { Pencil, Trash2, Check, X, ArrowRightLeft, AlertTriangle, Plus } from 'lucide-react';
+import { Pencil, Trash2, Check, X, ArrowRightLeft, AlertTriangle, Plus, Loader2 } from 'lucide-react';
 import { CurrencyCode } from '@/types/customer';
 
 const AVAILABLE_CURRENCIES: CurrencyCode[] = [
@@ -25,6 +25,7 @@ export default function BusinessProfilesSection() {
 
   // State for adding a new business
   const [isAdding, setIsAdding] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [newName, setNewName] = useState('');
   const [newSubtitle, setNewSubtitle] = useState('');
   const [newCurrencies, setNewCurrencies] = useState<CurrencyCode[]>(['AFN', 'USD', 'PKR']);
@@ -61,18 +62,21 @@ export default function BusinessProfilesSection() {
 
   const handleCreateBusiness = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newName.trim()) return;
+    if (!newName.trim() || isCreating) return;
+    setIsCreating(true);
     setDatabaseError(null);
     try {
-      const res= await addBusiness(newName.trim(), newSubtitle.trim(), newCurrencies);
+      const res = await addBusiness(newName.trim(), newSubtitle.trim(), newCurrencies);
 
-      console.log("res.data",res)
+      console.log("res.data", res)
       setNewName('');
       setNewSubtitle('');
       setNewCurrencies(['AFN', 'USD', 'PKR']);
       setIsAdding(false);
     } catch (error) {
       setDatabaseError(error instanceof Error ? error.message : 'Unable to create business profile.');
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -206,11 +210,10 @@ export default function BusinessProfilesSection() {
                       type="button"
                       key={curr}
                       onClick={() => toggleNewCurrency(curr)}
-                      className={`py-1.5 px-2 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
-                        isSelected
+                      className={`py-1.5 px-2 rounded-lg text-xs font-bold border transition-all cursor-pointer ${isSelected
                           ? 'bg-sky-400 text-slate-950 border-sky-400 font-extrabold shadow-sm scale-[1.02]'
                           : 'bg-surface-subtle text-content-muted border-surface-border hover:text-content-primary'
-                      }`}
+                        }`}
                     >
                       {curr}
                     </button>
@@ -224,16 +227,24 @@ export default function BusinessProfilesSection() {
             <button
               type="button"
               onClick={() => setIsAdding(false)}
-              className="px-3 py-1.5 rounded-xl bg-surface-subtle hover:bg-surface-hover border border-surface-border text-xs font-semibold text-content-muted transition-colors cursor-pointer"
+              disabled={isCreating}
+              className="px-3 py-1.5 rounded-xl bg-surface-subtle hover:bg-surface-hover border border-surface-border text-xs font-semibold text-content-muted transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {t('cancel')}
             </button>
             <button
               type="submit"
-              disabled={!newName.trim() || newCurrencies.length !== 3}
-              className="px-4 py-1.5 rounded-xl bg-sky-400 hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold text-slate-950 shadow-sm transition-all cursor-pointer"
+              disabled={isCreating || !newName.trim() || newCurrencies.length !== 3}
+              className="px-4 py-1.5 rounded-xl bg-sky-400 hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold text-slate-950 shadow-sm transition-all cursor-pointer flex items-center gap-1.5"
             >
-              {t('save')}
+              {isCreating ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>{t('saving') || 'Saving...'}</span>
+                </>
+              ) : (
+                t('save')
+              )}
             </button>
           </div>
         </form>
@@ -247,9 +258,8 @@ export default function BusinessProfilesSection() {
           return (
             <div
               key={b.id}
-              className={`w-full bg-surface border rounded-2xl p-4 sm:p-5 space-y-3 shadow-sm transition-all ${
-                b.isActive ? 'border-emerald-500/40 ring-1 ring-emerald-500/20' : 'border-surface-border'
-              }`}
+              className={`w-full bg-surface border rounded-2xl p-4 sm:p-5 space-y-3 shadow-sm transition-all ${b.isActive ? 'border-emerald-500/40 ring-1 ring-emerald-500/20' : 'border-surface-border'
+                }`}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
@@ -294,7 +304,7 @@ export default function BusinessProfilesSection() {
                 </div>
 
                 {/* Icon Action Buttons */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 ">
                   {isEditing ? (
                     <>
                       {/* Save Button */}
