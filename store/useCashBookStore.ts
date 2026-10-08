@@ -1,146 +1,12 @@
-import { create } from 'zustand';
+﻿import { create } from 'zustand';
 import { CashBookEntry, CurrencyCode, TransactionType } from '@/types/cashbook';
 import { CustomerTransaction } from '@/types/customer';
 import { useSettingsStore } from './useSettingsStore';
 import { useCustomerDetailsStore } from './useCustomerDetailsStore';
-import seedData from './AllJs.json';
 import { supabaseClient } from '@/lib/supabaseClient';
 
 export type CurrencyFilterType = 'ALL' | CurrencyCode;
 export type ModalType = 'cash_in' | 'cash_out' | 'exchange' | 'edit' | 'delete' | null;
-
-interface SeedCashBookTx {
-  transaction_id: string;
-  customer_id?: string;
-  from_customer_id?: string;
-  to_customer_id?: string;
-  currency: string;
-  amount: number;
-  type: string;
-  mode?: string;
-  date?: string;
-  description?: string;
-  details?: {
-    memo?: string;
-    ref_no?: string;
-  };
-}
-
-interface SeedExchangeTx {
-  exchange_id: string;
-  customer_id: string;
-  from_currency: string;
-  to_currency: string;
-  from_amount: number;
-  to_amount: number;
-  exchange_rate: number;
-  date?: string;
-  description?: string;
-  details?: {
-    ref_no?: string;
-    memo?: string;
-  };
-}
-
-const seedBusinesses = seedData[0].businesses;
-
-const jsonCashBookEntries: CashBookEntry[] = seedBusinesses.flatMap((biz) => {
-  const customerMap = new Map<string, string>();
-  (biz.customers || []).forEach((c) => {
-    customerMap.set(c.id, `${c.first_name} ${c.last_name}`.trim());
-  });
-
-  const cashBookList: CashBookEntry[] = (biz.cash_book || []).map((tx: SeedCashBookTx) => {
-    const rawDate = tx.date || '2025-02-24T07:36:00Z';
-    const date = rawDate.slice(0, 10);
-    const dateObj = new Date(rawDate);
-    const time = isNaN(dateObj.getTime())
-      ? '12:00 PM'
-      : dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-
-    if (tx.type === 'customer_transfer') {
-      const fromName = (tx.from_customer_id ? customerMap.get(tx.from_customer_id) : undefined) || tx.from_customer_id || 'Customer';
-      const toName = (tx.to_customer_id ? customerMap.get(tx.to_customer_id) : undefined) || tx.to_customer_id || 'Customer';
-      return {
-        id: tx.transaction_id,
-        businessId: biz.id,
-        customerId: tx.from_customer_id ? `${biz.id}_${tx.from_customer_id}` : undefined,
-        customerName: `${fromName} ➔ ${toName}`,
-        fromCustomer: fromName,
-        toCustomer: toName,
-        type: 'exchange' as TransactionType,
-        amount: tx.amount,
-        currency: tx.currency as CurrencyCode,
-        date,
-        time,
-        memo: tx.description || tx.details?.memo || `${fromName} transfer to ${toName}`,
-        serialNo: tx.details?.ref_no || tx.transaction_id,
-        exchangeDetails: {
-          fromUser: fromName,
-          toUser: toName,
-          fromCurrency: tx.currency as CurrencyCode,
-          fromAmount: tx.amount,
-          toCurrency: tx.currency as CurrencyCode,
-          toAmount: tx.amount,
-          rate: 1,
-        },
-        createdAt: dateObj.getTime() || Date.now(),
-      };
-    }
-
-    const custName = (tx.customer_id ? customerMap.get(tx.customer_id) : undefined) || tx.customer_id || 'Customer';
-    return {
-      id: tx.transaction_id,
-      businessId: biz.id,
-      customerId: tx.customer_id ? `${biz.id}_${tx.customer_id}` : undefined,
-      customerName: custName,
-      type: tx.type as TransactionType,
-      amount: tx.amount,
-      currency: tx.currency as CurrencyCode,
-      date,
-      time,
-      memo: tx.description || tx.details?.memo || '',
-      serialNo: tx.details?.ref_no || tx.transaction_id,
-      createdAt: dateObj.getTime() || Date.now(),
-    };
-  });
-
-  const exchangeList: CashBookEntry[] = (biz.exchanges || []).map((exc: SeedExchangeTx) => {
-    const rawDate = exc.date || '2025-02-23T11:00:00Z';
-    const date = rawDate.slice(0, 10);
-    const dateObj = new Date(rawDate);
-    const time = isNaN(dateObj.getTime())
-      ? '12:00 PM'
-      : dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-    const custName = customerMap.get(exc.customer_id) || exc.customer_id || 'Customer';
-
-    return {
-      id: exc.exchange_id,
-      businessId: biz.id,
-      customerId: exc.customer_id ? `${biz.id}_${exc.customer_id}` : undefined,
-      customerName: custName,
-      type: 'exchange' as TransactionType,
-      amount: exc.from_amount,
-      currency: exc.from_currency as CurrencyCode,
-      date,
-      time,
-      memo: `${exc.description || 'Forex Exchange'} @ rate ${exc.exchange_rate}`,
-      serialNo: exc.details?.ref_no || exc.exchange_id,
-      exchangeDetails: {
-        fromUser: custName,
-        toUser: custName,
-        fromCurrency: exc.from_currency as CurrencyCode,
-        fromAmount: exc.from_amount,
-        toCurrency: exc.to_currency as CurrencyCode,
-        toAmount: exc.to_amount,
-        rate: exc.exchange_rate,
-      },
-      createdAt: dateObj.getTime() || Date.now(),
-    };
-  });
-
-  return [...cashBookList, ...exchangeList];
-});
 
 const toCustomerLedgerTransactions = (entry: CashBookEntry): CustomerTransaction[] => {
   const customers = useSettingsStore.getState().customers.filter(
@@ -329,6 +195,8 @@ interface CashBookState {
 
   // Transactions State
   transactions: CashBookEntry[];
+  isLoading: boolean;
+  loadError: string | null;
   fetchTransactions: () => Promise<void>;
 
   // Baseline Opening Balances for computation
@@ -381,31 +249,42 @@ interface CashBookState {
 }
 
 export const useCashBookStore = create<CashBookState>((set, get) => ({
-  selectedDate: '2025-02-24',
+  selectedDate: new Date().toISOString().split('T')[0],
   filterCurrency: 'ALL',
   selectedCustomerId: null,
   searchQuery: '',
-  transactions: jsonCashBookEntries,
+  transactions: [],
+  isLoading: true,
+  loadError: null,
   fetchTransactions: async () => {
-    const business = useSettingsStore.getState().businesses.find((item) => item.isActive)
-      || useSettingsStore.getState().businesses[0];
-    if (!business?.id || !(await hasSupabaseSession())) return;
+    set({ isLoading: true, loadError: null });
+    try {
+      const business = useSettingsStore.getState().businesses.find((item) => item.isActive)
+        || useSettingsStore.getState().businesses[0];
+      if (!business?.id) {
+        set({ transactions: [], isLoading: false });
+        return;
+      }
+      if (!(await hasSupabaseSession())) throw new Error('No authenticated Supabase session.');
 
-    const { data, error } = await supabaseClient
-      .from('cashbook')
-      .select('*')
-      .eq('business_id', Number(business.id))
-      .order('transaction_date', { ascending: false });
-    if (error) throw error;
+      const { data, error } = await supabaseClient
+        .from('cashbook')
+        .select('*')
+        .eq('business_id', Number(business.id))
+        .order('transaction_date', { ascending: false });
+      if (error) throw error;
 
-    const entries = (data ?? []).map((row) => fromCashbookRow(row as Record<string, unknown>));
-    set((state) => ({
-      transactions: [
-        ...state.transactions.filter((entry) => entry.businessId !== String(business.id)),
-        ...entries,
-      ],
-    }));
-    entries.forEach(replaceCustomerLedgerTransactions);
+      const entries = (data ?? []).map((row) => fromCashbookRow(row as Record<string, unknown>));
+      const selectedDate = get().selectedDate;
+      const dateToShow = entries.some((entry) => entry.date === selectedDate)
+        ? selectedDate
+        : entries[0]?.date ?? selectedDate;
+      set({ transactions: entries, selectedDate: dateToShow, isLoading: false, loadError: null });
+      entries.forEach(replaceCustomerLedgerTransactions);
+    } catch (error) {
+      set({ transactions: [], isLoading: false, loadError: error instanceof Error ? error.message : String(error) });
+      throw error;
+    }
   },
   openingBalances: {
     pkr: 0,

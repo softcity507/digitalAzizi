@@ -16,13 +16,14 @@ import ExchangeModal from '@/components/mini/ExchangeModal';
 import EditTransactionModal from '@/components/mini/EditTransactionModal';
 import DeleteConfirmModal from '@/components/mini/DeleteConfirmModal';
 import AddBussinessModal from '@/components/mini_second/AddBussinessModal';
+import MiniLoader from '@/components/mini_second/MiniLoader';
 import { useCashBookStore } from '@/store/useCashBookStore';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function CashBookContainer() {
-  const { getFilteredTransactions, editingTransaction, fetchTransactions } = useCashBookStore();
+  const { getFilteredTransactions, editingTransaction, fetchTransactions, isLoading, loadError } = useCashBookStore();
   const businessId = useSettingsStore((state) =>
     state.businesses.find((business) => business.isActive)?.id || state.businesses[0]?.id
   );
@@ -213,7 +214,24 @@ export default function CashBookContainer() {
           </div>
 
           {/* Cash Book Transaction Details List */}
-          <CashBookTransactionList />
+          {isLoading ? (
+            <div className="flex min-h-48 items-center justify-center">
+              <MiniLoader size="md" variant="brand" text="Loading cashbook..." />
+            </div>
+          ) : loadError ? (
+            <div role="alert" className="rounded-2xl border border-debit/30 bg-debit-subtle p-4 text-sm text-debit-text">
+              <p>Couldn&apos;t load cashbook data: {loadError}</p>
+              <button
+                type="button"
+                onClick={() => void fetchTransactions().catch((error) => console.error('Cashbook load failed:', error))}
+                className="mt-2 font-semibold underline"
+              >
+                Retry
+              </button>
+            </div>
+          ) : (
+            <CashBookTransactionList />
+          )}
         </div>
       </div>
 
