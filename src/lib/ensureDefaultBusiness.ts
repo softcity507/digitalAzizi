@@ -4,7 +4,8 @@ export async function ensureDefaultBusiness(email: string, displayName: string, 
   const ownerEmail = email.trim().toLowerCase();
   if (!ownerEmail) return;
 
-  // 1. Always prioritize the real Supabase Auth user ID if provided
+  // The OAuth callback passes the authenticated Supabase UUID explicitly.
+  // The service client used for database writes does not carry the user's session.
   let finalUserId = userId;
 
   if (!finalUserId) {
@@ -17,7 +18,7 @@ export async function ensureDefaultBusiness(email: string, displayName: string, 
     return;
   }
 
-  // 2. Check if a business already exists for this auth user ID
+  // Keep sign-ins idempotent: each auth user gets at most one system default.
   const { data: existingBusiness, error: lookupError } = await supabase
     .from('businesses')
     .select('id')
@@ -30,12 +31,12 @@ export async function ensureDefaultBusiness(email: string, displayName: string, 
 
   const businessName = displayName.trim() || ownerEmail.split('@')[0] || 'My';
 
-  // 3. Insert new business using the exact Supabase Auth UUID
+  // `subtitle` is the description field available in the businesses schema.
   const { error: insertError } = await supabase.from('businesses').insert({
     user_id: finalUserId,
     owner_email: ownerEmail,
     name: `${businessName}'s Business`,
-    subtitle: 'Default business',
+    subtitle: 'Default business created by the system',
     is_active: true,
     supported_currencies: 'AFN, USD, PKR',
   });

@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
           );
 
         try {
-          await ensureDefaultBusiness(email, name);
+          await ensureDefaultBusiness(email, name, user.id);
         } catch (businessError) {
           console.error('Default business creation error:', businessError);
         }
