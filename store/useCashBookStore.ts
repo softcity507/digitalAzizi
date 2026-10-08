@@ -4,6 +4,7 @@ import { CustomerTransaction } from '@/types/customer';
 import { useSettingsStore } from './useSettingsStore';
 import { useCustomerDetailsStore } from './useCustomerDetailsStore';
 import seedData from './AllJs.json';
+import { supabaseClient } from '@/lib/supabaseClient';
 
 export type CurrencyFilterType = 'ALL' | CurrencyCode;
 export type ModalType = 'cash_in' | 'cash_out' | 'exchange' | 'edit' | 'delete' | null;
@@ -227,6 +228,98 @@ const replaceCustomerLedgerTransactions = (entry: CashBookEntry) => {
   );
 };
 
+const customerDatabaseId = (customerId?: string, customerName?: string, businessId?: string) => {
+  const customers = useSettingsStore.getState().customers;
+  const customer = customers.find((item) => customerId && item.id === customerId)
+    || customers.find((item) => customerName && item.name.trim().toLowerCase() === customerName.trim().toLowerCase());
+  const id = customer?.id ?? customerId;
+  const numericId = Number(String(id ?? '').replace(/[^0-9]/g, ''));
+  if (!Number.isSafeInteger(numericId) || numericId <= 0) return null;
+  if (businessId && customer?.businessId && customer.businessId !== businessId) return null;
+  return numericId;
+};
+
+const toCashbookRow = (entry: CashBookEntry) => {
+  const timeMatch = entry.time.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  let time = entry.time || '12:00 AM';
+  if (timeMatch) {
+    let hours = Number(timeMatch[1]) % 12;
+    if (timeMatch[3].toUpperCase() === 'PM') hours += 12;
+    time = `${String(hours).padStart(2, '0')}:${timeMatch[2]}:00`;
+  }
+  const transactionDate = new Date(`${entry.date}T${time}`);
+  const details = {
+    serial_no: entry.serialNo ?? null,
+    customer_name: entry.customerName,
+    from_customer: entry.fromCustomer ?? null,
+    to_customer: entry.toCustomer ?? null,
+    memo: entry.memo ?? null,
+  };
+
+  return {
+    business_id: entry.businessId ? Number(entry.businessId) : null,
+    customer_id: customerDatabaseId(entry.customerId, entry.customerName, entry.businessId),
+    from_customer_id: customerDatabaseId(undefined, entry.fromCustomer, entry.businessId),
+    to_customer_id: customerDatabaseId(undefined, entry.toCustomer, entry.businessId),
+    type: entry.type,
+    currency: entry.currency,
+    amount: entry.amount,
+    mode: entry.type,
+    transaction_date: transactionDate.toISOString(),
+    description: entry.memo ?? null,
+    from_currency: entry.exchangeDetails?.fromCurrency ?? null,
+    to_currency: entry.exchangeDetails?.toCurrency ?? null,
+    from_amount: entry.exchangeDetails?.fromAmount ?? null,
+    to_amount: entry.exchangeDetails?.toAmount ?? null,
+    exchange_rate: entry.exchangeDetails?.rate ?? null,
+    details: { ...details, ...(entry.exchangeDetails ?? {}) },
+  };
+};
+
+const fromCashbookRow = (row: Record<string, unknown>): CashBookEntry => {
+  const transactionDate = new Date(String(row.transaction_date));
+  const details = row.details && typeof row.details === 'object'
+    ? row.details as Record<string, unknown>
+    : {};
+  const type = String(row.type) as TransactionType;
+  const hasExchange = type === 'exchange';
+  const date = `${transactionDate.getFullYear()}-${String(transactionDate.getMonth() + 1).padStart(2, '0')}-${String(transactionDate.getDate()).padStart(2, '0')}`;
+  const fromCustomer = String(details.from_customer ?? '');
+  const toCustomer = String(details.to_customer ?? '');
+  const customerName = String(details.customer_name ?? fromCustomer);
+
+  return {
+    id: String(row.id),
+    businessId: row.business_id == null ? undefined : String(row.business_id),
+    customerId: row.customer_id == null ? undefined : String(row.customer_id),
+    customerName,
+    fromCustomer: fromCustomer || undefined,
+    toCustomer: toCustomer || undefined,
+    type,
+    amount: Number(row.amount),
+    currency: String(row.currency) as CurrencyCode,
+    date,
+    time: transactionDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+    memo: String(row.description ?? details.memo ?? '') || undefined,
+    serialNo: String(details.serial_no ?? '') || undefined,
+    exchangeDetails: hasExchange ? {
+      fromUser: fromCustomer,
+      toUser: toCustomer,
+      fromCurrency: String(row.from_currency ?? row.currency) as CurrencyCode,
+      fromAmount: Number(row.from_amount ?? row.amount),
+      toCurrency: String(row.to_currency ?? row.currency) as CurrencyCode,
+      toAmount: Number(row.to_amount ?? row.amount),
+      rate: Number(row.exchange_rate ?? 1),
+    } : undefined,
+    createdAt: row.created_at ? new Date(String(row.created_at)).getTime() : transactionDate.getTime(),
+  };
+};
+
+const hasSupabaseSession = async () => {
+  const { data, error } = await supabaseClient.auth.getUser();
+  return !error && Boolean(data.user);
+};
+
 interface CashBookState {
   // Filters & Navigation
   selectedDate: string; // YYYY-MM-DD format
@@ -236,6 +329,7 @@ interface CashBookState {
 
   // Transactions State
   transactions: CashBookEntry[];
+  fetchTransactions: () => Promise<void>;
 
   // Baseline Opening Balances for computation
   openingBalances: {
@@ -266,12 +360,12 @@ interface CashBookState {
   // Transaction CRUD Actions
   addTransaction: (
     data: Omit<CashBookEntry, 'id' | 'createdAt'>
-  ) => void;
+  ) => Promise<void>;
   updateTransaction: (
     id: string,
     data: Partial<Omit<CashBookEntry, 'id' | 'createdAt'>>
-  ) => void;
-  deleteTransaction: (id: string) => void;
+  ) => Promise<void>;
+  deleteTransaction: (id: string) => Promise<void>;
 
   // Computed Selectors
   getFilteredTransactions: () => CashBookEntry[];
@@ -292,6 +386,27 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
   selectedCustomerId: null,
   searchQuery: '',
   transactions: jsonCashBookEntries,
+  fetchTransactions: async () => {
+    const business = useSettingsStore.getState().businesses.find((item) => item.isActive)
+      || useSettingsStore.getState().businesses[0];
+    if (!business?.id || !(await hasSupabaseSession())) return;
+
+    const { data, error } = await supabaseClient
+      .from('cashbook')
+      .select('*')
+      .eq('business_id', Number(business.id))
+      .order('transaction_date', { ascending: false });
+    if (error) throw error;
+
+    const entries = (data ?? []).map((row) => fromCashbookRow(row as Record<string, unknown>));
+    set((state) => ({
+      transactions: [
+        ...state.transactions.filter((entry) => entry.businessId !== String(business.id)),
+        ...entries,
+      ],
+    }));
+    entries.forEach(replaceCustomerLedgerTransactions);
+  },
   openingBalances: {
     pkr: 0,
     afn: 0,
@@ -352,35 +467,60 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
       deletingTransactionId: null,
     }),
 
-  addTransaction: (data) => {
+  addTransaction: async (data) => {
     const activeBusiness = useSettingsStore.getState().businesses.find((business) => business.isActive) || useSettingsStore.getState().businesses[0];
     const newEntry: CashBookEntry = {
       ...data,
       businessId: data.businessId ?? activeBusiness?.id,
-      id: `tx-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+      id: '',
       createdAt: Date.now(),
     };
+
+    if (!newEntry.businessId) throw new Error('Select an active business before saving.');
+    if (!(await hasSupabaseSession())) throw new Error('Sign in before saving cashbook transactions.');
+
+    const { data: inserted, error } = await supabaseClient
+      .from('cashbook')
+      .insert(toCashbookRow(newEntry))
+      .select('*')
+      .single();
+    if (error) throw error;
+
+    const savedEntry = fromCashbookRow(inserted as Record<string, unknown>);
     set((state) => ({
-      transactions: [newEntry, ...state.transactions],
+      transactions: [savedEntry, ...state.transactions],
       activeModal: null,
     }));
-    replaceCustomerLedgerTransactions(newEntry);
+    replaceCustomerLedgerTransactions(savedEntry);
   },
 
-  updateTransaction: (id, data) => {
+  updateTransaction: async (id, data) => {
     const existingEntry = get().transactions.find((tx) => tx.id === id);
-    const updatedEntry = existingEntry ? { ...existingEntry, ...data } : null;
+    if (!existingEntry) return;
+    if (!(await hasSupabaseSession())) throw new Error('Sign in before updating cashbook transactions.');
+    const updatedEntry = { ...existingEntry, ...data };
+    const { data: updatedRow, error } = await supabaseClient
+      .from('cashbook')
+      .update(toCashbookRow(updatedEntry))
+      .eq('id', Number(id))
+      .select('*')
+      .single();
+    if (error) throw error;
+    const savedEntry = fromCashbookRow(updatedRow as Record<string, unknown>);
     set((state) => ({
       transactions: state.transactions.map((tx) =>
-        tx.id === id ? { ...tx, ...data } : tx
+        tx.id === id ? savedEntry : tx
       ),
       activeModal: null,
       editingTransaction: null,
     }));
-    if (updatedEntry) replaceCustomerLedgerTransactions(updatedEntry);
+    replaceCustomerLedgerTransactions(savedEntry);
   },
 
-  deleteTransaction: (id) => {
+  deleteTransaction: async (id) => {
+    if (!(await hasSupabaseSession())) throw new Error('Sign in before deleting cashbook transactions.');
+    const { error } = await supabaseClient.from('cashbook').delete().eq('id', Number(id));
+    if (error) throw error;
     useCustomerDetailsStore.getState().replaceLinkedTransactions(
       [id, `${id}_from`, `${id}_to`],
       []

@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 // import CashBookHeader from '@/components/mini/CashBookHeader';
 import CashBookDateBar from '@/components/mini/CashBookDateBar';
 import CashBookCurrencyFilter from '@/components/mini/CashBookCurrencyFilter';
@@ -17,9 +19,18 @@ import AddBussinessModal from '@/components/mini_second/AddBussinessModal';
 import { useCashBookStore } from '@/store/useCashBookStore';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function CashBookContainer() {
-  const { getFilteredTransactions, editingTransaction } = useCashBookStore();
+  const { getFilteredTransactions, editingTransaction, fetchTransactions } = useCashBookStore();
+  const businessId = useSettingsStore((state) =>
+    state.businesses.find((business) => business.isActive)?.id || state.businesses[0]?.id
+  );
+  useEffect(() => {
+    if (businessId) {
+      void fetchTransactions().catch((error) => console.error('Cashbook load failed:', error));
+    }
+  }, [businessId, fetchTransactions]);
   const transactions = getFilteredTransactions() as unknown as Record<string, unknown>[];
 
   const handleExport = () => {
