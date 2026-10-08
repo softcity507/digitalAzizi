@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ClientNameCard from '@/components/mini_second/ClientNameCard';
 import CustomerCurrencyTabs from '@/components/mini_second/CustomerCurrencyTabs';
@@ -12,6 +12,8 @@ import DeleteCustomerTxModal from '@/components/mini_second/DeleteCustomerTxModa
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
+import { useCashBookStore } from '@/store/useCashBookStore';
+import MiniLoader from '@/components/mini_second/MiniLoader';
 
 export default function CustomerDetailsContainer() {
   const searchParams = useSearchParams();
@@ -20,7 +22,30 @@ export default function CustomerDetailsContainer() {
   const { selectedCustomerId, setSelectedCustomerId } = useCustomerDetailsStore();
   const { customers, businesses, setDefaultUser, setActiveBusiness } = useSettingsStore();
   const { setCustomerId } = useExchangeDeskStore();
+  const fetchBusinesses = useSettingsStore((state) => state.fetchBusinesses);
+  const fetchTransactions = useCashBookStore((state) => state.fetchTransactions);
+  const [isLoadingLedger, setIsLoadingLedger] = useState(true);
   const activeBusiness = businesses.find((b) => b.isActive) || businesses[0];
+
+  useEffect(() => {
+    let isCurrent = true;
+    const loadLedger = async () => {
+      setIsLoadingLedger(true);
+      try {
+        await fetchBusinesses();
+        await fetchTransactions();
+      } catch (error) {
+        console.error('Customer details ledger load failed:', error);
+      } finally {
+        if (isCurrent) setIsLoadingLedger(false);
+      }
+    };
+
+    void loadLedger();
+    return () => {
+      isCurrent = false;
+    };
+  }, [fetchBusinesses, fetchTransactions]);
 
   // Sync state with ?id=... URL query parameter
   useEffect(() => {
@@ -46,6 +71,14 @@ export default function CustomerDetailsContainer() {
       }
     }
   }, [urlParamId, customers, activeBusiness, selectedCustomerId, setSelectedCustomerId, setDefaultUser, setCustomerId, setActiveBusiness]);
+
+  if (isLoadingLedger) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <MiniLoader size="md" variant="brand" text="Loading customer transactions..." />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-7xl 2xl:max-w-[1500px] mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 space-y-5 sm:space-y-6 pb-28 sm:pb-20 transition-colors duration-200">
