@@ -8,7 +8,17 @@ import { User, X, Plus } from 'lucide-react';
 
 export default function CashBookTransactionList() {
   const t = useTranslations('CashBook');
-  const { getFilteredTransactions, selectedCustomerId, setSelectedCustomerId, selectedDate, openModal } = useCashBookStore();
+  const {
+    transactions: loadedTransactions,
+    getFilteredTransactions,
+    selectedCustomerId,
+    setSelectedCustomerId,
+    selectedDate,
+    setSelectedDate,
+    setFilterCurrency,
+    setSearchQuery,
+    openModal,
+  } = useCashBookStore();
   const allCustomers = useSettingsStore((state) => state.customers);
   const activeCustomer = selectedCustomerId ? allCustomers.find((c) => c.id === selectedCustomerId) : null;
 
@@ -45,18 +55,36 @@ export default function CashBookTransactionList() {
           </div>
           <div className="space-y-1">
             <div className="text-sm sm:text-base font-bold text-slate-200">
-              {activeCustomer
-                ? `No transactions on ${selectedDate} for ${activeCustomer.name}`
-                : t('noTransactions')}
+              {loadedTransactions.length === 0
+                ? 'No rows were returned for this business. Check cashbook business_id values and the SELECT RLS policy.'
+                : activeCustomer
+                  ? `No transactions on ${selectedDate} for ${activeCustomer.name}`
+                  : t('noTransactions')}
             </div>
             <p className="text-xs sm:text-sm text-slate-400 max-w-sm mx-auto">
-              {activeCustomer
-                ? 'Try picking another date from the date bar or record a new cash entry.'
-                : t('noTransactionsDesc')}
+              {loadedTransactions.length === 0
+                ? 'Supabase returned zero visible cashbook rows. The active business must match the row business_id and your RLS policy.'
+                : activeCustomer
+                  ? 'Try picking another date from the date bar or record a new cash entry.'
+                  : t('noTransactionsDesc')}
             </p>
           </div>
 
           <div className="flex items-center justify-center gap-2 pt-2">
+            {loadedTransactions.length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedCustomerId(null);
+                  setFilterCurrency('ALL');
+                  setSearchQuery('');
+                  setSelectedDate(loadedTransactions[0].date);
+                }}
+                className="px-3 py-1.5 rounded-xl bg-surface-subtle hover:bg-surface-hover border border-surface-border text-xs font-semibold text-content-primary transition-colors cursor-pointer"
+              >
+                Show loaded transactions
+              </button>
+            )}
             {activeCustomer && (
               <button
                 type="button"
