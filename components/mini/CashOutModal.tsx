@@ -31,7 +31,7 @@ export default function CashOutModal() {
 
   if (activeModal !== 'cash_out') return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const numAmount = parseFloat(amount);
     if (!customerName.trim() || isNaN(numAmount) || numAmount <= 0) {
@@ -50,17 +50,23 @@ export default function CashOutModal() {
       hour12: true,
     });
 
-    addTransaction({
-      customerId: selectedCustomer?.id,
-      customerName: customerName.trim(),
-      type: 'cash_out',
-      amount: numAmount,
-      currency: selectedCurrency,
-      date,
-      time: timeStr,
-      memo: memo.trim() || undefined,
-      serialNo: serialNo.trim() || undefined,
-    });
+    try {
+      await addTransaction({
+        customerId: selectedCustomer?.id,
+        customerName: customerName.trim(),
+        type: 'cash_out',
+        amount: numAmount,
+        currency: selectedCurrency,
+        date,
+        time: timeStr,
+        memo: memo.trim() || undefined,
+        serialNo: serialNo.trim() || undefined,
+      });
+    } catch (error) {
+      console.error('Cash-out save failed:', error);
+      const message = error instanceof Error ? error.message : String(error);
+      alert(`Unable to save cash-out: ${message}`);
+    }
   };
 
   return (

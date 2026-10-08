@@ -41,7 +41,7 @@ export default function ExchangeModal() {
     setToCustomer(tempUser);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const fAmt = parseFloat(fromAmount);
 
@@ -77,28 +77,34 @@ export default function ExchangeModal() {
     const autoMemo = `${fromCustomer.trim()} transferred ${fAmt} ${selectedCurrency} to ${toCustomer.trim()}`;
     const transactionMemo = memo.trim() || autoMemo;
 
-    addTransaction({
-      customerId: senderAccount.id,
-      customerName: combinedCustomerLabel,
-      fromCustomer: fromCustomer.trim(),
-      toCustomer: toCustomer.trim(),
-      type: 'exchange',
-      amount: fAmt,
-      currency: selectedCurrency,
-      date,
-      time: timeStr,
-      memo: transactionMemo,
-      serialNo: serialNo.trim() || undefined,
-      exchangeDetails: {
-        fromUser: fromCustomer.trim(),
-        toUser: toCustomer.trim(),
-        fromCurrency: selectedCurrency,
-        fromAmount: fAmt,
-        toCurrency: selectedCurrency,
-        toAmount: fAmt,
-        rate: 1,
-      },
-    });
+    try {
+      await addTransaction({
+        customerId: senderAccount.id,
+        customerName: combinedCustomerLabel,
+        fromCustomer: senderAccount.name,
+        toCustomer: receiverAccount.name,
+        type: 'exchange',
+        amount: fAmt,
+        currency: selectedCurrency,
+        date,
+        time: timeStr,
+        memo: transactionMemo,
+        serialNo: serialNo.trim() || undefined,
+        exchangeDetails: {
+          fromUser: senderAccount.name,
+          toUser: receiverAccount.name,
+          fromCurrency: selectedCurrency,
+          fromAmount: fAmt,
+          toCurrency: selectedCurrency,
+          toAmount: fAmt,
+          rate: 1,
+        },
+      });
+    } catch (error) {
+      console.error('Customer transfer save failed:', error);
+      const message = error instanceof Error ? error.message : String(error);
+      alert(`Unable to save this transfer: ${message}`);
+    }
   };
 
   return (
