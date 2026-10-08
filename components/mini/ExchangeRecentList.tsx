@@ -3,10 +3,11 @@
 import { useTranslations } from 'next-intl';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 import ExchangeRecentItem from '@/components/mini/ExchangeRecentItem';
+import MiniLoader from '@/components/mini_second/MiniLoader';
 
 export default function ExchangeRecentList() {
   const t = useTranslations('ExchangeDesk');
-  const { exchanges } = useExchangeDeskStore();
+  const { exchanges, isLoading, loadError, fetchExchanges } = useExchangeDeskStore();
 
   return (
     <div className="w-full space-y-3.5">
@@ -21,7 +22,18 @@ export default function ExchangeRecentList() {
       </div>
 
       {/* Exchanges Feed */}
-      {exchanges.length === 0 ? (
+      {isLoading ? (
+        <div className="flex min-h-40 items-center justify-center">
+          <MiniLoader size="md" variant="brand" text="Loading exchanges..." />
+        </div>
+      ) : loadError ? (
+        <div role="alert" className="rounded-2xl border border-debit/30 bg-debit-subtle p-4 text-sm text-debit-text">
+          <p>Couldn&apos;t load exchanges: {loadError}</p>
+          <button type="button" onClick={() => void fetchExchanges().catch((error) => console.error('Exchange load failed:', error))} className="mt-2 font-semibold underline">
+            Retry
+          </button>
+        </div>
+      ) : exchanges.length === 0 ? (
         <div className="p-8 text-center rounded-3xl bg-surface border border-surface-border space-y-2">
           <span className="text-3xl">💱</span>
           <p className="text-sm font-semibold text-slate-400">{t('emptyState')}</p>

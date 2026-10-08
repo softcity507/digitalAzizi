@@ -35,7 +35,7 @@ export default function ExchangeEditModal() {
 
   if (!editingTransaction) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const gAmt = parseFloat(giveAmount);
     const rate = parseFloat(exchangeRate);
@@ -48,17 +48,23 @@ export default function ExchangeEditModal() {
     const currentCustomer = customers.find((c) => c.id === customerId);
     const customerName = currentCustomer ? currentCustomer.name : editingTransaction.customerName;
 
-    updateTransaction(editingTransaction.id, {
-      customerId,
-      customerName,
-      giveAmount: gAmt,
-      giveCurrency,
-      calcMode,
-      exchangeRate: rate,
-      getCurrency,
-      type,
-      memo: memo || undefined,
-    });
+    try {
+      await updateTransaction(editingTransaction.id, {
+        customerId,
+        customerName,
+        giveAmount: gAmt,
+        giveCurrency,
+        calcMode,
+        exchangeRate: rate,
+        getCurrency,
+        type,
+        memo: memo || undefined,
+      });
+    } catch (error) {
+      console.error('Exchange update failed:', error);
+      const message = error instanceof Error ? error.message : String(error);
+      alert(`Unable to update exchange: ${message}`);
+    }
   };
 
   return (

@@ -38,7 +38,15 @@ export default function ExchangeDeleteModal() {
           </button>
           <button
             type="button"
-            onClick={() => deleteTransaction(deletingTransactionId)}
+            onClick={async () => {
+              try {
+                await deleteTransaction(deletingTransactionId);
+              } catch (error) {
+                console.error('Exchange delete failed:', error);
+                const message = error instanceof Error ? error.message : String(error);
+                alert(`Unable to delete exchange: ${message}`);
+              }
+            }}
             className="w-1/2 h-11 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-sm transition-all shadow-md shadow-rose-500/20 cursor-pointer"
           >
             {t('delete')}

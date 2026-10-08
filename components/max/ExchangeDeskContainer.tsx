@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import ExchangeCustomerSelect from '@/components/mini/ExchangeCustomerSelect';
 import ExchangeTypeToggle from '@/components/mini/ExchangeTypeToggle';
 import ExchangeAmountInput from '@/components/mini/ExchangeAmountInput';
@@ -9,8 +11,23 @@ import ExchangeCommitButton from '@/components/mini/ExchangeCommitButton';
 import ExchangeRecentList from '@/components/mini/ExchangeRecentList';
 import ExchangeEditModal from '@/components/mini/ExchangeEditModal';
 import ExchangeDeleteModal from '@/components/mini/ExchangeDeleteModal';
+import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function ExchangeDeskContainer() {
+  const fetchExchanges = useExchangeDeskStore((state) => state.fetchExchanges);
+  const editingTransaction = useExchangeDeskStore((state) => state.editingTransaction);
+  const businessId = useSettingsStore((state) =>
+    state.businesses.find((business) => business.isActive)?.id || state.businesses[0]?.id
+  );
+  const customerCount = useSettingsStore((state) => state.customers.length);
+
+  useEffect(() => {
+    if (businessId) {
+      void fetchExchanges().catch((error) => console.error('Exchange load failed:', error));
+    }
+  }, [businessId, customerCount, fetchExchanges]);
+
   return (
     <div className="min-h-screen bg-canvas text-content-primary py-4 sm:py-6 px-3 sm:px-6 lg:px-8 max-w-7xl 2xl:max-w-[1500px] mx-auto space-y-5 pb-24 lg:pb-12 transition-colors duration-200">
        
@@ -49,7 +66,7 @@ export default function ExchangeDeskContainer() {
       </div>
 
       {/* 3. Global Modals */}
-      <ExchangeEditModal />
+      <ExchangeEditModal key={editingTransaction?.id || 'idle'} />
       <ExchangeDeleteModal />
     </div>
   );
