@@ -1,13 +1,69 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useCashBookStore } from '@/store/useCashBookStore';
+import { useSettingsStore } from '@/store/useSettingsStore';
+import type { CashBookEntry } from '@/types/cashbook';
+
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+function formatRelativeTime(timestamp: number, now: number) {
+  const minutes = Math.max(0, Math.floor((now - timestamp) / 60_000));
+  if (minutes < 1) return 'Just now';
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return 'Yesterday';
+}
+
+function getTransactionTitle(transaction: CashBookEntry) {
+  if (transaction.type === 'exchange') {
+    return transaction.fromCustomer && transaction.toCustomer
+      ? `${transaction.fromCustomer} → ${transaction.toCustomer}`
+      : transaction.customerName || 'Currency exchange';
+  }
+  return transaction.customerName || 'Customer transaction';
+}
+
+function getTransactionDetail(transaction: CashBookEntry) {
+  if (transaction.type === 'exchange' && transaction.exchangeDetails) {
+    const { fromAmount, fromCurrency, toAmount, toCurrency, rate } = transaction.exchangeDetails;
+    return `${fromAmount.toLocaleString()} ${fromCurrency} → ${toAmount.toLocaleString()} ${toCurrency} @ ${rate}`;
+  }
+
+  const label = transaction.type === 'cash_in' ? 'Cash In' : 'Cash Out';
+  const sign = transaction.type === 'cash_in' ? '+' : '−';
+  return `${label} ${sign}${transaction.amount.toLocaleString()} ${transaction.currency}`;
+}
+
+function getTransactionColor(type: CashBookEntry['type']) {
+  if (type === 'cash_in') return 'text-credit';
+  if (type === 'cash_out') return 'text-debit';
+  return 'text-brand';
+}
 
 export default function Notification() {
   const t = useTranslations('Header');
   const [isOpen, setIsOpen] = useState(false);
-  const [hasUnread, setHasUnread] = useState(true);
+  const [now, setNow] = useState(() => Date.now());
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const transactions = useCashBookStore((state) => state.transactions);
+  const fetchTransactions = useCashBookStore((state) => state.fetchTransactions);
+  const businesses = useSettingsStore((state) => state.businesses);
+  const activeBusiness = businesses.find((business) => business.isActive) || businesses[0];
+
+  useEffect(() => {
+    if (!activeBusiness?.id) return;
+    void fetchTransactions().catch((error: unknown) => {
+      console.warn('Notification transactions could not be loaded:', error instanceof Error ? error.message : error);
+    });
+  }, [fetchTransactions, activeBusiness?.id]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -19,38 +75,26 @@ export default function Notification() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const notifications = [
-    {
-      id: 1,
-      title: 'Aziz Khan',
-      detail: 'Cash In +8,954,000 PKR completed',
-      time: '2m ago',
-      type: 'credit',
-    },
-    {
-      id: 2,
-      title: 'Exchange Executed',
-      detail: '5,000 USD → 356,000 AFN @ 71.20',
-      time: '18m ago',
-      type: 'brand',
-    },
-    {
-      id: 3,
-      title: 'Haji Noorullah',
-      detail: 'Cash Out -5,000 AFN processed',
-      time: '1h ago',
-      type: 'debit',
-    },
-  ];
+  const notifications = useMemo(
+    () => transactions
+      .filter((transaction) => {
+        if (activeBusiness && transaction.businessId && transaction.businessId !== activeBusiness.id) return false;
+        return transaction.createdAt <= now && now - transaction.createdAt < DAY_IN_MS;
+      })
+      .sort((a, b) => b.createdAt - a.createdAt),
+    [transactions, activeBusiness, now],
+  );
+
+  const hasUnread = notifications.length > 0 && !isOpen;
 
   return (
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => {
-          setIsOpen(prev => !prev);
-          setHasUnread(false);
+          setIsOpen((previous) => !previous);
         }}
         aria-label={t('notifications')}
+        aria-expanded={isOpen}
         className="relative flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-full bg-surface-subtle hover:bg-surface-hover text-content-primary border border-surface-border transition-all duration-200 active:scale-95 shadow-sm"
       >
         <svg
@@ -58,6 +102,7 @@ export default function Notification() {
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"
@@ -67,10 +112,10 @@ export default function Notification() {
           />
         </svg>
 
-        {hasUnread && (
-          <span className="absolute top-2 right-2 flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-debit-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-debit-500"></span>
+        {hasUnread && notifications.length > 0 && (
+          <span className="absolute top-2 right-2 flex h-2.5 w-2.5" aria-hidden="true">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-debit-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-debit-500" />
           </span>
         )}
       </button>
@@ -86,34 +131,31 @@ export default function Notification() {
             </div>
             <button
               onClick={() => setIsOpen(false)}
+              aria-label="Close notifications"
               className="text-xs text-content-muted hover:text-content-primary"
             >
-              ✕
+              ×
             </button>
           </div>
 
           <div className="space-y-2.5 max-h-72 overflow-y-auto">
-            {notifications.map(item => (
+            {notifications.length === 0 ? (
+              <p className="py-5 text-center text-xs text-content-muted">No transactions in the last 24 hours.</p>
+            ) : notifications.map((item) => (
               <div
                 key={item.id}
                 className="flex flex-col gap-1 p-2.5 rounded-xl bg-surface-subtle hover:bg-surface-hover border border-surface-border/50 transition-colors"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-content-primary">
-                    {item.title}
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-semibold text-content-primary truncate">
+                    {getTransactionTitle(item)}
                   </span>
-                  <span className="text-[10px] text-content-muted">{item.time}</span>
+                  <span className="text-[10px] text-content-muted whitespace-nowrap">
+                    {formatRelativeTime(item.createdAt, now)}
+                  </span>
                 </div>
-                <p
-                  className={`text-xs ${
-                    item.type === 'credit'
-                      ? 'text-credit font-medium'
-                      : item.type === 'debit'
-                      ? 'text-debit font-medium'
-                      : 'text-brand font-medium'
-                  }`}
-                >
-                  {item.detail}
+                <p className={`text-xs ${getTransactionColor(item.type)} font-medium`}>
+                  {getTransactionDetail(item)}
                 </p>
               </div>
             ))}

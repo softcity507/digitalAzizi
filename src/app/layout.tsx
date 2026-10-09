@@ -1,7 +1,9 @@
 import { NextIntlClientProvider } from 'next-intl';
+import 'react-toastify/dist/ReactToastify.css';
 import './globals.css';
 import messages from '../../messages/en.json';
 import { DEFAULT_LOCALE, LANGUAGES_MAP } from '@/i18n/request';
+import DynamicToast from '@/components/max_second/DynamicToast';
 
 type Props = {
   children: React.ReactNode;
@@ -54,6 +56,7 @@ export default function RootLayout({ children }: Props) {
           timeZone="UTC"
         >
           {children}
+          <DynamicToast />
         </NextIntlClientProvider>
       </body>
     </html>
