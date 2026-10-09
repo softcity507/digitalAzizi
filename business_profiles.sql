@@ -116,4 +116,100 @@ create policy businesses_delete_own
   on public.businesses for delete to authenticated
   using (user_id = (select public.current_app_user_id()));
 
+-- Customer and cashbook rows must remain inside businesses owned by the signed-in user.
+-- Remove existing policies on these tables first so an older broad policy cannot bypass these rules.
+alter table public.customers enable row level security;
+alter table public.cashbook enable row level security;
+grant select, insert, update, delete on public.customers to authenticated;
+grant select, insert, update, delete on public.cashbook to authenticated;
+
+do $$
+declare
+  existing_policy record;
+begin
+  for existing_policy in
+    select tablename, policyname
+    from pg_policies
+    where schemaname = 'public'
+      and tablename in ('customers', 'cashbook')
+  loop
+    execute format('drop policy %I on public.%I', existing_policy.policyname, existing_policy.tablename);
+  end loop;
+end;
+$$;
+
+create policy customers_select_owned_business
+  on public.customers for select to authenticated
+  using (exists (
+    select 1 from public.businesses as business
+    where business.id = customers.business_id
+      and business.user_id = (select public.current_app_user_id())
+  ));
+
+create policy customers_insert_owned_business
+  on public.customers for insert to authenticated
+  with check (exists (
+    select 1 from public.businesses as business
+    where business.id = customers.business_id
+      and business.user_id = (select public.current_app_user_id())
+  ));
+
+create policy customers_update_owned_business
+  on public.customers for update to authenticated
+  using (exists (
+    select 1 from public.businesses as business
+    where business.id = customers.business_id
+      and business.user_id = (select public.current_app_user_id())
+  ))
+  with check (exists (
+    select 1 from public.businesses as business
+    where business.id = customers.business_id
+      and business.user_id = (select public.current_app_user_id())
+  ));
+
+create policy customers_delete_owned_business
+  on public.customers for delete to authenticated
+  using (exists (
+    select 1 from public.businesses as business
+    where business.id = customers.business_id
+      and business.user_id = (select public.current_app_user_id())
+  ));
+
+create policy cashbook_select_owned_business
+  on public.cashbook for select to authenticated
+  using (exists (
+    select 1 from public.businesses as business
+    where business.id = cashbook.business_id
+      and business.user_id = (select public.current_app_user_id())
+  ));
+
+create policy cashbook_insert_owned_business
+  on public.cashbook for insert to authenticated
+  with check (exists (
+    select 1 from public.businesses as business
+    where business.id = cashbook.business_id
+      and business.user_id = (select public.current_app_user_id())
+  ));
+
+create policy cashbook_update_owned_business
+  on public.cashbook for update to authenticated
+  using (exists (
+    select 1 from public.businesses as business
+    where business.id = cashbook.business_id
+      and business.user_id = (select public.current_app_user_id())
+  ))
+  with check (exists (
+    select 1 from public.businesses as business
+    where business.id = cashbook.business_id
+      and business.user_id = (select public.current_app_user_id())
+  ));
+
+create policy cashbook_delete_owned_business
+  on public.cashbook for delete to authenticated
+  using (exists (
+    select 1 from public.businesses as business
+    where business.id = cashbook.business_id
+      and business.user_id = (select public.current_app_user_id())
+  ));
+
 notify pgrst, 'reload schema';

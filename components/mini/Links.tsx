@@ -25,7 +25,7 @@ export default function Links({
 
   const isCurrentActive = (itemHref: string) => {
     if (activeHref) return activeHref === itemHref;
-    if (itemHref === '/customers') return routePath === '/customers' || routePath === '/';
+    if (itemHref === '/customers') return routePath === '/customers' || routePath === '/details' || routePath === '/';
     return routePath.startsWith(itemHref);
   };
 
