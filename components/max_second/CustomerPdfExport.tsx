@@ -3,12 +3,11 @@
 import React, { useState } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { CustomerAccount } from '@/types/customer';
-import { LedgerTransaction } from '@/data/customerData';
+import type { CustomerAccount, CustomerTransaction } from '@/types/customer';
 
 interface CustomerPdfExportProps {
     customers: CustomerAccount[];
-    transactions: LedgerTransaction[];
+    transactions: CustomerTransaction[];
 }
 
 export default function CustomerPdfExport({ transactions }: CustomerPdfExportProps) {

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { AccountFilterType } from '@/types/customer';
-import { CURRENCY_SUMMARIES, DOUBLE_ENTRY_BOOKS, DEFAULT_CUSTOMER_TRANSACTIONS } from '@/data/customerData';
+import type { AccountFilterType, BookEntry, CurrencyCode, CurrencySummary, CustomerAccount } from '@/types/customer';
+import { useCashBookStore } from '@/store/useCashBookStore';
+import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 import CurrencySummaryGrid from '@/components/max/CurrencySummaryGrid';
 import CustomerSearch from '@/components/mini/CustomerSearch';
 import DeskMirrorSection from '@/components/max/DeskMirrorSection';
@@ -13,19 +14,117 @@ import CustomerList from '@/components/max/CustomerList';
 import CustomerPdfExport from '../max_second/CustomerPdfExport';
 import { useSettingsStore } from '@/store/useSettingsStore';
 
+const DEFAULT_CURRENCIES: CurrencyCode[] = ['AFN', 'USD', 'PKR'];
+
+const parseAmount = (amount: string) => {
+  const parsed = Number(amount.replaceAll(',', '').replace(/[^\d.-]/g, ''));
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const formatBalance = (amount: number, currency: CurrencyCode) =>
+  `${amount < 0 ? '-' : '+'}${currency === 'USD' ? '$' : ''}${Math.abs(amount).toLocaleString()}`;
+
 export default function CustomerLedgerContainer() {
   const t = useTranslations('CustomerBook');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<AccountFilterType>('all');
   const businesses = useSettingsStore((state) => state.businesses);
   const allCustomers = useSettingsStore((state) => state.customers);
+  const fetchBusinesses = useSettingsStore((state) => state.fetchBusinesses);
+  const fetchTransactions = useCashBookStore((state) => state.fetchTransactions);
+  const ledgerTransactions = useCustomerDetailsStore((state) => state.transactions);
 
   const activeBusiness = useMemo(() => businesses.find((b) => b.isActive) || businesses[0], [businesses]);
 
+  useEffect(() => {
+    if (businesses.length > 0) return;
+    void fetchBusinesses().catch((error: unknown) => {
+      console.error('Customer ledger business load failed:', error);
+    });
+  }, [businesses.length, fetchBusinesses]);
+
+  useEffect(() => {
+    if (!activeBusiness?.id) return;
+    void fetchTransactions().catch((error: unknown) => {
+      console.error('Customer ledger transaction load failed:', error);
+    });
+  }, [activeBusiness?.id, fetchTransactions]);
+
+  const currencies = activeBusiness?.supportedCurrencies?.length
+    ? activeBusiness.supportedCurrencies
+    : DEFAULT_CURRENCIES;
+
   const activeBusinessCustomers = useMemo(() => {
-    if (!activeBusiness) return allCustomers;
-    return allCustomers.filter((c) => c.businessId === activeBusiness.id);
-  }, [allCustomers, activeBusiness]);
+    if (!activeBusiness) return [];
+
+    const businessCustomers = allCustomers.filter((customer) => customer.businessId === activeBusiness.id);
+    const customerIds = new Set(businessCustomers.map((customer) => customer.id));
+    const businessTransactions = ledgerTransactions.filter((transaction) => customerIds.has(transaction.customerId));
+
+    return businessCustomers.map((customer): CustomerAccount => {
+      const customerTransactions = businessTransactions.filter((transaction) => transaction.customerId === customer.id);
+      const balances = currencies.map((currency) => {
+        const openingBalance = customer.balances
+          .filter((balance) => balance.currency === currency)
+          .reduce((total, balance) => total + parseAmount(balance.amount), 0);
+        const transactionBalance = customerTransactions
+          .filter((transaction) => transaction.currency === currency && transaction.category !== 'initial')
+          .reduce((total, transaction) => total + (transaction.isCredit ? transaction.amount : -transaction.amount), 0);
+        const amount = openingBalance + transactionBalance;
+
+        return {
+          currency,
+          amount: formatBalance(amount, currency),
+          isCredit: amount >= 0,
+        };
+      });
+
+      return { ...customer, balances };
+    });
+  }, [allCustomers, activeBusiness, currencies, ledgerTransactions]);
+
+  const businessTransactions = useMemo(() => {
+    const customerIds = new Set(activeBusinessCustomers.map((customer) => customer.id));
+    return ledgerTransactions.filter((transaction) => customerIds.has(transaction.customerId));
+  }, [activeBusinessCustomers, ledgerTransactions]);
+
+  const { currencySummaries, doubleEntryBooks } = useMemo(() => {
+    const netByCurrency = new Map<CurrencyCode, number>(currencies.map((currency) => [currency, 0]));
+    activeBusinessCustomers.forEach((customer) => {
+      customer.balances.forEach((balance) => {
+        netByCurrency.set(balance.currency, (netByCurrency.get(balance.currency) ?? 0) + parseAmount(balance.amount));
+      });
+    });
+
+    const summaries: CurrencySummary[] = currencies.map((currency) => {
+      const net = netByCurrency.get(currency) ?? 0;
+      const isPositive = net >= 0;
+      const formatted = formatBalance(net, currency);
+      const deskBalance = formatBalance(-net, currency);
+      return {
+        currency,
+        badge: isPositive ? 'Net Cr' : 'Net Dr',
+        total: formatted,
+        customerBalance: formatted,
+        deskBalance,
+        isPositive,
+      };
+    });
+
+    const books: BookEntry[] = currencies.map((currency) => {
+      const net = netByCurrency.get(currency) ?? 0;
+      const amount = `${currency === 'USD' ? '$' : ''}${Math.abs(net).toLocaleString()}`;
+      return {
+        currency,
+        cr: `+${amount}`,
+        dr: `-${amount}`,
+        net: '0.00',
+        status: 'Balanced',
+      };
+    });
+
+    return { currencySummaries: summaries, doubleEntryBooks: books };
+  }, [activeBusinessCustomers, currencies]);
 
   const filteredCustomers = useMemo(() => {
     return activeBusinessCustomers.filter((customer) => {
@@ -39,10 +138,10 @@ export default function CustomerLedgerContainer() {
 
       // 2. Tab filter (all / receivable / payable)
       if (activeFilter === 'receivable') {
-        return customer.balances.some((b) => b.isCredit);
+        return customer.balances.some((balance) => parseAmount(balance.amount) > 0);
       }
       if (activeFilter === 'payable') {
-        return customer.balances.some((b) => !b.isCredit);
+        return customer.balances.some((balance) => parseAmount(balance.amount) < 0);
       }
 
       return true;
@@ -52,14 +151,14 @@ export default function CustomerLedgerContainer() {
   return (
     <div className="w-full max-w-7xl 2xl:max-w-[1500px] mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 space-y-5 sm:space-y-6 pb-28 sm:pb-20 transition-colors duration-200">
       {/* 1. Top Currency Net Balances (AFN, USD, PKR) */}
-      <CurrencySummaryGrid summaries={CURRENCY_SUMMARIES} />
+      <CurrencySummaryGrid summaries={currencySummaries} />
 
       {/* 2. Responsive 12-Column Dashboard Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
         {/* Left Column: Desk Mirror Position & Filter Tabs (Sticky on Laptop/Desktop) */}
         <div className="lg:col-span-5 xl:col-span-4  space-y-4 lg:sticky lg:top-20">
           {/* Desk Mirror Position & Double-Entry Section */}
-          <DeskMirrorSection books={DOUBLE_ENTRY_BOOKS} />
+          <DeskMirrorSection books={doubleEntryBooks} />
 
           {/* Account Filter Pills (All Accounts, Receivable, Payable) */}
           <div className="p-3.5 rounded-3xl bg-surface border border-surface-border shadow-sm space-y-2">
@@ -83,7 +182,7 @@ export default function CustomerLedgerContainer() {
             </div>
             {/* PDF Export Component Button */}
             <div className="w-full sm:w-auto shrink-0 flex justify-end">
-              <CustomerPdfExport customers={activeBusinessCustomers} transactions={DEFAULT_CUSTOMER_TRANSACTIONS} />
+              <CustomerPdfExport customers={activeBusinessCustomers} transactions={businessTransactions} />
             </div>
           </div>
 

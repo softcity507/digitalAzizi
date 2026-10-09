@@ -4,14 +4,14 @@ import { useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
-import { LedgerTransaction } from '@/data/customerData';
+import type { CustomerTransaction } from '@/types/customer';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import CustomerTransactionItemCard from '@/components/mini_second/CustomerTransactionItemCard';
 
 interface HandleExportProps {
-  transactions: LedgerTransaction[];
+  transactions: CustomerTransaction[];
   selectedCurrency: string;
   customerName: string;
 }
@@ -32,7 +32,7 @@ export default function CustomerTransactionsFeed() {
 
   const transactions = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    return (storeTransactions as LedgerTransaction[])
+    return storeTransactions
       .filter((tx) => {
         if (tx.customerId !== effectiveCustomerId) return false;
         if (selectedCurrency !== 'ALL' && tx.currency !== selectedCurrency) return false;
