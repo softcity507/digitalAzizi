@@ -6,17 +6,52 @@ import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 
+const DEFAULT_CURRENCIES = ['AFN', 'USD', 'PKR'] as const;
+
+const parseAmount = (amount: string) => {
+  const parsed = Number(amount.replaceAll(',', '').replace(/[^\d.-]/g, ''));
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const formatBalance = (amount: number, currency: string) =>
+  `${amount < 0 ? '-' : '+'}${currency === 'USD' ? '$' : ''}${Math.abs(amount).toLocaleString()}`;
+
 export default function ExchangeCustomerSelect() {
   const t = useTranslations('ExchangeDesk');
   const { customerId, setCustomerId } = useExchangeDeskStore();
   const businesses = useSettingsStore((state) => state.businesses);
   const allCustomers = useSettingsStore((state) => state.customers);
+  const ledgerTransactions = useCustomerDetailsStore((state) => state.transactions);
   const activeBusiness = useMemo(() => businesses.find((b) => b.isActive) || businesses[0], [businesses]);
+  const currencies = activeBusiness?.supportedCurrencies?.length
+    ? activeBusiness.supportedCurrencies
+    : DEFAULT_CURRENCIES;
 
   const customers = useMemo(() => {
     if (!activeBusiness) return [];
-    return allCustomers.filter((customer) => customer.businessId === activeBusiness.id);
-  }, [allCustomers, activeBusiness]);
+    return allCustomers
+      .filter((customer) => customer.businessId === activeBusiness.id)
+      .map((customer) => {
+        const customerTransactions = ledgerTransactions.filter((transaction) => transaction.customerId === customer.id);
+        const balances = currencies.map((currency) => {
+          const openingBalance = customer.balances
+            .filter((balance) => balance.currency === currency)
+            .reduce((total, balance) => total + parseAmount(balance.amount), 0);
+          const transactionBalance = customerTransactions
+            .filter((transaction) => transaction.currency === currency && transaction.category !== 'initial')
+            .reduce((total, transaction) => total + (transaction.isCredit ? transaction.amount : -transaction.amount), 0);
+          const amount = openingBalance + transactionBalance;
+
+          return {
+            currency,
+            amount: formatBalance(amount, currency),
+            isCredit: amount >= 0,
+          };
+        });
+
+        return { ...customer, balances };
+      });
+  }, [allCustomers, activeBusiness, currencies, ledgerTransactions]);
 
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -156,10 +191,8 @@ export default function ExchangeCustomerSelect() {
 
         {/* Responsive Balances Display & Chevron */}
         <div className="flex items-center gap-2 shrink-0">
-          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-1.5 justify-end">
+          <div className="flex flex-wrap items-end justify-end gap-1">
             {(selectedCustomer?.balances || []).map((bal, idx) => {
-              const num = parseFloat((bal.amount || '').replace(/[^0-9.-]/g, ''));
-              if (!isNaN(num) && num === 0) return null;
               return (
                 <span
                   key={idx}
@@ -226,10 +259,8 @@ export default function ExchangeCustomerSelect() {
                   </div>
 
                   {/* Responsive Balances for Dropdown Items */}
-                  <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-1.5 justify-end shrink-0">
+                  <div className="flex flex-wrap items-end justify-end gap-1 shrink-0">
                     {customer.balances.map((bal, idx) => {
-                      const num = parseFloat(bal.amount.replace(/[^0-9.-]/g, ''));
-                      if (!isNaN(num) && num === 0) return null;
                       return (
                         <span
                           key={idx}

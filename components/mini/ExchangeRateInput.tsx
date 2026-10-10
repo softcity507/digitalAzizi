@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 import { ExchangeCurrencyCode } from '@/types/exchange';
 import { useSettingsStore } from '@/store/useSettingsStore';
@@ -18,14 +19,18 @@ export default function ExchangeRateInput() {
     setCalcMode,
   } = useExchangeDeskStore();
   const customers = useSettingsStore((state) => state.customers);
+  const businesses = useSettingsStore((state) => state.businesses);
 
-  // Find customer's assigned 3 currencies
   const matchedCustomer = customers.find((c) => c.id === customerId);
-  const userCurrencies = (matchedCustomer?.balances?.map((b) => b.currency) || [
-    'AFN',
-    'USD',
-    'PKR',
-  ]) as ExchangeCurrencyCode[];
+  const customerBusiness = businesses.find((business) => business.id === matchedCustomer?.businessId)
+    || businesses.find((business) => business.isActive)
+    || businesses[0];
+  const userCurrencies = useMemo(
+    () => (customerBusiness?.supportedCurrencies?.length
+      ? customerBusiness.supportedCurrencies
+      : matchedCustomer?.balances?.map((balance) => balance.currency) ?? ['AFN', 'USD', 'PKR']) as ExchangeCurrencyCode[],
+    [customerBusiness, matchedCustomer],
+  );
 
   return (
     <div className="w-full space-y-2">

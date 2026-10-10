@@ -309,7 +309,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       mappedUsers.push(user);
       mappedCustomers.push(customer);
 
-      const currencies = customer.balances.map((b) => b.currency);
+      const currencies = get().businesses.find((business) => business.id === customer.businessId)?.supportedCurrencies
+        ?? customer.balances.map((balance) => balance.currency);
       useExchangeDeskStore.getState().registerCustomer(customer.id, customer.name, currencies);
     });
 
@@ -353,6 +354,16 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       .eq('id', id);
 
     if (error) throw new Error(error.message);
+
+    get().customers
+      .filter((customer) => customer.businessId === id)
+      .forEach((customer) => {
+        useExchangeDeskStore.getState().registerCustomer(
+          customer.id,
+          customer.name,
+          currentBusiness.supportedCurrencies,
+        );
+      });
 
     set((s) => {
       const updatedBusinesses = s.businesses.map((b) => ({ ...b, isActive: b.id === id }));

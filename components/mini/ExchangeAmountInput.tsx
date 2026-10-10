@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 import { ExchangeCurrencyCode } from '@/types/exchange';
@@ -20,17 +21,29 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
 
 export default function ExchangeAmountInput() {
   const t = useTranslations('ExchangeDesk');
-  const { customerId, giveAmount, setGiveAmount, giveCurrency, setGiveCurrency, type } =
+  const { customerId, giveAmount, setGiveAmount, giveCurrency, setGiveCurrency, getCurrency, setGetCurrency, type } =
     useExchangeDeskStore();
   const customers = useSettingsStore((state) => state.customers);
+  const businesses = useSettingsStore((state) => state.businesses);
 
-  // Find customer's assigned 3 currencies
   const matchedCustomer = customers.find((c) => c.id === customerId);
-  const userCurrencies = (matchedCustomer?.balances?.map((b) => b.currency) || [
-    'USD',
-    'AFN',
-    'PKR',
-  ]) as ExchangeCurrencyCode[];
+  const customerBusiness = businesses.find((business) => business.id === matchedCustomer?.businessId)
+    || businesses.find((business) => business.isActive)
+    || businesses[0];
+  const userCurrencies = useMemo(
+    () => (customerBusiness?.supportedCurrencies?.length
+      ? customerBusiness.supportedCurrencies
+      : matchedCustomer?.balances?.map((balance) => balance.currency) ?? ['USD', 'AFN', 'PKR']) as ExchangeCurrencyCode[],
+    [customerBusiness, matchedCustomer],
+  );
+
+  useEffect(() => {
+    if (userCurrencies.length === 0) return;
+    if (!userCurrencies.includes(giveCurrency)) setGiveCurrency(userCurrencies[0]);
+    if (!userCurrencies.includes(getCurrency)) {
+      setGetCurrency(userCurrencies.find((currency) => currency !== giveCurrency) ?? userCurrencies[0]);
+    }
+  }, [userCurrencies, giveCurrency, getCurrency, setGiveCurrency, setGetCurrency]);
 
   const symbol = CURRENCY_SYMBOLS[giveCurrency] || '$';
 
