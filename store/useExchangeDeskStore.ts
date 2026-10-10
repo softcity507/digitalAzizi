@@ -39,27 +39,27 @@ export function computeDoubleEntryLedger(
       },
     };
   } else {
-    // BUY: Client gives giveCurrency (e.g. AFN) to buy getCurrency (e.g. USD)
+    // BUY: The exchange gives giveCurrency and receives getCurrency from the customer.
     return {
       customerReceives: {
-        amount: getAmount,
-        formatted: `+${getAmount.toLocaleString('en-US')}`,
-        currency: getCurrency,
-      },
-      customerPays: {
         amount: giveAmount,
-        formatted: `-${giveAmount.toLocaleString('en-US')}`,
+        formatted: `+${giveAmount.toLocaleString('en-US')}`,
         currency: giveCurrency,
       },
-      exchangePays: {
+      customerPays: {
         amount: getAmount,
         formatted: `-${getAmount.toLocaleString('en-US')}`,
         currency: getCurrency,
       },
-      exchangeReceives: {
+      exchangePays: {
         amount: giveAmount,
-        formatted: `+${giveAmount.toLocaleString('en-US')}`,
+        formatted: `-${giveAmount.toLocaleString('en-US')}`,
         currency: giveCurrency,
+      },
+      exchangeReceives: {
+        amount: getAmount,
+        formatted: `+${getAmount.toLocaleString('en-US')}`,
+        currency: getCurrency,
       },
     };
   }
