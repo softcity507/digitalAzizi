@@ -56,39 +56,24 @@ export default function CustomerCurrencyTabs() {
     }
   }, [selectedCurrency, setSelectedCurrency, supportedCurrencies]);
 
+  const getNetBalance = (code: CurrencyCode) => {
+    const openingBalance = customer.balances
+      ?.filter((balance) => balance.currency === code)
+      .reduce((total, balance) => total + (parseFloat(String(balance.amount).replace(/[^0-9.-]+/g, '')) || 0), 0) ?? 0;
+    const transactionBalance = transactions
+      .filter((tx) => tx.customerId === effectiveCustomerId && tx.currency === code && tx.category !== 'initial')
+      .reduce((net, tx) => net + (tx.isCredit ? tx.amount : -tx.amount), 0);
+
+    return openingBalance + transactionBalance;
+  };
+
   const getCurrencySummary = (code: CurrencyCode) => {
-    // 1. Check if matching ledger transactions exist
-    const matchingTx = transactions.filter(
-      (tx) => tx.customerId === effectiveCustomerId && tx.currency === code
-    );
-
-    if (matchingTx.length > 0) {
-      let net = 0;
-      for (const tx of matchingTx) {
-        net += tx.isCredit ? tx.amount : -tx.amount;
-      }
-      const formatted = `${net >= 0 ? '+' : ''}${net.toLocaleString()}`;
-      return {
-        amountFormatted: formatted,
-        isPositive: net >= 0,
-        dotColor: net > 0 ? 'bg-emerald-400' : net < 0 ? 'bg-rose-400' : 'bg-slate-400',
-      };
-    }
-
-    // 2. Fallback to customer default balances
-    const bal = customer.balances?.find((b) => b.currency === code);
-    if (bal) {
-      return {
-        amountFormatted: bal.amount,
-        isPositive: bal.isCredit,
-        dotColor: bal.isCredit ? 'bg-emerald-400' : 'bg-rose-400',
-      };
-    }
-
+    const net = getNetBalance(code);
+    const formatted = `${net >= 0 ? '+' : ''}${net.toLocaleString()}`;
     return {
-      amountFormatted: '0',
-      isPositive: true,
-      dotColor: 'bg-slate-400',
+      amountFormatted: formatted,
+      isPositive: net >= 0,
+      dotColor: net > 0 ? 'bg-emerald-400' : net < 0 ? 'bg-rose-400' : 'bg-slate-400',
     };
   };
 
@@ -102,31 +87,11 @@ export default function CustomerCurrencyTabs() {
     .filter((item) => item.code !== 'ALL')
     .map((item) => {
       const currency = item.code as CurrencyCode;
-      const matchingTx = transactions.filter(
-        (tx) => tx.customerId === effectiveCustomerId && tx.currency === currency
-      );
-      let credit = 0;
-      let debit = 0;
-
-      if (matchingTx.length > 0) {
-        for (const tx of matchingTx) {
-          if (tx.isCredit) credit += tx.amount;
-          else debit += tx.amount;
-        }
-      } else {
-        const balance = customer.balances?.find((entry) => entry.currency === currency);
-        if (balance) {
-          const amt = parseFloat(String(balance.amount).replace(/[^0-9.-]+/g, '')) || 0;
-          if (balance.isCredit) credit = amt;
-          else debit = amt;
-        }
-      }
-
-      return { currency, credit, debit, net: credit - debit };
+      return { currency, net: getNetBalance(currency) };
     });
 
-  const getBalanceLines = () => getBalanceSummaries().map(({ currency, credit, debit, net }) =>
-    `${currency}: Credit ${credit.toLocaleString()} ${currency} | Debit ${debit.toLocaleString()} ${currency} | Net ${net >= 0 ? '+' : ''}${net.toLocaleString()} ${currency}`
+  const getBalanceLines = () => getBalanceSummaries().map(({ currency, net }) =>
+    `${currency}: Net Balance ${net >= 0 ? '+' : ''}${net.toLocaleString()} ${currency}`
   );
 
   // Handler to send remaining balance details via WhatsApp
@@ -157,22 +122,22 @@ export default function CustomerCurrencyTabs() {
     doc.line(14, 40, 196, 40);
     doc.setFontSize(11);
     doc.setTextColor(30, 30, 30);
-    doc.text('Remaining Balance by Currency', 14, 49);
+    doc.text('Net Balance by Currency', 14, 49);
 
     doc.setFontSize(9);
-    getBalanceSummaries().forEach(({ currency, credit, debit, net }, index) => {
-      const y = 59 + index * 10;
+    doc.setTextColor(90, 90, 90);
+    doc.text('Currency', 20, 58);
+    doc.text('Net Balance', 150, 58);
+    doc.line(14, 61, 196, 61);
+    getBalanceSummaries().forEach(({ currency, net }, index) => {
+      const y = 69 + index * 9;
       doc.setTextColor(30, 30, 30);
       doc.text(currency, 20, y);
-      doc.setTextColor(5, 150, 105);
-      doc.text(`Credit: ${credit.toLocaleString()}`, 45, y);
-      doc.setTextColor(220, 38, 38);
-      doc.text(`Debit: ${debit.toLocaleString()}`, 95, y);
       doc.setTextColor(net >= 0 ? 5 : 220, net >= 0 ? 150 : 38, net >= 0 ? 105 : 38);
-      doc.text(`Net: ${net >= 0 ? '+' : ''}${net.toLocaleString()}`, 145, y);
+      doc.text(`${net >= 0 ? '+' : ''}${net.toLocaleString()} ${currency}`, 150, y);
     });
 
-    const summaryBottom = 67 + (currencyConfig.length - 2) * 10;
+    const summaryBottom = 73 + Math.max(currencyConfig.length - 2, 0) * 9;
     doc.line(14, summaryBottom, 196, summaryBottom);
     doc.setFontSize(9);
     doc.text('Thank you for your business.', 14, summaryBottom + 10);

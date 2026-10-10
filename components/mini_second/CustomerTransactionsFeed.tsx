@@ -74,7 +74,7 @@ export default function CustomerTransactionsFeed() {
       };
 
       // Table Headers & Rows mapping
-      const headers = [['Date', 'Title', 'Tag', 'Credit (+)', 'Debit (-)', 'Net Balance']];
+      const headers = [['Customer Name', 'Description', 'Credit (+)', 'Debit (-)', 'Net Balance']];
       const runningBalances: Record<string, number> = {};
 
       const rows = transactions.map((tx) => {
@@ -83,11 +83,11 @@ export default function CustomerTransactionsFeed() {
         const currency = tx.currency || selectedCurrency;
         addTotal(currency, tx.isCredit ? 'credit' : 'debit', amountVal);
         runningBalances[currency] = (runningBalances[currency] || 0) + (tx.isCredit ? amountVal : -amountVal);
+        const memo = (tx as CustomerTransaction & { memo?: string }).memo?.trim() || tx.notes?.trim();
 
         return [
-          tx.date || '-',
-          tx.title || '-',
-          tx.tag || '-',
+          customerName || '-',
+          memo || tx.title || '-',
           tx.isCredit ? `${amountVal.toLocaleString()} ${currency}` : '-',
           !tx.isCredit ? `${amountVal.toLocaleString()} ${currency}` : '-',
           `${runningBalances[currency] >= 0 ? '+' : ''}${runningBalances[currency].toLocaleString()} ${currency}`,
@@ -103,25 +103,24 @@ export default function CustomerTransactionsFeed() {
         headStyles: { fillColor: [41, 128, 185], textColor: 255 },
         styles: { fontSize: 8, cellPadding: 3 },
         columnStyles: {
-          0: { cellWidth: 26 },
-          1: { cellWidth: 38 },
-          2: { cellWidth: 25 },
-          3: { cellWidth: 31, halign: 'right' },
-          4: { cellWidth: 31, halign: 'right' },
-          5: { cellWidth: 41, halign: 'right' },
+          0: { cellWidth: 38 },
+          1: { cellWidth: 45 },
+          2: { cellWidth: 32, halign: 'right' },
+          3: { cellWidth: 32, halign: 'right' },
+          4: { cellWidth: 35, halign: 'right' },
         },
         didParseCell: (data) => {
-          if (data.section === 'head' && data.column.index === 4) {
+          if (data.section === 'head' && data.column.index === 3) {
             data.cell.styles.fillColor = [220, 38, 38];
           }
 
           if (data.section !== 'body') return;
 
-          if (data.column.index === 3) {
+          if (data.column.index === 2) {
             data.cell.styles.textColor = [5, 150, 105];
-          } else if (data.column.index === 4) {
+          } else if (data.column.index === 3) {
             data.cell.styles.textColor = [220, 38, 38];
-          } else if (data.column.index === 5) {
+          } else if (data.column.index === 4) {
             const isNegative = String(data.cell.raw).trim().startsWith('-');
             data.cell.styles.textColor = isNegative ? [220, 38, 38] : [5, 150, 105];
           }

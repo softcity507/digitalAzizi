@@ -150,11 +150,7 @@ export default function ExchangeCustomerSelect() {
             <span className="block text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
               {selectedCustomer?.name || t('customer')}
             </span>
-            {selectedCustomer?.subtitle && (
-              <span className="block text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                {selectedCustomer.subtitle}
-              </span>
-            )}
+             
           </div>
         </div>
 
@@ -224,7 +220,7 @@ export default function ExchangeCustomerSelect() {
                     <span className="block text-xs sm:text-sm font-bold truncate">{customer.name}</span>
                     {customer.subtitle && (
                       <span className="block text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                        {customer.subtitle}
+                        {customer.phone}
                       </span>
                     )}
                   </div>

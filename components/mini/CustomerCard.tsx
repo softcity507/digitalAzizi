@@ -46,11 +46,11 @@ export default function CustomerCard({
           )}
         </div>
 
-        {customer.subtitle && (
+        {/* {customer.subtitle && (
           <span className="text-xs text-content-secondary font-medium">
             {customer.subtitle}
           </span>
-        )}
+        )} */}
 
         {customer.phone && (
           <span className="text-[11px] font-mono text-content-muted">

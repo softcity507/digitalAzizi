@@ -63,16 +63,14 @@ export default function ClientNameCard() {
   return (
     <div className="w-full bg-surface border border-surface-border rounded-2xl p-4 sm:p-5 flex items-center justify-between shadow-sm transition-all">
       <div className="flex items-center gap-3.5">
-        <div className="w-11 h-11 rounded-xl bg-surface-subtle border border-surface-border flex items-center justify-center text-lg font-bold text-content-primary">
-          {currentCustomer?.name ? currentCustomer.name.charAt(0) : 'C'}
-        </div>
+         
         <div>
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-content-primary">
             {currentCustomer?.name || 'Customer'}
           </h1>
-          {currentCustomer?.subtitle && (
+          {/* {currentCustomer?.subtitle && (
             <p className="text-xs text-content-muted">{currentCustomer.subtitle}</p>
-          )}
+          )} */}
         </div>
       </div>
 
