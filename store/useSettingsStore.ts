@@ -317,10 +317,13 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
     const activeBiz = get().businesses.find((b) => b.isActive) || get().businesses[0];
     if (activeBiz) {
-      const matched = mappedCustomers.find((c) => c.businessId === activeBiz.id) || mappedCustomers[0];
+      const matched = mappedCustomers.find((c) => c.businessId === activeBiz.id);
       if (matched) {
         useCustomerDetailsStore.getState().setSelectedCustomerId(matched.id);
         useExchangeDeskStore.getState().setCustomerId(matched.id);
+      } else {
+        useCustomerDetailsStore.getState().setSelectedCustomerId('');
+        useExchangeDeskStore.getState().setCustomerId('');
       }
     }
   },
@@ -358,6 +361,9 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       if (matchedCustomer) {
         useCustomerDetailsStore.getState().setSelectedCustomerId(matchedCustomer.id);
         useExchangeDeskStore.getState().setCustomerId(matchedCustomer.id);
+      } else {
+        useCustomerDetailsStore.getState().setSelectedCustomerId('');
+        useExchangeDeskStore.getState().setCustomerId('');
       }
       return { businesses: updatedBusinesses };
     });

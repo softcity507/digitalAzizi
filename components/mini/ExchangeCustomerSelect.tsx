@@ -14,9 +14,8 @@ export default function ExchangeCustomerSelect() {
   const activeBusiness = useMemo(() => businesses.find((b) => b.isActive) || businesses[0], [businesses]);
 
   const customers = useMemo(() => {
-    if (!activeBusiness) return allCustomers;
-    const filtered = allCustomers.filter((c) => c.businessId === activeBusiness.id);
-    return filtered.length > 0 ? filtered : allCustomers.filter((c) => !c.businessId);
+    if (!activeBusiness) return [];
+    return allCustomers.filter((customer) => customer.businessId === activeBusiness.id);
   }, [allCustomers, activeBusiness]);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -26,8 +25,14 @@ export default function ExchangeCustomerSelect() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const selectedCustomer =
-    customers.find((c) => c.id === customerId) || customers[0] || allCustomers[0];
+  const selectedCustomer = customers.find((customer) => customer.id === customerId) || customers[0];
+
+  useEffect(() => {
+    if (customers.some((customer) => customer.id === customerId)) return;
+    const nextCustomerId = customers[0]?.id ?? '';
+    useExchangeDeskStore.getState().setCustomerId(nextCustomerId);
+    useCustomerDetailsStore.getState().setSelectedCustomerId(nextCustomerId);
+  }, [customers, customerId]);
 
   const filteredCustomers = useMemo(() => {
     if (!appliedSearchQuery.trim()) return customers;

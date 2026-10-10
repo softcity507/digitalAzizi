@@ -50,20 +50,20 @@ export default function CashBookTransactionList() {
       {/* Transactions List or Empty State */}
       {transactions.length === 0 ? (
         <div className="w-full bg-surface/60 rounded-3xl border border-dashed border-surface-border p-8 sm:p-12 text-center space-y-3.5">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-surface/90 border border-surface-border flex items-center justify-center text-2xl text-slate-400 shadow-sm">
-            🔍
-          </div>
+           
           <div className="space-y-1">
             <div className="text-sm sm:text-base font-bold text-slate-200">
               {loadedTransactions.length === 0
-                ? 'No rows were returned for this business. Check cashbook business_id values and the SELECT RLS policy.'
+                ? 
+                //  t('noTransactionsAll') 
+                ''
                 : activeCustomer
                   ? `No transactions on ${selectedDate} for ${activeCustomer.name}`
                   : t('noTransactions')}
             </div>
             <p className="text-xs sm:text-sm text-slate-400 max-w-sm mx-auto">
               {loadedTransactions.length === 0
-                ? 'Supabase returned zero visible cashbook rows. The active business must match the row business_id and your RLS policy.'
+                ? ''
                 : activeCustomer
                   ? 'Try picking another date from the date bar or record a new cash entry.'
                   : t('noTransactionsDesc')}

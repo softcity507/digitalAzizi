@@ -238,14 +238,10 @@ interface CashBookState {
   // Computed Selectors
   getFilteredTransactions: () => CashBookEntry[];
   getTodaySummary: () => {
-    cashIn: { pkr: number; afn: number; usd: number };
-    cashOut: { pkr: number; afn: number; usd: number };
+    cashIn: Record<string, number>;
+    cashOut: Record<string, number>;
   };
-  getCashNetBalances: () => {
-    pkr: number;
-    afn: number;
-    usd: number;
-  };
+  getCashNetBalances: () => Record<string, number>;
 }
 
 export const useCashBookStore = create<CashBookState>((set, get) => ({
@@ -473,29 +469,23 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
       return tx.date === selectedDate;
     });
 
-    const summary = {
-      cashIn: { pkr: 0, afn: 0, usd: 0 },
-      cashOut: { pkr: 0, afn: 0, usd: 0 },
+    const summary: { cashIn: Record<string, number>; cashOut: Record<string, number> } = {
+      cashIn: {},
+      cashOut: {},
+    };
+    const addAmount = (side: 'cashIn' | 'cashOut', currency: CurrencyCode, amount: number) => {
+      summary[side][currency] = (summary[side][currency] ?? 0) + amount;
     };
 
     dayTransactions.forEach((tx) => {
       if (tx.type === 'cash_in') {
-        if (tx.currency === 'PKR') summary.cashIn.pkr += tx.amount;
-        if (tx.currency === 'AFN') summary.cashIn.afn += tx.amount;
-        if (tx.currency === 'USD') summary.cashIn.usd += tx.amount;
+        addAmount('cashIn', tx.currency, tx.amount);
       } else if (tx.type === 'cash_out') {
-        if (tx.currency === 'PKR') summary.cashOut.pkr += tx.amount;
-        if (tx.currency === 'AFN') summary.cashOut.afn += tx.amount;
-        if (tx.currency === 'USD') summary.cashOut.usd += tx.amount;
+        addAmount('cashOut', tx.currency, tx.amount);
       } else if (tx.type === 'exchange' && tx.exchangeDetails) {
         const { fromCurrency, fromAmount, toCurrency, toAmount } = tx.exchangeDetails;
-        if (fromCurrency === 'PKR') summary.cashOut.pkr += fromAmount;
-        if (fromCurrency === 'AFN') summary.cashOut.afn += fromAmount;
-        if (fromCurrency === 'USD') summary.cashOut.usd += fromAmount;
-
-        if (toCurrency === 'PKR') summary.cashIn.pkr += toAmount;
-        if (toCurrency === 'AFN') summary.cashIn.afn += toAmount;
-        if (toCurrency === 'USD') summary.cashIn.usd += toAmount;
+        addAmount('cashOut', fromCurrency, fromAmount);
+        addAmount('cashIn', toCurrency, toAmount);
       }
     });
 
@@ -505,11 +495,13 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
   getCashNetBalances: () => {
     const { getTodaySummary, openingBalances } = get();
     const { cashIn, cashOut } = getTodaySummary();
+    const activeBusiness = useSettingsStore.getState().businesses.find((business) => business.isActive)
+      || useSettingsStore.getState().businesses[0];
+    const currencies = activeBusiness?.supportedCurrencies ?? ['PKR', 'AFN', 'USD'];
 
-    return {
-      pkr: openingBalances.pkr + cashIn.pkr - cashOut.pkr,
-      afn: openingBalances.afn + cashIn.afn - cashOut.afn,
-      usd: openingBalances.usd + cashIn.usd - cashOut.usd,
-    };
+    return Object.fromEntries(currencies.map((currency) => {
+      const openingBalance = openingBalances[currency.toLowerCase() as keyof typeof openingBalances] ?? 0;
+      return [currency, openingBalance + (cashIn[currency] ?? 0) - (cashOut[currency] ?? 0)];
+    }));
   },
 }));

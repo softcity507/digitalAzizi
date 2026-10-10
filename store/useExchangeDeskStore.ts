@@ -296,7 +296,7 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
   },
 
   fetchExchanges: async () => {
-    set({ isLoading: true, loadError: null });
+    set({ exchanges: [], isLoading: true, loadError: null });
     try {
       const business = useSettingsStore.getState().businesses.find((item) => item.isActive)
         || useSettingsStore.getState().businesses[0];

@@ -2,14 +2,18 @@
 
 import { useTranslations } from 'next-intl';
 import { useCashBookStore } from '@/store/useCashBookStore';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 export default function TodayCashInOutSummary() {
   const t = useTranslations('CashBook');
   const { getTodaySummary } = useCashBookStore();
   const { cashIn, cashOut } = getTodaySummary();
+  const activeBusiness = useSettingsStore((state) => state.businesses.find((business) => business.isActive));
+  const currencies = activeBusiness?.supportedCurrencies ?? ['PKR', 'AFN', 'USD'];
 
-  const formatPlusAmount = (num: number, currency: string) => {
-    if (num === 0) {
+  const formatPlusAmount = (amount: number | undefined, currency: string) => {
+    const num = Number(amount);
+    if (!Number.isFinite(num) || num === 0) {
       return currency === 'USD' ? '$0' : '0';
     }
     const formatted = num.toLocaleString('en-US');
@@ -17,8 +21,9 @@ export default function TodayCashInOutSummary() {
     return `+${formatted}`;
   };
 
-  const formatMinusAmount = (num: number, currency: string) => {
-    if (num === 0) {
+  const formatMinusAmount = (amount: number | undefined, currency: string) => {
+    const num = Number(amount);
+    if (!Number.isFinite(num) || num === 0) {
       return currency === 'USD' ? '$0' : '0';
     }
     const formatted = num.toLocaleString('en-US');
@@ -41,41 +46,17 @@ export default function TodayCashInOutSummary() {
         </div>
 
         <div className="space-y-1.5">
-          {/* PKR */}
-          <div className="flex items-center justify-between text-xs sm:text-sm">
-            <span className="text-slate-400 font-semibold">PKR</span>
-            <span
-              className={`font-mono font-bold tracking-tight ${
-                cashIn.pkr > 0 ? 'text-[#34d399]' : 'text-slate-500'
-              }`}
-            >
-              {formatPlusAmount(cashIn.pkr, 'PKR')}
-            </span>
-          </div>
-
-          {/* AFN */}
-          <div className="flex items-center justify-between text-xs sm:text-sm">
-            <span className="text-slate-400 font-semibold">AFN</span>
-            <span
-              className={`font-mono font-bold tracking-tight ${
-                cashIn.afn > 0 ? 'text-[#34d399]' : 'text-slate-500'
-              }`}
-            >
-              {formatPlusAmount(cashIn.afn, 'AFN')}
-            </span>
-          </div>
-
-          {/* USD */}
-          <div className="flex items-center justify-between text-xs sm:text-sm">
-            <span className="text-slate-400 font-semibold">USD</span>
-            <span
-              className={`font-mono font-bold tracking-tight ${
-                cashIn.usd > 0 ? 'text-[#34d399]' : 'text-slate-500'
-              }`}
-            >
-              {formatPlusAmount(cashIn.usd, 'USD')}
-            </span>
-          </div>
+          {currencies.map((currency) => {
+            const amount = cashIn[currency] ?? 0;
+            return (
+              <div key={currency} className="flex items-center justify-between text-xs sm:text-sm">
+                <span className="text-slate-400 font-semibold">{currency}</span>
+                <span className={`font-mono font-bold tracking-tight ${amount > 0 ? 'text-[#34d399]' : 'text-slate-500'}`}>
+                  {formatPlusAmount(amount, currency)}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -92,41 +73,17 @@ export default function TodayCashInOutSummary() {
         </div>
 
         <div className="space-y-1.5">
-          {/* PKR */}
-          <div className="flex items-center justify-between text-xs sm:text-sm">
-            <span className="text-slate-400 font-semibold">PKR</span>
-            <span
-              className={`font-mono font-bold tracking-tight ${
-                cashOut.pkr > 0 ? 'text-[#f87171]' : 'text-slate-500'
-              }`}
-            >
-              {formatMinusAmount(cashOut.pkr, 'PKR')}
-            </span>
-          </div>
-
-          {/* AFN */}
-          <div className="flex items-center justify-between text-xs sm:text-sm">
-            <span className="text-slate-400 font-semibold">AFN</span>
-            <span
-              className={`font-mono font-bold tracking-tight ${
-                cashOut.afn > 0 ? 'text-[#f87171]' : 'text-slate-500'
-              }`}
-            >
-              {formatMinusAmount(cashOut.afn, 'AFN')}
-            </span>
-          </div>
-
-          {/* USD */}
-          <div className="flex items-center justify-between text-xs sm:text-sm">
-            <span className="text-slate-400 font-semibold">USD</span>
-            <span
-              className={`font-mono font-bold tracking-tight ${
-                cashOut.usd > 0 ? 'text-[#f87171]' : 'text-slate-500'
-              }`}
-            >
-              {cashOut.usd > 0 ? formatMinusAmount(cashOut.usd, 'USD') : '$0'}
-            </span>
-          </div>
+          {currencies.map((currency) => {
+            const amount = cashOut[currency] ?? 0;
+            return (
+              <div key={currency} className="flex items-center justify-between text-xs sm:text-sm">
+                <span className="text-slate-400 font-semibold">{currency}</span>
+                <span className={`font-mono font-bold tracking-tight ${amount > 0 ? 'text-[#f87171]' : 'text-slate-500'}`}>
+                  {formatMinusAmount(amount, currency)}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
