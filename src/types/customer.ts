@@ -5,9 +5,9 @@ export type CurrencyCode = 'AFN' | 'USD' | 'PKR' | 'INR' | 'IRR' | 'EUR' | 'GBP'
 export interface CurrencySummary {
   currency: CurrencyCode;
   badge: string;
-  total: string;
-  customerBalance: string;
-  deskBalance: string;
+  credit: string;
+  debit: string;
+  net: string;
   isPositive: boolean;
 }
 

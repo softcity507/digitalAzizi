@@ -6,11 +6,12 @@ import autoTable from 'jspdf-autotable';
 import type { CustomerAccount, CustomerTransaction } from '@/types/customer';
 
 interface CustomerPdfExportProps {
+    businessName: string;
     customers: CustomerAccount[];
     transactions: CustomerTransaction[];
 }
 
-export default function CustomerPdfExport({ transactions }: CustomerPdfExportProps) {
+export default function CustomerPdfExport({ businessName, customers, transactions }: CustomerPdfExportProps) {
     const [isGenerating, setIsGenerating] = useState(false);
 
     const generatePdf = () => {
@@ -21,7 +22,7 @@ export default function CustomerPdfExport({ transactions }: CustomerPdfExportPro
             // --- 1. Top Header Section (100% English for safe font rendering) ---
             doc.setFontSize(14);
             doc.setTextColor(30, 30, 30);
-            doc.text('Al-Rahman Company', 14, 15);
+            doc.text(businessName || 'Business', 14, 15);
 
             doc.setFontSize(9);
             doc.setTextColor(100, 100, 100);
@@ -38,45 +39,71 @@ export default function CustomerPdfExport({ transactions }: CustomerPdfExportPro
             doc.text(new Date().toISOString().slice(0, 10), 143, 22);
 
             // --- 3. Calculations & Rows Mapping ---
-            let runningBalance = 0;
-            let totalCredit = 0;
-            let totalDebit = 0;
-            let activeCurrency = 'AFN';
+            const balancesByCurrency = new Map<string, number>();
+            const currentBalancesByCurrency = new Map<string, number>();
+            const totalsByCurrency = new Map<string, { credit: number; debit: number }>();
+            const transactionNetByCurrency = new Map<string, number>();
+            const customerNames = new Map(customers.map((customer) => [customer.id, customer.name]));
 
-            const headers = [['No', 'Date', 'Description', 'Credit (+)', 'Debit (-)', 'Balance']];
+            customers.forEach((customer) => {
+                customer.balances.forEach((balance) => {
+                    const currency = balance.currency.toUpperCase();
+                    if (!totalsByCurrency.has(currency)) totalsByCurrency.set(currency, { credit: 0, debit: 0 });
+                    const amount = Number(balance.amount.replaceAll(',', '').replace(/[^\d.-]/g, '')) || 0;
+                    currentBalancesByCurrency.set(currency, (currentBalancesByCurrency.get(currency) ?? 0) + amount);
+                });
+            });
+
+            const headers = [['No', 'Date', 'Customer', 'Description', 'Currency', 'Credit (+)', 'Debit (-)', 'Balance']];
 
             const rows = transactions.map((t, index) => {
                 const serialNo = t.refNo || String(index + 1);
                 const dateStr = t.date || new Date().toISOString().slice(0, 10);
                 const amountVal = Number(t.amount) || 0;
                 const currency = (t.currency || 'AFN').toUpperCase();
-                activeCurrency = currency; // Track currency for footer summary
+                const currentBalance = balancesByCurrency.get(currency) ?? 0;
+                const totals = totalsByCurrency.get(currency) ?? { credit: 0, debit: 0 };
 
                 const description = `${t.title || ''} ${t.tag ? `(${t.tag})` : ''}`;
 
                 let creditStr = '-';
                 let debitStr = '-';
 
-                if (t.isCredit) {
-                    runningBalance += amountVal;
-                    totalCredit += amountVal;
+                if (t.category !== 'initial' && t.isCredit) {
+                    balancesByCurrency.set(currency, currentBalance + amountVal);
+                    totals.credit += amountVal;
+                    transactionNetByCurrency.set(currency, (transactionNetByCurrency.get(currency) ?? 0) + amountVal);
                     creditStr = `${amountVal.toLocaleString()} ${currency}`;
-                } else {
-                    runningBalance -= amountVal;
-                    totalDebit += amountVal;
+                } else if (t.category !== 'initial') {
+                    balancesByCurrency.set(currency, currentBalance - amountVal);
+                    totals.debit += amountVal;
+                    transactionNetByCurrency.set(currency, (transactionNetByCurrency.get(currency) ?? 0) - amountVal);
                     debitStr = `${amountVal.toLocaleString()} ${currency}`;
                 }
+                totalsByCurrency.set(currency, totals);
 
-                const balanceDisplay = `${runningBalance.toLocaleString()} ${currency}`;
+                const balanceDisplay = `${(balancesByCurrency.get(currency) ?? 0).toLocaleString()} ${currency}`;
 
                 return [
                     serialNo,
                     dateStr,
+                    customerNames.get(t.customerId) || 'Unknown customer',
                     description || '-',
+                    currency,
                     creditStr,
                     debitStr,
                     balanceDisplay,
                 ];
+            });
+
+            // Reconcile transaction totals with each customer's current balance so
+            // opening balances are included in the same per-currency summary.
+            currentBalancesByCurrency.forEach((currentNet, currency) => {
+                const totals = totalsByCurrency.get(currency) ?? { credit: 0, debit: 0 };
+                const openingNet = currentNet - (transactionNetByCurrency.get(currency) ?? 0);
+                if (openingNet >= 0) totals.credit += openingNet;
+                else totals.debit += Math.abs(openingNet);
+                totalsByCurrency.set(currency, totals);
             });
 
             // --- 4. Table Generation using autoTable ---
@@ -88,15 +115,17 @@ export default function CustomerPdfExport({ transactions }: CustomerPdfExportPro
                 headStyles: { fillColor: [16, 185, 129], textColor: 255, fontSize: 8 },
                 styles: { fontSize: 7.5, cellPadding: 2.5 },
                 columnStyles: {
-                    0: { cellWidth: 14 },
-                    1: { cellWidth: 25 },
-                    2: { cellWidth: 54 },
-                    3: { cellWidth: 29, halign: 'right' },
-                    4: { cellWidth: 29, halign: 'right' },
-                    5: { cellWidth: 31, halign: 'right' },
+                    0: { cellWidth: 10 },
+                    1: { cellWidth: 20 },
+                    2: { cellWidth: 28 },
+                    3: { cellWidth: 35 },
+                    4: { cellWidth: 15 },
+                    5: { cellWidth: 23, halign: 'right' },
+                    6: { cellWidth: 23, halign: 'right' },
+                    7: { cellWidth: 28, halign: 'right' },
                 },
                 didParseCell: (data) => {
-                    if (data.section === 'head' && data.column.index === 4) {
+                    if (data.section === 'head' && data.column.index === 6) {
                         data.cell.styles.fillColor = [220, 38, 38];
                     }
 
@@ -104,7 +133,7 @@ export default function CustomerPdfExport({ transactions }: CustomerPdfExportPro
 
                     if (data.column.index === 3) {
                         data.cell.styles.textColor = [5, 150, 105];
-                    } else if (data.column.index === 4) {
+                    } else if (data.column.index === 6) {
                         data.cell.styles.textColor = [220, 38, 38];
                     }
                 },
@@ -112,19 +141,26 @@ export default function CustomerPdfExport({ transactions }: CustomerPdfExportPro
 
             const finalY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
 
-            // --- 5. Summary Footer Cards with Currencies ---
-            doc.setFillColor(245, 247, 250);
-            doc.roundedRect(14, finalY, 182, 16, 2, 2, 'F');
-
-            doc.setFontSize(8);
-            doc.setTextColor(50, 50, 50);
-            doc.text(`Total Transactions: ${transactions.length}`, 18, finalY + 6);
-            doc.text(`Total Credit (+): ${totalCredit.toLocaleString()} ${activeCurrency}`, 70, finalY + 6);
-            doc.text(`Total Debit (-): ${totalDebit.toLocaleString()} ${activeCurrency}`, 125, finalY + 6);
-
-            doc.setFontSize(9);
-            doc.setTextColor(16, 185, 129);
-            doc.text(`Net Balance: ${runningBalance.toLocaleString()} ${activeCurrency}`, 18, finalY + 12);
+            // --- 5. Per-currency credit, debit, and net totals ---
+            autoTable(doc, {
+                startY: finalY,
+                head: [['Currency', 'Total Credit (+)', 'Total Debit (-)', 'Net Balance']],
+                body: [...totalsByCurrency.entries()].map(([currency, totals]) => [
+                    currency,
+                    `${totals.credit.toLocaleString()} ${currency}`,
+                    `${totals.debit.toLocaleString()} ${currency}`,
+                    `${(totals.credit - totals.debit).toLocaleString()} ${currency}`,
+                ]),
+                foot: [[`Transactions: ${transactions.length}`, '', '', '']],
+                theme: 'grid',
+                headStyles: { fillColor: [16, 185, 129], textColor: 255, fontSize: 8 },
+                styles: { fontSize: 8, cellPadding: 2.5 },
+                columnStyles: {
+                    1: { halign: 'right' },
+                    2: { halign: 'right' },
+                    3: { halign: 'right' },
+                },
+            });
 
             // Save PDF file
             doc.save(`customer-ledger-statement-${new Date().toISOString().slice(0, 10)}.pdf`);

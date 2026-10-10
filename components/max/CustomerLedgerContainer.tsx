@@ -89,42 +89,58 @@ export default function CustomerLedgerContainer() {
   }, [activeBusinessCustomers, ledgerTransactions]);
 
   const { currencySummaries, doubleEntryBooks } = useMemo(() => {
-    const netByCurrency = new Map<CurrencyCode, number>(currencies.map((currency) => [currency, 0]));
-    activeBusinessCustomers.forEach((customer) => {
-      customer.balances.forEach((balance) => {
-        netByCurrency.set(balance.currency, (netByCurrency.get(balance.currency) ?? 0) + parseAmount(balance.amount));
+    const totalsByCurrency = new Map<CurrencyCode, { credit: number; debit: number }>(
+      currencies.map((currency) => [currency, { credit: 0, debit: 0 }]),
+    );
+
+    allCustomers
+      .filter((customer) => customer.businessId === activeBusiness?.id)
+      .forEach((customer) => {
+        customer.balances.forEach((balance) => {
+          const amount = parseAmount(balance.amount);
+          const totals = totalsByCurrency.get(balance.currency);
+          if (!totals) return;
+          if (amount >= 0) totals.credit += amount;
+          else totals.debit += Math.abs(amount);
+        });
       });
+
+    businessTransactions.forEach((transaction) => {
+      if (transaction.category === 'initial') return;
+      const totals = totalsByCurrency.get(transaction.currency);
+      if (!totals) return;
+      if (transaction.isCredit) totals.credit += transaction.amount;
+      else totals.debit += transaction.amount;
     });
 
     const summaries: CurrencySummary[] = currencies.map((currency) => {
-      const net = netByCurrency.get(currency) ?? 0;
+      const totals = totalsByCurrency.get(currency) ?? { credit: 0, debit: 0 };
+      const net = totals.credit - totals.debit;
       const isPositive = net >= 0;
-      const formatted = formatBalance(net, currency);
-      const deskBalance = formatBalance(-net, currency);
       return {
         currency,
         badge: isPositive ? 'Net Cr' : 'Net Dr',
-        total: formatted,
-        customerBalance: formatted,
-        deskBalance,
+        credit: formatBalance(totals.credit, currency),
+        debit: formatBalance(-totals.debit, currency),
+        net: formatBalance(net, currency),
         isPositive,
       };
     });
 
     const books: BookEntry[] = currencies.map((currency) => {
-      const net = netByCurrency.get(currency) ?? 0;
-      const amount = `${currency === 'USD' ? '$' : ''}${Math.abs(net).toLocaleString()}`;
+      const totals = totalsByCurrency.get(currency) ?? { credit: 0, debit: 0 };
+      const net = totals.credit - totals.debit;
       return {
         currency,
-        cr: `+${amount}`,
-        dr: `-${amount}`,
-        net: '0.00',
-        status: 'Balanced',
+        cr: formatBalance(totals.credit, currency),
+        dr: formatBalance(-totals.debit, currency),
+        net: formatBalance(net, currency),
+        status: net === 0 ? 'Balanced' : 'Unbalanced',
       };
     });
 
     return { currencySummaries: summaries, doubleEntryBooks: books };
-  }, [activeBusinessCustomers, currencies]);
+  }, [activeBusiness?.id, allCustomers, businessTransactions, currencies]);
 
   const filteredCustomers = useMemo(() => {
     return activeBusinessCustomers.filter((customer) => {
@@ -182,7 +198,11 @@ export default function CustomerLedgerContainer() {
             </div>
             {/* PDF Export Component Button */}
             <div className="w-full sm:w-auto shrink-0 flex justify-end">
-              <CustomerPdfExport customers={activeBusinessCustomers} transactions={businessTransactions} />
+              <CustomerPdfExport
+                businessName={activeBusiness?.name ?? ''}
+                customers={activeBusinessCustomers}
+                transactions={businessTransactions}
+              />
             </div>
           </div>
 

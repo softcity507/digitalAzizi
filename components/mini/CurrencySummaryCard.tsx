@@ -15,7 +15,7 @@ export default function CurrencySummaryCard({
     <div
       className={`flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-surface border border-surface-border shadow-sm hover:border-surface-border/80 transition-all ${className}`}
     >
-      {/* Card Header: Currency Code and Net Badge */}
+      {/* Currency and net position */}
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs sm:text-sm font-semibold text-content-secondary tracking-wider">
           {summary.currency}
@@ -25,20 +25,19 @@ export default function CurrencySummaryCard({
         </span>
       </div>
 
-      {/* Main Total Number */}
-      <div className="text-xl sm:text-2xl font-black text-credit tracking-tight mb-2">
-        {summary.total}
-      </div>
-
-      {/* Breakdown Rows: Cust & Desk */}
-      <div className="space-y-0.5 text-[11px] font-mono">
-        <div className="flex items-center gap-1.5 text-credit">
-          <span className="text-content-muted">Cust</span>
-          <span className="font-semibold">{summary.customerBalance}</span>
+      {/* Credit, debit, and net totals */}
+      <div className="space-y-1.5 text-[11px] sm:text-xs font-mono">
+        <div className="flex items-center justify-between gap-1.5 text-credit">
+          <span className="text-content-muted">Credit</span>
+          <span className="font-semibold">{summary.credit}</span>
         </div>
-        <div className="flex items-center gap-1.5 text-content-muted">
-          <span>Desk</span>
-          <span className="font-semibold">{summary.deskBalance}</span>
+        <div className="flex items-center justify-between gap-1.5 text-debit">
+          <span className="text-content-muted">Debit</span>
+          <span className="font-semibold">{summary.debit}</span>
+        </div>
+        <div className="flex items-center justify-between gap-1.5 border-t border-surface-border pt-1 text-content-primary">
+          <span className="text-content-muted">Net</span>
+          <span className="font-bold">{summary.net}</span>
         </div>
       </div>
     </div>
