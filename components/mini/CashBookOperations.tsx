@@ -3,12 +3,34 @@
 import { useTranslations } from 'next-intl';
 import { useCashBookStore } from '@/store/useCashBookStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import { showDynamicToast } from '@/components/max_second/DynamicToast';
 
 export default function CashBookOperations() {
   const t = useTranslations('CashBook');
   const tSettings = useTranslations('Settings');
-  const { openModal } = useCashBookStore();
+  const openModal = useCashBookStore((state) => state.openModal);
+  const customers = useSettingsStore((state) => state.customers);
+  const businesses = useSettingsStore((state) => state.businesses);
   const openSettingsModal = useSettingsStore((state) => state.openModal);
+  const activeBusinessId = businesses.find((business) => business.isActive)?.id || businesses[0]?.id;
+  const activeCustomerCount = activeBusinessId
+    ? customers.filter((customer) => customer.businessId === activeBusinessId).length
+    : customers.length;
+
+  const openCustomerOperation = (modal: 'cash_in' | 'cash_out' | 'exchange') => {
+    const requiredCustomers = modal === 'exchange' ? 2 : 1;
+    if (activeCustomerCount < requiredCustomers) {
+      showDynamicToast({
+        message: modal === 'exchange'
+          ? 'Add at least two customers before transferring between customers.'
+          : 'Add a customer before recording cash in or cash out.',
+        backgroundColor: '#2563eb',
+        textColor: '#ffffff',
+      });
+      return;
+    }
+    openModal(modal);
+  };
 
   return (
     <div className="w-full space-y-2 pt-1">
@@ -16,7 +38,7 @@ export default function CashBookOperations() {
         {/* 1. Cash Out (-) Button */}
         <button
           type="button"
-          onClick={() => openModal('cash_out')}
+          onClick={() => openCustomerOperation('cash_out')}
           className="h-12 sm:h-14 rounded-2xl bg-[#fda4af] hover:bg-[#f87171] active:scale-[0.98] text-black font-extrabold text-xs sm:text-sm tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1.5 text-center px-2 cursor-pointer select-none group"
         >
           <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center font-black text-xs shrink-0">-</span>
@@ -26,7 +48,7 @@ export default function CashBookOperations() {
         {/* 2. transferBtn */}
         <button
           type="button"
-          onClick={() => openModal('exchange')}
+          onClick={() => openCustomerOperation('exchange')}
           className="h-12 sm:h-14 rounded-2xl bg-[#38bdf8] hover:bg-[#0ea5e9] active:scale-[0.98] text-black font-extrabold text-xs sm:text-sm tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1.5 text-center px-2 cursor-pointer select-none group"
         >
           <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center font-black text-xs shrink-0">⇄</span>
@@ -36,7 +58,7 @@ export default function CashBookOperations() {
         {/* 3. Cash In (+) Button */}
         <button
           type="button"
-          onClick={() => openModal('cash_in')}
+          onClick={() => openCustomerOperation('cash_in')}
           className="h-12 sm:h-14 rounded-2xl bg-[#34d399] hover:bg-[#10b981] active:scale-[0.98] text-black font-extrabold text-xs sm:text-sm tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1.5 text-center px-2 cursor-pointer select-none group"
         >
           <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center font-black text-xs shrink-0">+</span>
