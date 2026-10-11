@@ -5,13 +5,12 @@ import { useTranslations } from 'next-intl';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { CurrencyCode } from '@/types/customer';
 
-const DEFAULT_CURRENCIES: CurrencyCode[] = ['AFN', 'USD', 'PKR'];
-
 export default function AddBussinessModal() {
   const t = useTranslations('Settings');
   const { activeModal, closeModal, addUser, businesses } = useSettingsStore();
+  const [saveError, setSaveError] = useState<string | null>(null);
   const activeBusiness = businesses.find((business) => business.isActive) || businesses[0];
-  const businessCurrencies = activeBusiness?.supportedCurrencies ?? DEFAULT_CURRENCIES;
+  const businessCurrencies = activeBusiness?.supportedCurrencies ?? [];
    // Initial State: First Name, Last Name, Phone, Address
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -22,6 +21,9 @@ export default function AddBussinessModal() {
   const [amount, setAmount] = useState('');
   const [amountCurrency, setAmountCurrency] = useState<CurrencyCode>('AFN');
   const [amountDescription, setAmountDescription] = useState('');
+  const selectedAmountCurrency = businessCurrencies.includes(amountCurrency)
+    ? amountCurrency
+    : businessCurrencies[0];
 
   if (activeModal !== 'add_customer') return null;
 
@@ -33,11 +35,13 @@ export default function AddBussinessModal() {
     setAmount('');
     setAmountCurrency('AFN');
     setAmountDescription('');
+    setSaveError(null);
     closeModal();
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSaveError(null);
     const trimmedFirst = firstName.trim();
     const trimmedLast = lastName.trim();
     if (!trimmedFirst) return;
@@ -49,28 +53,38 @@ export default function AddBussinessModal() {
       address.trim(),
     ].filter(Boolean).join(' • ') || 'Business Account';
 
-    const numAmount = parseFloat(amount);
-    const initialBalances: Partial<Record<CurrencyCode, number>> = {};
-    if (!isNaN(numAmount) && numAmount > 0) {
-      initialBalances[amountCurrency] = numAmount;
+    const numAmount = amount.trim() === '' ? 0 : Number(amount);
+    if (!Number.isFinite(numAmount) || numAmount < 0) {
+      setSaveError('Enter a valid amount of zero or more.');
+      return;
+    }
+    if (!selectedAmountCurrency) {
+      setSaveError('Select a business with supported currencies before adding a customer.');
+      return;
     }
 
-    // Default supported currencies around the selected amount currency
-    const finalCurrencies = businessCurrencies;
+    // Persist an explicit value for every supported currency so currencies with
+    // zero opening balances are not lost when the customer is loaded again.
+    const initialBalances: Partial<Record<CurrencyCode, number>> = Object.fromEntries(
+      businessCurrencies.map((currency) => [currency, currency === selectedAmountCurrency ? numAmount : 0])
+    );
 
     const trimmedNotes = amountDescription.trim() || 'Opening balance';
 
-    addUser(
-      fullName,
-      fullSubtitle,
-      finalCurrencies,
-      'Business',
-      initialBalances,
-      'en',
-      trimmedNotes
-    );
-
-    handleClose();
+    try {
+      await addUser(
+        fullName,
+        fullSubtitle,
+        businessCurrencies,
+        'Business',
+        initialBalances,
+        'en',
+        trimmedNotes
+      );
+      handleClose();
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : 'Unable to save this customer.');
+    }
   };
 
   return (
@@ -89,6 +103,7 @@ export default function AddBussinessModal() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3.5">
+          {saveError && <p role="alert" className="text-xs text-red-400">{saveError}</p>}
           {/* 1. Name Section: First Name & Last Name */}
           <div className="grid grid-cols-2 gap-2.5">
             <div>
@@ -160,10 +175,11 @@ export default function AddBussinessModal() {
               <div>
                 <label className="block text-[11px] font-semibold text-content-muted mb-1">Currency</label>
                 <select
-                  value={amountCurrency}
+                  value={selectedAmountCurrency ?? ''}
                   onChange={(e) => setAmountCurrency(e.target.value as CurrencyCode)}
                   className="w-full h-[38px] px-2.5 rounded-xl bg-surface border border-surface-border text-sm font-bold text-content-primary focus:outline-none focus:ring-1 focus:ring-brand uppercase cursor-pointer"
                 >
+                  {businessCurrencies.length === 0 && <option value="">No supported currencies</option>}
                   {businessCurrencies.map((c) => (
                     <option key={c} value={c}>
                       {c}

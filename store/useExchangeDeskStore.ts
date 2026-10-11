@@ -66,17 +66,20 @@ export function computeDoubleEntryLedger(
 }
 
 const syncCustomerLedger = (entry: ExchangeDeskEntry | null, id: string) => {
+  // BUY means the exchange gives the customer the give-side currency, while
+  // SELL means the customer gives that currency to the exchange.
+  const giveIsCredit = entry?.type === 'BUY';
   const transactions: CustomerTransaction[] = entry
     ? [
       {
         id: `${entry.id}_give`,
         customerId: entry.customerId,
-        title: `Exchange paid ${entry.giveAmount.toLocaleString()} ${entry.giveCurrency}`,
+        title: `Exchange ${giveIsCredit ? 'received' : 'paid'} ${entry.giveAmount.toLocaleString()} ${entry.giveCurrency}`,
         tag: 'Exchange',
         category: 'exchange',
         amount: entry.giveAmount,
         currency: entry.giveCurrency as CurrencyCode,
-        isCredit: false,
+        isCredit: giveIsCredit,
         date: entry.date,
         refNo: entry.serialNo || entry.id,
         notes: entry.memo,
@@ -84,12 +87,12 @@ const syncCustomerLedger = (entry: ExchangeDeskEntry | null, id: string) => {
       {
         id: `${entry.id}_get`,
         customerId: entry.customerId,
-        title: `Exchange received ${entry.getAmount.toLocaleString()} ${entry.getCurrency}`,
+        title: `Exchange ${giveIsCredit ? 'paid' : 'received'} ${entry.getAmount.toLocaleString()} ${entry.getCurrency}`,
         tag: 'Exchange',
         category: 'exchange',
         amount: entry.getAmount,
         currency: entry.getCurrency as CurrencyCode,
-        isCredit: true,
+        isCredit: !giveIsCredit,
         date: entry.date,
         refNo: entry.serialNo || entry.id,
         notes: entry.memo,
