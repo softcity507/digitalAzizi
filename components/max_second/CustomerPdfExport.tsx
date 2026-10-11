@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { CustomerAccount, CustomerTransaction } from '@/types/customer';
+import PdfExportButton from '@/components/shared/PdfExportButton';
 
 interface CustomerPdfExportProps {
     businessName: string;
@@ -12,11 +13,8 @@ interface CustomerPdfExportProps {
 }
 
 export default function CustomerPdfExport({ businessName, customers, transactions }: CustomerPdfExportProps) {
-    const [isGenerating, setIsGenerating] = useState(false);
-
     const generatePdf = () => {
         try {
-            setIsGenerating(true);
             const doc = new jsPDF();
 
             // --- 1. Top Header Section (100% English for safe font rendering) ---
@@ -166,21 +164,12 @@ export default function CustomerPdfExport({ businessName, customers, transaction
             doc.save(`customer-ledger-statement-${new Date().toISOString().slice(0, 10)}.pdf`);
         } catch (error) {
             console.error('Error generating PDF:', error);
-        } finally {
-            setIsGenerating(false);
         }
     };
 
     return (
-        <button
-            onClick={generatePdf}
-            disabled={isGenerating}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs sm:text-sm rounded-xl shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50 cursor-pointer"
-        >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            {isGenerating ? 'Generating PDF...' : 'Download Full Report (PDF)'}
-        </button>
+        <PdfExportButton
+            onExport={generatePdf}
+        />
     );
 }

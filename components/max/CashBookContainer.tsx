@@ -22,6 +22,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import type { CashBookEntry } from '@/types/cashbook';
+import PdfExportButton from '@/components/shared/PdfExportButton';
 
 export default function CashBookContainer() {
   const { getFilteredTransactions, editingTransaction, fetchTransactions, isLoading, loadError } = useCashBookStore();
@@ -207,16 +208,7 @@ export default function CashBookContainer() {
           <div className="flex items-center justify-between gap-2 px-1 py-1">
             <TransactionCounterBadge count={transactions.length} />
 
-            <button
-              type="button"
-              onClick={handleExport}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface hover:bg-surface-hover border border-surface-border text-[11px] font-semibold text-content-primary transition-colors cursor-pointer shadow-sm"
-            >
-              <svg className="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              <span>PDF</span>
-            </button>
+            <PdfExportButton onExport={handleExport} />
           </div>
 
           {/* Cash Book Transaction Details List */}

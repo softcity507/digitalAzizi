@@ -7,6 +7,7 @@ import { CurrencyCode } from '@/types/customer';
 import { CustomerCurrencySelection, useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import jsPDF from 'jspdf';
+import PdfExportButton from '@/components/shared/PdfExportButton';
 
 interface CurrencyTabConfig {
   code: CustomerCurrencySelection;
@@ -166,17 +167,7 @@ export default function CustomerCurrencyTabs() {
             </svg>
             <span>WhatsApp</span>
           </button>
-          <button
-            type="button"
-            onClick={handleDownloadBalancePdf}
-            title="Download all currency balances as PDF"
-            className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-brand hover:bg-brand-hover text-brand-foreground text-[10px] font-bold transition-colors cursor-pointer shadow-sm"
-          >
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            <span>PDF</span>
-          </button>
+          <PdfExportButton onExport={handleDownloadBalancePdf} />
         </div>
       </div>
 
