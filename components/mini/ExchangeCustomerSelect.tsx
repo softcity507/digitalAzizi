@@ -175,22 +175,30 @@ export default function ExchangeCustomerSelect() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full min-h-[3.75rem] py-2 px-3.5 sm:px-4 rounded-2xl bg-surface-subtle hover:bg-surface-hover border border-surface-border transition-all flex items-center justify-between text-left cursor-pointer shadow-sm group gap-2"
+        className="w-full min-h-[3.75rem] py-2 px-3.5 sm:px-4 rounded-2xl bg-surface-subtle hover:bg-surface-hover border border-surface-border transition-all flex flex-col  justify-between text-left cursor-pointer shadow-sm group gap-2"
       >
-        <div className="flex items-center gap-2.5 truncate min-w-0">
-          <div className="w-8 h-8 rounded-xl bg-brand/15 border border-brand/30 flex items-center justify-center text-brand font-bold text-sm shrink-0">
-            {selectedCustomer?.name ? selectedCustomer.name.charAt(0).toUpperCase() : '?'}
-          </div>
+        <div className="  flex justify-between items-center gap-2.5 truncate min-w-0">
+           
           <div className="truncate">
             <span className="block text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
               {selectedCustomer?.name || t('customer')}
             </span>
              
           </div>
+
+          <svg
+            className={`w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''
+              }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+          </svg>
         </div>
 
         {/* Responsive Balances Display & Chevron */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0  ">
           <div className="flex flex-wrap items-end justify-end gap-1">
             {(selectedCustomer?.balances || []).map((bal, idx) => {
               return (
@@ -209,15 +217,7 @@ export default function ExchangeCustomerSelect() {
               );
             })}
           </div>
-          <svg
-            className={`w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''
-              }`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-          </svg>
+          
         </div>
       </button>
 
@@ -244,7 +244,7 @@ export default function ExchangeCustomerSelect() {
                   key={customer.id}
                   type="button"
                   onClick={() => handleSelect(customer.id)}
-                  className={`w-full p-2.5 rounded-xl text-left flex items-center justify-between gap-2 transition-colors cursor-pointer ${isSelected
+                  className={`w-full p-2.5 rounded-xl text-left flex flex-col justify-between gap-2 transition-colors cursor-pointer ${isSelected
                     ? 'bg-brand/15 border border-brand/40 text-brand'
                     : 'hover:bg-surface-hover text-slate-800 dark:text-slate-200'
                     }`}
@@ -259,7 +259,7 @@ export default function ExchangeCustomerSelect() {
                   </div>
 
                   {/* Responsive Balances for Dropdown Items */}
-                  <div className="flex flex-wrap items-end justify-end gap-1 shrink-0">
+                  <div className="flex  gap-1 shrink-0">
                     {customer.balances.map((bal, idx) => {
                       return (
                         <span

@@ -23,7 +23,7 @@ export default function ExchangeTypeToggle() {
             <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block shrink-0" />
             <span className="truncate text-content-primary">{activeCustomer.name}</span>
             {activeCustomer.subtitle && (
-              <span className="hidden sm:inline text-slate-400 truncate">• {activeCustomer.subtitle}</span>
+              <span className="hidden sm:inline text-slate-400 truncate">{activeCustomer.phone}</span>
             )}
           </div>
         )}
