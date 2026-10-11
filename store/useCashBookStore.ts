@@ -65,12 +65,68 @@ const toCustomerLedgerTransactions = (entry: CashBookEntry): CustomerTransaction
   if (!customer) return [];
 
   const isExchange = entry.type === 'exchange' && details;
+  if (isExchange) {
+    const customerGiveIsCredit = details.exchangeType === 'BUY';
+    const exchangeAccount = customer.businessId
+      ? useSettingsStore.getState().customers.find(
+        (item) => item.businessId === customer.businessId && item.isSystemDefault
+      )
+      : undefined;
+    const giveTransaction: CustomerTransaction = {
+      id: `${entry.id}_give`,
+      customerId: customer.id,
+      title: `Exchange ${customerGiveIsCredit ? 'received' : 'paid'} ${details.fromAmount.toLocaleString()} ${details.fromCurrency}`,
+      tag: 'Exchange',
+      category: 'exchange',
+      amount: details.fromAmount,
+      currency: details.fromCurrency,
+      isCredit: customerGiveIsCredit,
+      date: entry.date,
+      refNo: entry.serialNo || entry.id,
+      notes: entry.memo,
+    };
+    const getTransaction: CustomerTransaction = {
+      id: `${entry.id}_get`,
+      customerId: customer.id,
+      title: `Exchange ${customerGiveIsCredit ? 'paid' : 'received'} ${details.toAmount.toLocaleString()} ${details.toCurrency}`,
+      tag: 'Exchange',
+      category: 'exchange',
+      amount: details.toAmount,
+      currency: details.toCurrency,
+      isCredit: !customerGiveIsCredit,
+      date: entry.date,
+      refNo: entry.serialNo || entry.id,
+      notes: entry.memo,
+    };
+
+    if (!exchangeAccount || exchangeAccount.id === customer.id) {
+      return [giveTransaction, getTransaction];
+    }
+
+    return [
+      giveTransaction,
+      getTransaction,
+      {
+        ...giveTransaction,
+        id: `${entry.id}_exchange_give`,
+        customerId: exchangeAccount.id,
+        title: `Exchange with ${customer.name} ${customerGiveIsCredit ? 'paid' : 'received'} ${details.fromAmount.toLocaleString()} ${details.fromCurrency}`,
+        isCredit: !customerGiveIsCredit,
+      },
+      {
+        ...getTransaction,
+        id: `${entry.id}_exchange_get`,
+        customerId: exchangeAccount.id,
+        title: `Exchange with ${customer.name} ${customerGiveIsCredit ? 'received' : 'paid'} ${details.toAmount.toLocaleString()} ${details.toCurrency}`,
+        isCredit: customerGiveIsCredit,
+      },
+    ];
+  }
+
   const isCredit = entry.type === 'cash_in';
-  const amount = isExchange ? details.fromAmount : entry.amount;
-  const currency = isExchange ? details.fromCurrency : entry.currency;
-  const title = isExchange
-    ? `Exchange ${details.fromAmount.toLocaleString()} ${details.fromCurrency} -> ${details.toAmount.toLocaleString()} ${details.toCurrency}`
-    : isCredit ? 'Cash Deposit' : 'Cash Disbursement';
+  const amount = entry.amount;
+  const currency = entry.currency;
+  const title = isCredit ? 'Cash Deposit' : 'Cash Disbursement';
 
   return [{
     id: entry.id,
@@ -89,7 +145,15 @@ const toCustomerLedgerTransactions = (entry: CashBookEntry): CustomerTransaction
 
 const replaceCustomerLedgerTransactions = (entry: CashBookEntry) => {
   useCustomerDetailsStore.getState().replaceLinkedTransactions(
-    [entry.id, `${entry.id}_from`, `${entry.id}_to`],
+    [
+      entry.id,
+      `${entry.id}_from`,
+      `${entry.id}_to`,
+      `${entry.id}_give`,
+      `${entry.id}_get`,
+      `${entry.id}_exchange_give`,
+      `${entry.id}_exchange_get`,
+    ],
     toCustomerLedgerTransactions(entry)
   );
 };
@@ -176,6 +240,7 @@ const fromCashbookRow = (row: Record<string, unknown>): CashBookEntry => {
       toCurrency: String(row.to_currency ?? row.currency) as CurrencyCode,
       toAmount: Number(row.to_amount ?? row.amount),
       rate: Number(row.exchange_rate ?? 1),
+      exchangeType: String(details.exchange_type ?? row.mode ?? '').toUpperCase() === 'BUY' ? 'BUY' : 'SELL',
     } : undefined,
     createdAt: row.created_at ? new Date(String(row.created_at)).getTime() : transactionDate.getTime(),
   };
@@ -397,7 +462,15 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
     const { error } = await supabaseClient.from('cashbook').delete().eq('id', Number(id));
     if (error) throw error;
     useCustomerDetailsStore.getState().replaceLinkedTransactions(
-      [id, `${id}_from`, `${id}_to`],
+      [
+        id,
+        `${id}_from`,
+        `${id}_to`,
+        `${id}_give`,
+        `${id}_get`,
+        `${id}_exchange_give`,
+        `${id}_exchange_get`,
+      ],
       []
     );
     set((state) => ({

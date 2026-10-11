@@ -66,20 +66,28 @@ export function computeDoubleEntryLedger(
 }
 
 const syncCustomerLedger = (entry: ExchangeDeskEntry | null, id: string) => {
-  // BUY means the exchange gives the customer the give-side currency, while
-  // SELL means the customer gives that currency to the exchange.
-  const giveIsCredit = entry?.type === 'BUY';
+  // BUY: the customer receives give and pays get. SELL: the customer pays
+  // give and receives get. The exchange account posts the opposite entries.
+  const customer = entry
+    ? useSettingsStore.getState().customers.find((item) => item.id === entry.customerId)
+    : undefined;
+  const exchangeAccount = customer?.businessId
+    ? useSettingsStore.getState().customers.find(
+      (item) => item.businessId === customer.businessId && item.isSystemDefault
+    )
+    : undefined;
+  const customerGiveIsCredit = entry?.type === 'BUY';
   const transactions: CustomerTransaction[] = entry
     ? [
       {
         id: `${entry.id}_give`,
         customerId: entry.customerId,
-        title: `Exchange ${giveIsCredit ? 'received' : 'paid'} ${entry.giveAmount.toLocaleString()} ${entry.giveCurrency}`,
+        title: `Exchange ${customerGiveIsCredit ? 'received' : 'paid'} ${entry.giveAmount.toLocaleString()} ${entry.giveCurrency}`,
         tag: 'Exchange',
         category: 'exchange',
         amount: entry.giveAmount,
         currency: entry.giveCurrency as CurrencyCode,
-        isCredit: giveIsCredit,
+        isCredit: customerGiveIsCredit,
         date: entry.date,
         refNo: entry.serialNo || entry.id,
         notes: entry.memo,
@@ -87,21 +95,51 @@ const syncCustomerLedger = (entry: ExchangeDeskEntry | null, id: string) => {
       {
         id: `${entry.id}_get`,
         customerId: entry.customerId,
-        title: `Exchange ${giveIsCredit ? 'paid' : 'received'} ${entry.getAmount.toLocaleString()} ${entry.getCurrency}`,
+        title: `Exchange ${customerGiveIsCredit ? 'paid' : 'received'} ${entry.getAmount.toLocaleString()} ${entry.getCurrency}`,
         tag: 'Exchange',
         category: 'exchange',
         amount: entry.getAmount,
         currency: entry.getCurrency as CurrencyCode,
-        isCredit: !giveIsCredit,
+        isCredit: !customerGiveIsCredit,
         date: entry.date,
         refNo: entry.serialNo || entry.id,
         notes: entry.memo,
       },
+      ...(exchangeAccount && exchangeAccount.id !== entry.customerId
+        ? [
+          {
+            id: `${entry.id}_exchange_give`,
+            customerId: exchangeAccount.id,
+            title: `Exchange with ${customer?.name || entry.customerName} ${customerGiveIsCredit ? 'paid' : 'received'} ${entry.giveAmount.toLocaleString()} ${entry.giveCurrency}`,
+            tag: 'Exchange',
+            category: 'exchange' as const,
+            amount: entry.giveAmount,
+            currency: entry.giveCurrency as CurrencyCode,
+            isCredit: !customerGiveIsCredit,
+            date: entry.date,
+            refNo: entry.serialNo || entry.id,
+            notes: entry.memo,
+          },
+          {
+            id: `${entry.id}_exchange_get`,
+            customerId: exchangeAccount.id,
+            title: `Exchange with ${customer?.name || entry.customerName} ${customerGiveIsCredit ? 'received' : 'paid'} ${entry.getAmount.toLocaleString()} ${entry.getCurrency}`,
+            tag: 'Exchange',
+            category: 'exchange' as const,
+            amount: entry.getAmount,
+            currency: entry.getCurrency as CurrencyCode,
+            isCredit: customerGiveIsCredit,
+            date: entry.date,
+            refNo: entry.serialNo || entry.id,
+            notes: entry.memo,
+          },
+        ]
+        : []),
     ]
     : [];
 
   useCustomerDetailsStore.getState().replaceLinkedTransactions(
-    [id, `${id}_give`, `${id}_get`],
+    [id, `${id}_give`, `${id}_get`, `${id}_exchange_give`, `${id}_exchange_get`],
     transactions
   );
 };

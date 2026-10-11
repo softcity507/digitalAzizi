@@ -10,6 +10,7 @@ export interface ExchangeData {
   toCurrency: CurrencyCode;
   toAmount: number;
   rate: number;
+  exchangeType?: 'BUY' | 'SELL';
 }
 
 export interface CashBookEntry {

@@ -28,8 +28,12 @@ interface CustomerRow {
   business_id: number | string | null;
 }
 
+const DEFAULT_EXCHANGE_ACCOUNT_DESCRIPTION = 'Default exchange account';
+const exchangeAccountCreation = new Map<string, Promise<CustomerRow>>();
+
 const mapCustomerRow = (row: CustomerRow): { user: RegisteredUser; customer: CustomerAccount } => {
   const slugId = String(row.id);
+  const isSystemDefault = row.description === DEFAULT_EXCHANGE_ACCOUNT_DESCRIPTION;
   const subtitleParts = [row.description, row.phone, row.address].filter(Boolean);
   const subtitle = subtitleParts.join(' • ') || 'Customer Account';
 
@@ -51,7 +55,7 @@ const mapCustomerRow = (row: CustomerRow): { user: RegisteredUser; customer: Cus
     name: row.name,
     subtitle,
     isDefault: false,
-    roleTag: 'Customer',
+    roleTag: isSystemDefault ? 'Exchange Account' : 'Customer',
   };
 
   const customer: CustomerAccount = {
@@ -60,6 +64,7 @@ const mapCustomerRow = (row: CustomerRow): { user: RegisteredUser; customer: Cus
     subtitle,
     phone: row.phone || undefined,
     businessId: row.business_id ? String(row.business_id) : undefined,
+    isSystemDefault,
     balances,
   };
 
@@ -117,6 +122,47 @@ const mapBusinessRow = (business: BusinessRow): BusinessProfile => ({
   isActive: Boolean(business.is_active),
   supportedCurrencies: parseBusinessCurrencies(business.supported_currencies),
 });
+
+const ensureDefaultExchangeCustomer = (business: BusinessProfile): Promise<CustomerRow> => {
+  const existingRequest = exchangeAccountCreation.get(business.id);
+  if (existingRequest) return existingRequest;
+
+  const request = (async () => {
+    const businessId = Number(business.id);
+    const { data: existing, error: lookupError } = await supabaseClient
+      .from('customers')
+      .select('*')
+      .eq('business_id', businessId)
+      .eq('description', DEFAULT_EXCHANGE_ACCOUNT_DESCRIPTION)
+      .maybeSingle();
+    if (lookupError) throw new Error(lookupError.message);
+    if (existing) return existing as CustomerRow;
+
+    const firstpayment = Object.fromEntries(business.supportedCurrencies.map((currency) => [currency, 0]));
+    const { data, error } = await supabaseClient
+      .from('customers')
+      .insert({
+        business_id: businessId,
+        name: 'Exchange Account',
+        phone: null,
+        address: null,
+        description: DEFAULT_EXCHANGE_ACCOUNT_DESCRIPTION,
+        firstpayment,
+      })
+      .select('*')
+      .single();
+    if (error) throw new Error(error.message);
+    return data as CustomerRow;
+  })();
+
+  exchangeAccountCreation.set(business.id, request);
+  void request.finally(() => {
+    if (exchangeAccountCreation.get(business.id) === request) {
+      exchangeAccountCreation.delete(business.id);
+    }
+  }).catch(() => undefined);
+  return request;
+};
 
 const getSignedInUser = async (): Promise<{ id: string; email: string }> => {
   let authUserId: string | null = null;
@@ -301,10 +347,21 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
     if (error) throw new Error(error.message);
 
+    const customerRows = [...(data ?? [])] as CustomerRow[];
+    for (const business of get().businesses) {
+      const hasExchangeAccount = customerRows.some((row) =>
+        String(row.business_id) === business.id
+        && row.description === DEFAULT_EXCHANGE_ACCOUNT_DESCRIPTION
+      );
+      if (!hasExchangeAccount) {
+        customerRows.push(await ensureDefaultExchangeCustomer(business));
+      }
+    }
+
     const mappedUsers: RegisteredUser[] = [];
     const mappedCustomers: CustomerAccount[] = [];
 
-    (data ?? []).forEach((row) => {
+    customerRows.forEach((row) => {
       const { user, customer } = mapCustomerRow(row as CustomerRow);
       mappedUsers.push(user);
       mappedCustomers.push(customer);
@@ -436,11 +493,40 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
     const createdBusiness = mapBusinessRow(data as BusinessRow);
 
+    let customerRow: CustomerRow;
+    try {
+      customerRow = await ensureDefaultExchangeCustomer(createdBusiness);
+    } catch (customerError) {
+      const customerErrorMessage = customerError instanceof Error ? customerError.message : String(customerError);
+      const { error: rollbackError } = await supabaseClient
+        .from('businesses')
+        .delete()
+        .eq('id', createdBusiness.id);
+      if (rollbackError) {
+        throw new Error(`Business was created, but its exchange account could not be created or rolled back: ${customerErrorMessage}; ${rollbackError.message}`);
+      }
+      throw new Error(`Unable to create the business exchange account: ${customerErrorMessage}`);
+    }
+
+    const { user: exchangeUser, customer: exchangeCustomer } = mapCustomerRow(customerRow);
+    useExchangeDeskStore.getState().registerCustomer(
+      exchangeCustomer.id,
+      exchangeCustomer.name,
+      currencies,
+    );
+
     set((s) => ({
-      businesses: [...s.businesses, createdBusiness],
+      businesses: [...s.businesses.filter((business) => business.id !== createdBusiness.id), createdBusiness],
+      users: [...s.users.filter((user) => user.id !== exchangeUser.id), exchangeUser],
+      customers: [...s.customers.filter((customer) => customer.id !== exchangeCustomer.id), exchangeCustomer],
       activeModal: null,
       editingBusiness: null,
     }));
+
+    if (createdBusiness.isActive) {
+      useCustomerDetailsStore.getState().setSelectedCustomerId(exchangeCustomer.id);
+      useExchangeDeskStore.getState().setCustomerId(exchangeCustomer.id);
+    }
 
     return createdBusiness;
   },

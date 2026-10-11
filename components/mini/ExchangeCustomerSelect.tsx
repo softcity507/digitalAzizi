@@ -30,7 +30,7 @@ export default function ExchangeCustomerSelect() {
   const customers = useMemo(() => {
     if (!activeBusiness) return [];
     return allCustomers
-      .filter((customer) => customer.businessId === activeBusiness.id)
+      .filter((customer) => customer.businessId === activeBusiness.id && !customer.isSystemDefault)
       .map((customer) => {
         const customerTransactions = ledgerTransactions.filter((transaction) => transaction.customerId === customer.id);
         const balances = currencies.map((currency) => {
