@@ -64,13 +64,18 @@ export default function CustomerLedgerContainer() {
     return businessCustomers.map((customer): CustomerAccount => {
       const customerTransactions = businessTransactions.filter((transaction) => transaction.customerId === customer.id);
       const balances = currencies.map((currency) => {
-        const openingBalance = customer.balances
-          .filter((balance) => balance.currency === currency)
-          .reduce((total, balance) => total + parseAmount(balance.amount), 0);
-        const transactionBalance = customerTransactions
-          .filter((transaction) => transaction.currency === currency && transaction.category !== 'initial')
-          .reduce((total, transaction) => total + (transaction.isCredit ? transaction.amount : -transaction.amount), 0);
-        const amount = openingBalance + transactionBalance;
+        const currencyTransactions = customerTransactions.filter((transaction) => transaction.currency === currency);
+        const amount = currencyTransactions.length > 0
+          ? currencyTransactions.reduce(
+            (total, transaction) => total + (transaction.isCredit ? transaction.amount : -transaction.amount),
+            0,
+          )
+          : (() => {
+            const openingBalance = customer.balances.find((balance) => balance.currency === currency);
+            if (!openingBalance) return 0;
+            const openingAmount = Math.abs(parseAmount(openingBalance.amount));
+            return openingBalance.isCredit ? openingAmount : -openingAmount;
+          })();
 
         return {
           currency,
