@@ -4,7 +4,8 @@
     "notifications": "বিজ্ঞপ্তি",
     "noNotifications": "কোন নতুন বিজ্ঞপ্তি নেই",
     "darkMode": "ডার্ক মোড",
-    "lightMode": "লাইট মোড"
+    "lightMode": "লাইট মোড",
+    "closeNotifications": "বন্ধ করুন"
   },
   "Navigation": {
     "customers": "গ্রাহক",
@@ -38,7 +39,15 @@
     "instantPdfSubtitle": "দৈনিক রোজনামচা",
     "exploreDemo": "লগইন ছাড়াই ডেমো লেজার দেখুন",
     "copyright": "ডিজিটাল আজিজি এক্সচেঞ্জ ক্লাউড সিস্টেম © ২০২৫। সর্বস্বত্ব সংরক্ষিত।",
-    "compliance": "সরাফ হাওয়ালা হিসাবরক্ষণ প্রোটোকল মেনে প্রস্তুত"
+    "compliance": "সরাফ হাওয়ালা হিসাবরক্ষণ প্রোটোকল মেনে প্রস্তুত",
+    "chooseAccount": "Google অ্যাকাউন্ট নির্বাচন করুন",
+    "selectAccount": "সাইন ইন করতে একটি অ্যাকাউন্ট বেছে নিন:",
+    "systemManager": "সিস্টেম ম্যানেজার",
+    "select": "বাছাই করুন",
+    "orEnterEmail": "অথবা অন্য Google ইমেইল দিন:",
+    "continue": "চালিয়ে যান",
+    "showFewer": "কম দেখান",
+    "viewAll": "সবগুলো দেখুন ({count})"
   },
   "CustomerBook": {
     "searchPlaceholder": "গ্রাহকের নাম বা ফোন নম্বর খুঁজুন...",
@@ -51,9 +60,13 @@
     "addCustomer": "নতুন গ্রাহক যোগ করুন",
     "cust": "গ্রাহক",
     "desk": "ডেস্ক",
-    "net": "নেট",
+    "net": "মোট ব্যালেন্স",
     "balanced": "ভারসাম্যপূর্ণ",
-    "noAccountsFound": "অনুসন্ধানের সাথে মিলে এমন কোন একাউন্ট পাওয়া যায়নি।"
+    "noAccountsFound": "অনুসন্ধানের সাথে মিলে এমন কোন একাউন্ট পাওয়া যায়নি।",
+    "credit": "জমা (ক্রেডিট)",
+    "debit": "খরচ (ডেবিট)",
+    "selectCustomer": "গ্রাহক নির্বাচন করুন",
+    "allCustomers": "সকল গ্রাহক"
   },
   "CustomerDetails": {
     "currency": "মুদ্রা",
@@ -66,7 +79,7 @@
     "export": "রপ্তানি (Export)",
     "noTransactions": "কোনো লেনদেন পাওয়া যায়নি",
     "noTransactionsDesc": "আপনার ফিল্টারের সাথে মিলে এমন কোনো লেনদেন নেই।",
-    "editTransaction": "লেনদেন সম্পাদনা করুন",
+    "editTransaction": "এন্ট্রি সম্পাদনা",
     "deleteConfirmTitle": "এন্ট্রি মুছুন",
     "deleteConfirmDesc": "আপনি কি নিশ্চিত যে এই লেনদেনটি মুছতে চান?",
     "saveChanges": "পরিবর্তন সংরক্ষণ করুন",
@@ -75,7 +88,15 @@
     "title": "শিরোনাম",
     "amount": "পরিমাণ",
     "refNo": "রেফারেন্স #",
-    "notes": "নোট / বিবরণ"
+    "notes": "নোট / বিবরণ",
+    "showingFor": "প্রদর্শিত হচ্ছে:",
+    "clearFilter": "ফিল্টার মুছুন",
+    "showAllDates": "সকল তারিখ",
+    "sendWhatsApp": "হোয়াটসঅ্যাপ",
+    "deleteTransaction": "এন্ট্রি মুছুন",
+    "exportPdf": "PDF এক্সপোর্ট",
+    "whatsappBalances": "হোয়াটসঅ্যাপে সব ব্যালেন্স পাঠান",
+    "noCurrenciesConfigured": "কোন মুদ্রা কনফিগার নেই"
   },
   "CashBook": {
     "title": "ক্যাশ বুক (নগদ খাতা)",
@@ -155,7 +176,14 @@
     "confirmTransfer": "স্থানান্তর ও বিনিময় নিশ্চিত করুন",
     "interUserBridge": "ব্যবহারকারীদের মধ্যে স্থানান্তর ব্রিজ",
     "swapUsers": "ব্যবহারকারী অদলবদল",
-    "exchangedMemo": "{rate} হারে {fromAmount} {fromCurrency} কে {toAmount} {toCurrency}-এ বিনিময় করা হয়েছে"
+    "exchangedMemo": "{rate} হারে {fromAmount} {fromCurrency} কে {toAmount} {toCurrency}-এ বিনিময় করা হয়েছে",
+    "allCustomers": "সকল গ্রাহক",
+    "clearFilter": "ফিল্টার মুছুন",
+    "showingFor": "প্রদর্শিত হচ্ছে:",
+    "showAllDates": "সকল তারিখ",
+    "noTransactionsAll": "কোন লেনদেন নেই",
+    "noCurrenciesConfigured": "মুদ্রা সেট নেই",
+    "saving": "সংরক্ষণ হচ্ছে..."
   },
   "ExchangeDesk": {
     "companyName": "আল-রহমান কোম্পানি",
@@ -190,7 +218,16 @@
     "delete": "মুছুন",
     "validationError": "দয়া করে সঠিক পরিমাণ এবং বিনিময় হার লিখুন।",
     "memo": "নোট / বিবরণ (ঐচ্ছিক)",
-    "serial": "ভাউচার / ক্রমিক নং"
+    "serial": "ভাউচার / ক্রমিক নং",
+    "multiply": "গুণ",
+    "divide": "ভাগ",
+    "committed": "সম্পন্ন!",
+    "saving": "সংরক্ষণ হচ্ছে...",
+    "searching": "খোঁজা হচ্ছে...",
+    "accountsFound": "{count} টি অ্যাকাউন্ট",
+    "searchCustomerPlaceholder": "গ্রাহক খুঁজুন...",
+    "noCustomersFound": "কোন গ্রাহক পাওয়া যায়নি",
+    "memoPlaceholder": "যেমন: সাররাফ সেটেলমেন্ট"
   },
   "Settings": {
     "configuration": "কনফিগারেশন",
@@ -208,8 +245,8 @@
     "addNewBusiness": "নতুন ব্যবসা যোগ করুন",
     "editBusiness": "ব্যবসা সম্পাদনা করুন",
     "deleteBusiness": "ব্যবসা মুছুন",
-    "confirmDeleteBusinessTitle": "ব্যবসার প্রোফাইল মুছুন",
-    "confirmDeleteBusinessDesc": "আপনি কি নিশ্চিত যে আপনি এই ব্যবসার প্রোফাইলটি মুছতে চান? এই কাজটি পূর্বাবස්ථায় ফেরানো যাবে না।",
+    "confirmDeleteBusinessTitle": "ব্যবসা প্রোফাইল মুছুন",
+    "confirmDeleteBusinessDesc": "আপনি কি নিশ্চিতভাবে এই প্রোফাইলটি মুছতে চান?",
     "businessName": "ব্যবসার নাম",
     "businessDescription": "ব্যবসার বিবরণ / উপশিরোনাম",
     "currenciesLockedNotice": "ডিল মুদ্রাগুলি নির্ধারিত এবং পরিবর্তন করা যাবে না।",
@@ -272,6 +309,25 @@
       "totalCredit": "মোট ক্রেডিট (+)",
       "totalDebit": "মোট ডেবিট (-)",
       "netBalance": "নিট ব্যালেন্স"
-    }
+    },
+    "saving": "সংরক্ষণ হচ্ছে...",
+    "customersCount": "{count} গ্রাহক",
+    "deleteBusinessTitle": "ব্যবসা প্রোফাইল মুছুন",
+    "deleteBusinessDesc": "আপনি কি নিশ্চিতভাবে এই প্রোফাইলটি মুছতে চান?",
+    "firstName": "প্রথম নাম",
+    "lastName": "শেষ নাম",
+    "phoneNumber": "ফোন",
+    "address": "ঠিকানা",
+    "openingBalance": "প্রাথমিক ব্যালেন্স",
+    "noCurrencies": "কোন মুদ্রা নেই",
+    "amountDesc": "বিবরণ",
+    "businessPlaceholder": "যেমন: কাবুল এক্সচেঞ্জ",
+    "businessDescPlaceholder": "যেমন: প্রধান ট্রেডিং হাব",
+    "amount": "পরিমাণ",
+    "currency": "মুদ্রা",
+    "createNewBusiness": "নতুন ব্যবসা তৈরি করুন",
+    "clickToToggle": "টগল করতে ক্লিক করুন",
+    "subtitle": "সাবটাইটেল",
+    "defaultActive": "ডিফল্ট সক্রিয়"
   }
 }

@@ -243,7 +243,7 @@ export default function ExchangeEditModal() {
               type="text"
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
-              placeholder="e.g. Herat Sarraf settlement"
+              placeholder={t('memoPlaceholder')}
               className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm focus:outline-none focus:border-brand"
             />
           </div>

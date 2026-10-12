@@ -107,7 +107,7 @@ export default function AddBussinessModal() {
           {/* 1. Name Section: First Name & Last Name */}
           <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="block text-xs font-semibold text-content-muted mb-1">First Name *</label>
+              <label className="block text-xs font-semibold text-content-muted mb-1">{t('firstName')} *</label>
               <input
                 type="text"
                 value={firstName}
@@ -118,7 +118,7 @@ export default function AddBussinessModal() {
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-content-muted mb-1">Last Name</label>
+              <label className="block text-xs font-semibold text-content-muted mb-1">{t('lastName')}</label>
               <input
                 type="text"
                 value={lastName}
@@ -132,7 +132,7 @@ export default function AddBussinessModal() {
           {/* 2. Contact Section: Phone & Address */}
           <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="block text-xs font-semibold text-content-muted mb-1">Phone Number</label>
+              <label className="block text-xs font-semibold text-content-muted mb-1">{t('phoneNumber')}</label>
               <input
                 type="text"
                 value={phone}
@@ -142,7 +142,7 @@ export default function AddBussinessModal() {
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-content-muted mb-1">Address</label>
+              <label className="block text-xs font-semibold text-content-muted mb-1">{t('address')}</label>
               <input
                 type="text"
                 value={address}
@@ -156,12 +156,12 @@ export default function AddBussinessModal() {
           {/* 3. Initial Amount & Currency Selection */}
           <div className="p-3.5 rounded-2xl bg-surface-subtle/50 border border-surface-border space-y-2.5">
             <span className="block text-xs font-bold uppercase tracking-wider text-content-primary">
-              Opening Balance / Initial Amount
+              {t('openingBalance')}
             </span>
 
             <div className="grid grid-cols-3 gap-2">
               <div className="col-span-2">
-                <label className="block text-[11px] font-semibold text-content-muted mb-1">Amount</label>
+                <label className="block text-[11px] font-semibold text-content-muted mb-1">{t('amount')}</label>
                 <input
                   type="number"
                   min="0"
@@ -173,13 +173,13 @@ export default function AddBussinessModal() {
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-semibold text-content-muted mb-1">Currency</label>
+                <label className="block text-[11px] font-semibold text-content-muted mb-1">{t('currency')}</label>
                 <select
                   value={selectedAmountCurrency ?? ''}
                   onChange={(e) => setAmountCurrency(e.target.value as CurrencyCode)}
                   className="w-full h-[38px] px-2.5 rounded-xl bg-surface border border-surface-border text-sm font-bold text-content-primary focus:outline-none focus:ring-1 focus:ring-brand uppercase cursor-pointer"
                 >
-                  {businessCurrencies.length === 0 && <option value="">No supported currencies</option>}
+                  {businessCurrencies.length === 0 && <option value="">{t('noCurrencies')}</option>}
                   {businessCurrencies.map((c) => (
                     <option key={c} value={c}>
                       {c}
@@ -190,7 +190,7 @@ export default function AddBussinessModal() {
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-content-muted mb-1">Amount Description</label>
+              <label className="block text-[11px] font-semibold text-content-muted mb-1">{t('amountDesc')}</label>
               <input
                 type="text"
                 value={amountDescription}

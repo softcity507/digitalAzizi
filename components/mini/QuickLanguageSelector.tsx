@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useTransition, useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { LANGUAGES, SupportedLocale } from '@/i18n/languages';
@@ -8,6 +8,7 @@ import { LANGUAGES, SupportedLocale } from '@/i18n/languages';
 const PRIMARY_CODES: SupportedLocale[] = ['en', 'ps', 'fa', 'ar'];
 
 export default function QuickLanguageSelector({ className = '' }: { className?: string }) {
+  const t = useTranslations('Landing');
   const currentLocale = useLocale() as SupportedLocale;
   const router = useRouter();
   const pathname = usePathname();
@@ -76,14 +77,14 @@ export default function QuickLanguageSelector({ className = '' }: { className?: 
         })}
       </div>
 
-      {/* Toggle to view all 12 languages from languages.ts */}
+      {/* Toggle to view all languages from languages.ts */}
       <div className="flex justify-center pt-1">
         <button
           type="button"
           onClick={() => setShowAll(prev => !prev)}
           className="text-xs font-semibold text-brand hover:text-brand-300 transition-colors"
         >
-          {showAll ? 'Show Fewer Languages' : `View All ${LANGUAGES.length} Languages`}
+          {showAll ? t('showFewer') : t('viewAll', { count: LANGUAGES.length })}
         </button>
       </div>
     </div>

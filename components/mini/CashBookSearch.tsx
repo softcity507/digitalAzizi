@@ -88,7 +88,7 @@ export default function CashBookSearch() {
             }`}
           >
             <Users className="w-3.5 h-3.5" />
-            <span>All Customers</span>
+            <span>{t('allCustomers')}</span>
             <span
               className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-extrabold ${
                 selectedCustomerId === null

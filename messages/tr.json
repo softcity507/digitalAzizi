@@ -4,7 +4,8 @@
     "notifications": "Bildirimler",
     "noNotifications": "Yeni bildirim yok",
     "darkMode": "Karanlık Mod",
-    "lightMode": "Aydınlık Mod"
+    "lightMode": "Aydınlık Mod",
+    "closeNotifications": "Kapat"
   },
   "Navigation": {
     "customers": "Müşteriler",
@@ -38,7 +39,15 @@
     "instantPdfSubtitle": "Günlük Roznamcha",
     "exploreDemo": "Giriş Yapmadan Demo Defteri İncele",
     "copyright": "DigitalAzizi Döviz Bulut Sistemi © 2025. Tüm Hakları Saklıdır.",
-    "compliance": "Saraf Havale Muhasebe Protokollerine Uygun"
+    "compliance": "Saraf Havale Muhasebe Protokollerine Uygun",
+    "chooseAccount": "Google Hesabı Seçin",
+    "selectAccount": "Giriş yapmak için bir hesap seçin:",
+    "systemManager": "Sistem Yöneticisi",
+    "select": "Seç",
+    "orEnterEmail": "Veya başka bir Google e-postası girin:",
+    "continue": "Devam Et",
+    "showFewer": "Daha Az Göster",
+    "viewAll": "Tümünü Gör ({count})"
   },
   "CustomerBook": {
     "searchPlaceholder": "Müşteri adı veya telefon ara...",
@@ -53,7 +62,11 @@
     "desk": "Kasa",
     "net": "Net",
     "balanced": "Dengeli",
-    "noAccountsFound": "Kriterlerinize uygun hesap bulunamadı."
+    "noAccountsFound": "Kriterlerinize uygun hesap bulunamadı.",
+    "credit": "Alacak",
+    "debit": "Borç",
+    "selectCustomer": "Müşteri Seç",
+    "allCustomers": "Tüm Müşteriler"
   },
   "CustomerDetails": {
     "currency": "PARA BİRİMİ",
@@ -66,7 +79,7 @@
     "export": "Dışa Aktar",
     "noTransactions": "İşlem bulunamadı",
     "noTransactionsDesc": "Filtreleme kriterlerinize uygun kayıt bulunamadı.",
-    "editTransaction": "İşlemi Düzenle",
+    "editTransaction": "Kaydı Düzenle",
     "deleteConfirmTitle": "Kaydı Sil",
     "deleteConfirmDesc": "Bu işlemi silmek istediğinizden emin misiniz?",
     "saveChanges": "Değişiklikleri Kaydet",
@@ -75,7 +88,15 @@
     "title": "Başlık",
     "amount": "Tutar",
     "refNo": "Referans No",
-    "notes": "Notlar / Açıklama"
+    "notes": "Notlar / Açıklama",
+    "showingFor": "Gösterilen:",
+    "clearFilter": "Filtreyi Temizle",
+    "showAllDates": "Tüm Tarihler",
+    "sendWhatsApp": "WhatsApp",
+    "deleteTransaction": "Kaydı Sil",
+    "exportPdf": "PDF Dışa Aktar",
+    "whatsappBalances": "Tüm bakiyeleri WhatsApp ile gönder",
+    "noCurrenciesConfigured": "Para birimi yapılandırılmadı"
   },
   "CashBook": {
     "title": "Kasa Defteri",
@@ -155,7 +176,14 @@
     "confirmTransfer": "Transferi ve Takası Onayla",
     "interUserBridge": "Kullanıcılar Arası Transfer Köprüsü",
     "swapUsers": "Kullanıcıları Değiştir",
-    "exchangedMemo": "{fromAmount} {fromCurrency}, {rate} kurundan {toAmount} {toCurrency} ile takas edildi"
+    "exchangedMemo": "{fromAmount} {fromCurrency}, {rate} kurundan {toAmount} {toCurrency} ile takas edildi",
+    "allCustomers": "Tüm Müşteriler",
+    "clearFilter": "Filtreyi Temizle",
+    "showingFor": "Gösterilen:",
+    "showAllDates": "Tüm Tarihler",
+    "noTransactionsAll": "İşlem bulunamadı",
+    "noCurrenciesConfigured": "Para birimi yapılandırılmadı",
+    "saving": "Kaydediliyor..."
   },
   "ExchangeDesk": {
     "companyName": "El-Rehman Şti.",
@@ -190,7 +218,16 @@
     "delete": "Sil",
     "validationError": "Lütfen geçerli bir tutar ve kur girin.",
     "memo": "Açıklama (İsteğe Bağlı)",
-    "serial": "Fiş / Sıra No"
+    "serial": "Fiş / Sıra No",
+    "multiply": "Çarp",
+    "divide": "Böl",
+    "committed": "İşlem Başarılı!",
+    "saving": "Kaydediliyor...",
+    "searching": "Aranıyor...",
+    "accountsFound": "{count} hesap",
+    "searchCustomerPlaceholder": "Müşteri ara...",
+    "noCustomersFound": "Müşteri bulunamadı",
+    "memoPlaceholder": "örn. Havale mutabakatı"
   },
   "Settings": {
     "configuration": "YAPILANDIRMA",
@@ -209,7 +246,7 @@
     "editBusiness": "İşletmeyi Düzenle",
     "deleteBusiness": "İşletmeyi Sil",
     "confirmDeleteBusinessTitle": "İşletme Profilini Sil",
-    "confirmDeleteBusinessDesc": "Bu işletme profilini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "confirmDeleteBusinessDesc": "Bu işletme profilini silmek istediğinizden emin misiniz?",
     "businessName": "İşletme Adı",
     "businessDescription": "İşletme Açıklaması / Alt Başlık",
     "currenciesLockedNotice": "İşlem para birimleri sabittir ve değiştirilemez.",
@@ -272,6 +309,25 @@
       "totalCredit": "Toplam Alacak (+)",
       "totalDebit": "Toplam Borç (-)",
       "netBalance": "Net Bakiye"
-    }
+    },
+    "saving": "Kaydediliyor...",
+    "customersCount": "{count} Müşteri",
+    "deleteBusinessTitle": "İşletme Profilini Sil",
+    "deleteBusinessDesc": "Bu işletme profilini silmek istediğinizden emin misiniz?",
+    "firstName": "Ad",
+    "lastName": "Soyad",
+    "phoneNumber": "Telefon",
+    "address": "Adres",
+    "openingBalance": "Açılış Bakiyesi",
+    "noCurrencies": "Para birimi yok",
+    "amountDesc": "Açıklama",
+    "businessPlaceholder": "örn. Kabil Döviz",
+    "businessDescPlaceholder": "örn. Merkez Şube",
+    "amount": "Tutar",
+    "currency": "Para Birimi",
+    "createNewBusiness": "Yeni İşletme Oluştur",
+    "clickToToggle": "Geçiş için tıklayın",
+    "subtitle": "Alt başlık",
+    "defaultActive": "Varsayılan Aktif"
   }
 }

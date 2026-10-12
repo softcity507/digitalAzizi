@@ -2,12 +2,13 @@
 
 import { useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 
 export default function ClientNameCard() {
+  const t = useTranslations('CustomerBook');
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = useLocale();
@@ -78,7 +79,7 @@ export default function ClientNameCard() {
         <select
           value={currentCustomer?.id || effectiveCustomerId}
           onChange={(e) => handleSelectCustomer(e.target.value)}
-          aria-label="Select Customer"
+          aria-label={t('selectCustomer')}
           className="bg-surface-subtle border border-surface-border text-xs font-semibold rounded-xl px-3 py-2 text-content-primary focus:outline-none focus:ring-1 focus:ring-brand cursor-pointer"
         >
           {activeCustomers.map((customer) => (

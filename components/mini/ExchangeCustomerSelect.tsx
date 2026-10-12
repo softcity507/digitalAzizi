@@ -130,9 +130,9 @@ export default function ExchangeCustomerSelect() {
         {searchQuery.trim() && (
           <span className="text-[10px] font-bold text-brand flex items-center gap-1">
             {isSearching ? (
-              <span className="animate-pulse">Searching in 2s...</span>
+              <span className="animate-pulse">{t('searching')}</span>
             ) : (
-              <span>{filteredCustomers.length} accounts found</span>
+              <span>{t('accountsFound', { count: filteredCustomers.length })}</span>
             )}
           </span>
         )}
@@ -157,7 +157,7 @@ export default function ExchangeCustomerSelect() {
           value={searchQuery}
           onFocus={() => setIsOpen(true)}
           onChange={(e) => handleSearchChange(e.target.value)}
-          placeholder="Search customer by name, market, phone..."
+          placeholder={t('searchCustomerPlaceholder')}
           className="w-full pl-10 pr-9 py-2 rounded-xl bg-surface-subtle border border-surface-border text-xs sm:text-sm text-content-primary placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand transition-all shadow-inner"
         />
         {searchQuery && (
@@ -228,12 +228,12 @@ export default function ExchangeCustomerSelect() {
             <div className="p-6 text-center space-y-2">
               <div className="w-7 h-7 border-2 border-brand border-t-transparent rounded-full animate-spin mx-auto" />
               <p className="text-xs font-bold text-content-muted animate-pulse">
-                Searching customer database (2s)...
+                {t('searching')}
               </p>
             </div>
           ) : filteredCustomers.length === 0 ? (
             <div className="p-4 text-center text-xs font-semibold text-content-muted">
-              No matching customers found for &quot;{searchQuery}&quot;
+              {t('noCustomersFound')}
             </div>
           ) : (
             filteredCustomers.map((customer) => {

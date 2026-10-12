@@ -94,11 +94,11 @@ export default function CustomerCashTransactionActions() {
                 <input value={memo} onChange={(event) => setMemo(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-surface-border bg-surface-input px-3 text-sm text-content-primary" />
               </label>
               {error && <p role="alert" className="text-sm text-debit">Unable to save: {error}</p>}
-              {currencies.length === 0 && <p role="alert" className="text-sm text-debit">No currencies are configured for this business.</p>}
+              {currencies.length === 0 && <p role="alert" className="text-sm text-debit">{t('noCurrenciesConfigured')}</p>}
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setType(null)} className="h-11 w-1/2 rounded-xl border border-surface-border bg-surface-hover text-sm font-semibold text-content-secondary">{t('cancel')}</button>
                 <button type="submit" disabled={saving || currencies.length === 0} className={`h-11 w-1/2 rounded-xl text-sm font-bold text-white disabled:opacity-50 ${type === 'cash_in' ? 'bg-credit-btn' : 'bg-debit-btn'}`}>
-                  {saving ? 'Saving…' : type === 'cash_in' ? t('confirmCashIn') : t('confirmCashOut')}
+                  {saving ? t('saving') : type === 'cash_in' ? t('confirmCashIn') : t('confirmCashOut')}
                 </button>
               </div>
             </form>

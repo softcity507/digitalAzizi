@@ -4,7 +4,8 @@
     "notifications": "Notifications",
     "noNotifications": "No new notifications",
     "darkMode": "Dark Mode",
-    "lightMode": "Light Mode"
+    "lightMode": "Light Mode",
+    "closeNotifications": "Close"
   },
   "Navigation": {
     "customers": "Customers",
@@ -38,7 +39,15 @@
     "instantPdfSubtitle": "Daily Roznamcha",
     "exploreDemo": "Explore Demo Ledger without Sign-In",
     "copyright": "DigitalAzizi Exchange Cloud System © 2025. All Rights Reserved.",
-    "compliance": "Compliant with Saraf Hawala Bookkeeping Protocols"
+    "compliance": "Compliant with Saraf Hawala Bookkeeping Protocols",
+    "chooseAccount": "Choose Account",
+    "selectAccount": "Select account:",
+    "systemManager": "System Manager",
+    "select": "Select",
+    "orEnterEmail": "Or enter Google email:",
+    "continue": "Continue",
+    "showFewer": "Show Less",
+    "viewAll": "View All ({count})"
   },
   "CustomerBook": {
     "searchPlaceholder": "Search customer or phone...",
@@ -53,7 +62,11 @@
     "desk": "Desk",
     "net": "Net",
     "balanced": "Balanced",
-    "noAccountsFound": "No accounts found matching your criteria."
+    "noAccountsFound": "No accounts found matching your criteria.",
+    "credit": "Credit",
+    "debit": "Debit",
+    "selectCustomer": "Select Customer",
+    "allCustomers": "All Customers"
   },
   "CustomerDetails": {
     "currency": "CURRENCY",
@@ -66,7 +79,7 @@
     "export": "Export",
     "noTransactions": "No transactions found",
     "noTransactionsDesc": "No ledger entries match your filter criteria.",
-    "editTransaction": "Edit Ledger Entry",
+    "editTransaction": "Edit Entry",
     "deleteConfirmTitle": "Delete Entry",
     "deleteConfirmDesc": "Are you sure you want to delete this ledger transaction? This will update the customer balance immediately.",
     "saveChanges": "Save Changes",
@@ -75,7 +88,15 @@
     "title": "Title",
     "amount": "Amount",
     "refNo": "Reference #",
-    "notes": "Notes / Remittance"
+    "notes": "Notes / Remittance",
+    "showingFor": "Showing for:",
+    "clearFilter": "Clear Filter",
+    "showAllDates": "All Dates",
+    "sendWhatsApp": "WhatsApp",
+    "deleteTransaction": "Delete Entry",
+    "exportPdf": "Export PDF",
+    "whatsappBalances": "Send all balances via WhatsApp",
+    "noCurrenciesConfigured": "No currencies configured"
   },
   "CashBook": {
     "title": "Cash Book",
@@ -155,7 +176,14 @@
     "confirmTransfer": "Confirm Transfer & Exchange",
     "interUserBridge": "Inter-User Transfer Bridge",
     "swapUsers": "Swap Users",
-    "exchangedMemo": "Exchanged {fromAmount} {fromCurrency} to {toAmount} {toCurrency} @ {rate}"
+    "exchangedMemo": "Exchanged {fromAmount} {fromCurrency} to {toAmount} {toCurrency} @ {rate}",
+    "allCustomers": "All Customers",
+    "clearFilter": "Clear Filter",
+    "showingFor": "Showing for:",
+    "showAllDates": "All Dates",
+    "noTransactionsAll": "No transactions",
+    "noCurrenciesConfigured": "No currencies configured",
+    "saving": "Saving..."
   },
   "ExchangeDesk": {
     "companyName": "Al-Rehman Co",
@@ -190,7 +218,16 @@
     "delete": "Delete",
     "validationError": "Please enter a valid amount and exchange rate.",
     "memo": "Memo / Notes (Optional)",
-    "serial": "Voucher / Serial #"
+    "serial": "Voucher / Serial #",
+    "multiply": "Multiply",
+    "divide": "Divide",
+    "committed": "Committed!",
+    "saving": "Saving...",
+    "searching": "Searching...",
+    "accountsFound": "{count} accounts",
+    "searchCustomerPlaceholder": "Search customer...",
+    "noCustomersFound": "No customers found",
+    "memoPlaceholder": "e.g. Settlement memo"
   },
   "Settings": {
     "edit": "Edit",
@@ -272,6 +309,25 @@
       "totalCredit": "Total Credit (+)",
       "totalDebit": "Total Debit (-)",
       "netBalance": "Net Balance"
-    }
+    },
+    "saving": "Saving...",
+    "customersCount": "{count} Customers",
+    "confirmDeleteBusinessTitle": "Delete Business Profile",
+    "confirmDeleteBusinessDesc": "Are you sure you want to delete this business profile? This action cannot be undone.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phoneNumber": "Phone",
+    "address": "Address",
+    "openingBalance": "Opening Balance",
+    "noCurrencies": "No currencies",
+    "amountDesc": "Description",
+    "businessPlaceholder": "e.g. Kabul Express Hawala",
+    "businessDescPlaceholder": "e.g. Primary Trading Hub",
+    "amount": "Amount",
+    "currency": "Currency",
+    "createNewBusiness": "Create New Business",
+    "clickToToggle": "Click to toggle",
+    "subtitle": "Subtitle",
+    "defaultActive": "Default Active"
   }
 }

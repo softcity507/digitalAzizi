@@ -141,7 +141,7 @@ export default function BusinessProfilesSection() {
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-400 hover:bg-sky-500 text-slate-950 text-xs font-bold shadow-sm transition-all cursor-pointer"
         >
           {isAdding ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
-          <span>{isAdding ? t('cancel') : 'Add Business'}</span>
+          <span>{isAdding ? t('cancel') : t('addNewBusiness')}</span>
         </button>
       </div>
 
@@ -159,10 +159,10 @@ export default function BusinessProfilesSection() {
         >
           <div className="flex items-center justify-between pb-1 border-b border-surface-border">
             <h4 className="text-xs font-bold uppercase tracking-wider text-sky-400">
-              Create New Business
+              {t('createNewBusiness')}
             </h4>
             <span className="text-[10px] text-content-muted">
-              Select any 3 currencies
+              {t('select3Currencies')}
             </span>
           </div>
 
@@ -170,13 +170,13 @@ export default function BusinessProfilesSection() {
             {/* 1. Business Name */}
             <div>
               <label className="block text-xs font-semibold text-content-muted mb-1">
-                Business Name *
+                {t('businessName')} *
               </label>
               <input
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                placeholder="e.g. Herat Exchange & Settlement"
+                placeholder={t('businessPlaceholder')}
                 required
                 className="w-full px-3 py-2 text-xs sm:text-sm font-bold bg-surface-subtle border border-surface-border rounded-xl text-content-primary focus:outline-none focus:ring-1 focus:ring-sky-400"
               />
@@ -185,13 +185,13 @@ export default function BusinessProfilesSection() {
             {/* 2. Business Description */}
             <div>
               <label className="block text-xs font-semibold text-content-muted mb-1">
-                Description / Subtitle
+                {t('businessDescription')}
               </label>
               <input
                 type="text"
                 value={newSubtitle}
                 onChange={(e) => setNewSubtitle(e.target.value)}
-                placeholder="e.g. Primary Trading Vault, Herat Gate"
+                placeholder={t('businessDescPlaceholder')}
                 className="w-full px-3 py-2 text-xs sm:text-sm bg-surface-subtle border border-surface-border rounded-xl text-content-primary focus:outline-none focus:ring-1 focus:ring-sky-400"
               />
             </div>
@@ -199,8 +199,8 @@ export default function BusinessProfilesSection() {
             {/* 3. Currency Selection (Any 3) */}
             <div className="space-y-1.5 pt-1">
               <div className="flex items-center justify-between text-xs font-semibold text-content-muted">
-                <span>Select 3 Currencies ({newCurrencies.length}/3)</span>
-                <span className="text-[10px] text-slate-400">Click to toggle</span>
+                <span>{t('dealCurrencies')} ({newCurrencies.length}/3)</span>
+                <span className="text-[10px] text-slate-400">{t('clickToToggle')}</span>
               </div>
               <div className="grid grid-cols-5 gap-1.5">
                 {AVAILABLE_CURRENCIES.map((curr) => {
@@ -240,7 +240,7 @@ export default function BusinessProfilesSection() {
               {isCreating ? (
                 <>
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>{t('saving') || 'Saving...'}</span>
+                  <span>{t('saving')}</span>
                 </>
               ) : (
                 t('save')
@@ -270,7 +270,7 @@ export default function BusinessProfilesSection() {
                         type="text"
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
-                        placeholder="Business Name"
+                        placeholder={t('businessName')}
                         className="w-full px-2.5 py-1.5 text-sm font-bold bg-surface-subtle border border-surface-border rounded-lg text-content-primary focus:outline-none focus:ring-1 focus:ring-emerald-500"
                         autoFocus
                       />
@@ -278,7 +278,7 @@ export default function BusinessProfilesSection() {
                         type="text"
                         value={editSubtitle}
                         onChange={(e) => setEditSubtitle(e.target.value)}
-                        placeholder="Subtitle"
+                        placeholder={t('subtitle')}
                         className="w-full px-2.5 py-1 text-xs bg-surface-subtle border border-surface-border rounded-lg text-content-muted focus:outline-none focus:ring-1 focus:ring-emerald-500"
                       />
                     </div>
@@ -290,7 +290,7 @@ export default function BusinessProfilesSection() {
                         {b.isActive ? (
                           <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
                             <Check className="w-3 h-3" />
-                            <span>Default Active</span>
+                            <span>{t('defaultActive')}</span>
                           </span>
                         ) : (
                           <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-surface-subtle text-content-muted border border-surface-border">
@@ -311,7 +311,7 @@ export default function BusinessProfilesSection() {
                       <button
                         type="button"
                         onClick={() => handleSaveEdit(b.id)}
-                        title="Save"
+                        title={t('save')}
                         className="p-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 transition-colors cursor-pointer"
                       >
                         <Check className="w-4 h-4" />
@@ -321,7 +321,7 @@ export default function BusinessProfilesSection() {
                       <button
                         type="button"
                         onClick={handleCancelEdit}
-                        title="Cancel"
+                        title={t('cancel')}
                         className="p-2 rounded-xl bg-surface-subtle hover:bg-surface-hover border border-surface-border text-content-muted transition-colors cursor-pointer"
                       >
                         <X className="w-4 h-4" />
@@ -333,11 +333,11 @@ export default function BusinessProfilesSection() {
                         <button
                           type="button"
                           onClick={() => void handleSetActive(b.id)}
-                          title="Set as Default Business"
+                          title={t('setDefault')}
                           className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface-subtle hover:bg-emerald-500/15 hover:text-emerald-400 hover:border-emerald-500/30 border border-surface-border text-content-secondary text-xs font-semibold transition-colors cursor-pointer"
                         >
                           <ArrowRightLeft className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">Set Default</span>
+                          <span className="hidden sm:inline">{t('setDefault')}</span>
                         </button>
                       ) : null}
 
@@ -345,7 +345,7 @@ export default function BusinessProfilesSection() {
                       <button
                         type="button"
                         onClick={() => handleStartEdit(b)}
-                        title="Edit Business"
+                        title={t('editBusiness')}
                         className="p-2 rounded-xl bg-surface-subtle hover:bg-surface-hover border border-surface-border text-content-secondary transition-colors cursor-pointer"
                       >
                         <Pencil className="w-4 h-4" />
@@ -355,7 +355,7 @@ export default function BusinessProfilesSection() {
                       <button
                         type="button"
                         onClick={() => setDeleteId(b.id)}
-                        title="Delete Business"
+                        title={t('deleteBusiness')}
                         className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 transition-colors cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -371,7 +371,7 @@ export default function BusinessProfilesSection() {
                     {t('currenciesSupported')}
                   </span>
                   <span className="text-[10px] font-bold text-sky-400 bg-sky-400/10 px-2 py-0.5 rounded-md border border-sky-400/20">
-                    {customers.filter((c) => c.businessId === b.id).length} Customers
+                    {t('customersCount', { count: customers.filter((c) => c.businessId === b.id).length })}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -399,8 +399,8 @@ export default function BusinessProfilesSection() {
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-content-primary">Delete Business Profile</h4>
-                <p className="text-xs text-content-muted">Are you sure you want to delete this business profile? This action cannot be undone.</p>
+                <h4 className="text-sm font-bold text-content-primary">{t('deleteBusinessTitle')}</h4>
+                <p className="text-xs text-content-muted">{t('deleteBusinessDesc')}</p>
               </div>
             </div>
 
@@ -410,14 +410,14 @@ export default function BusinessProfilesSection() {
                 onClick={() => setDeleteId(null)}
                 className="px-4 py-2 rounded-xl bg-surface-subtle hover:bg-surface-hover border border-surface-border text-xs font-semibold text-content-primary transition-colors cursor-pointer"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 type="button"
                 onClick={confirmDelete}
                 className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-xs font-semibold text-white transition-colors cursor-pointer shadow-sm"
               >
-                Delete
+                {t('delete')}
               </button>
             </div>
           </div>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import MiniLoader from '@/components/mini_second/MiniLoader';
 import { authApi } from '@/callapi/auth';
 import { AppUser } from '@/types/auth';
@@ -17,12 +17,14 @@ interface GoogleLoginProps {
 
 export default function GoogleLogin({
   className = '',
-  label = 'Sign In with Google (Gmail)',
+  label,
   redirectTo = '/cash-book',
   onSuccess,
 }: GoogleLoginProps) {
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations('Landing');
+  const buttonLabel = label || t('signInGoogle');
   const [isLoading, setIsLoading] = useState(false);
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [customEmail, setCustomEmail] = useState(DEFAULT_ADMIN);
@@ -86,7 +88,7 @@ export default function GoogleLogin({
           type="button"
           onClick={handleSignInClick}
           disabled={isLoading}
-          aria-label={label}
+          aria-label={buttonLabel}
           className={`group relative w-full flex items-center justify-center gap-3.5 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#ea4335] via-[#e53929] to-[#d93025] hover:from-[#f05144] hover:to-[#e13b2d] active:scale-[0.99] text-white font-bold text-sm sm:text-base shadow-lg shadow-red-500/20 hover:shadow-red-500/35 border border-red-400/30 transition-all duration-200 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed ${className}`}
         >
           <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-white shadow-sm flex-shrink-0 transition-transform duration-200 group-hover:scale-105">
@@ -111,7 +113,7 @@ export default function GoogleLogin({
           </div>
 
           <span className="tracking-tight select-none">
-            {isLoading ? <MiniLoader size="xs" variant="white" text="Connecting..." /> : label}
+            {isLoading ? <MiniLoader size="xs" variant="white" text="Connecting..." /> : buttonLabel}
           </span>
         </button>
 
@@ -137,7 +139,7 @@ export default function GoogleLogin({
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
                   </svg>
                 </div>
-                <h3 className="text-base font-bold tracking-tight">Choose Google Account</h3>
+                <h3 className="text-base font-bold tracking-tight">{t('chooseAccount')}</h3>
               </div>
               <button
                 type="button"
@@ -150,7 +152,7 @@ export default function GoogleLogin({
 
             {/* Quick Admin Account Selection */}
             <div className="space-y-2">
-              <p className="text-xs text-content-secondary font-medium">Click an account to sign in:</p>
+              <p className="text-xs text-content-secondary font-medium">{t('selectAccount')}</p>
 
               <button
                 type="button"
@@ -166,16 +168,16 @@ export default function GoogleLogin({
                       <span className="text-sm font-semibold">{DEFAULT_ADMIN}</span>
                       <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-brand/15 text-brand">Admin</span>
                     </div>
-                    <span className="text-xs text-content-muted">Primary System Manager</span>
+                    <span className="text-xs text-content-muted">{t('systemManager')}</span>
                   </div>
                 </div>
-                <span className="text-brand text-xs font-bold">Select &rarr;</span>
+                <span className="text-brand text-xs font-bold">{t('select')} &rarr;</span>
               </button>
             </div>
 
             {/* Custom Email Input */}
             <div className="pt-2 border-t border-surface-border space-y-2">
-              <label className="text-xs text-content-secondary font-medium">Or enter a different Google email:</label>
+              <label className="text-xs text-content-secondary font-medium">{t('orEnterEmail')}</label>
               <div className="flex gap-2">
                 <input
                   type="email"
@@ -190,7 +192,7 @@ export default function GoogleLogin({
                   disabled={!customEmail.includes('@')}
                   className="px-4 py-2.5 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand-hover disabled:opacity-50"
                 >
-                  Continue
+                  {t('continue')}
                 </button>
               </div>
             </div>

@@ -131,7 +131,7 @@ export default function Notification() {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              aria-label="Close notifications"
+              aria-label={t('closeNotifications')}
               className="text-xs text-content-muted hover:text-content-primary"
             >
               ×
@@ -140,7 +140,7 @@ export default function Notification() {
 
           <div className="space-y-2.5 max-h-72 overflow-y-auto">
             {notifications.length === 0 ? (
-              <p className="py-5 text-center text-xs text-content-muted">No transactions in the last 24 hours.</p>
+              <p className="py-5 text-center text-xs text-content-muted">{t('noNotifications')}</p>
             ) : notifications.map((item) => (
               <div
                 key={item.id}

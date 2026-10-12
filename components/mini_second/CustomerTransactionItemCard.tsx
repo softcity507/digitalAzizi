@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { CustomerTransaction } from '@/types/customer';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 
@@ -8,6 +9,7 @@ interface ItemProps {
 }
 
 export default function CustomerTransactionItemCard({ transaction }: ItemProps) {
+  const t = useTranslations('CustomerDetails');
   const { openModal } = useCustomerDetailsStore();
 
   const isCredit = transaction.isCredit;
@@ -102,7 +104,7 @@ export default function CustomerTransactionItemCard({ transaction }: ItemProps) 
           <button
             type="button"
             onClick={() => openModal('edit', transaction)}
-            aria-label="Edit transaction"
+            aria-label={t('editTransaction')}
             className="p-1.5 rounded-lg bg-surface-subtle hover:bg-surface-hover border border-surface-border text-content-muted hover:text-content-primary transition-colors cursor-pointer"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,7 +114,7 @@ export default function CustomerTransactionItemCard({ transaction }: ItemProps) 
           <button
             type="button"
             onClick={() => openModal('delete', null, transaction.id)}
-            aria-label="Delete transaction"
+            aria-label={t('deleteTransaction')}
             className="p-1.5 rounded-lg bg-surface-subtle hover:bg-rose-500/20 border border-surface-border text-content-muted hover:text-rose-400 transition-colors cursor-pointer"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

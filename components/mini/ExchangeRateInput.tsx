@@ -50,7 +50,7 @@ export default function ExchangeRateInput() {
             }`}
           >
             <span>✖</span>
-            <span>Multiply</span>
+            <span>{t('multiply')}</span>
           </button>
           <button
             type="button"
@@ -62,7 +62,7 @@ export default function ExchangeRateInput() {
             }`}
           >
             <span>➗</span>
-            <span>Divide</span>
+            <span>{t('divide')}</span>
           </button>
         </div>
 
