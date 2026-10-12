@@ -9,9 +9,10 @@ import CustomerCurrencyTabs from '@/components/mini_second/CustomerCurrencyTabs'
 import CustomerBalanceCard from '@/components/mini_second/CustomerBalanceCard';
 import CustomerTransactionFilterBar from '@/components/mini_second/CustomerTransactionFilterBar';
 import CustomerTransactionsFeed from '@/components/mini_second/CustomerTransactionsFeed';
+import CustomerCashTransactionActions from '@/components/mini_second/CustomerCashTransactionActions';
 import EditCustomerTxModal from '@/components/mini_second/EditCustomerTxModal';
 import DeleteCustomerTxModal from '@/components/mini_second/DeleteCustomerTxModal';
-// import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
+import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 import { useCashBookStore } from '@/store/useCashBookStore';
@@ -30,6 +31,7 @@ export default function CustomerDetailsContainer() {
   const { setCustomerId } = useExchangeDeskStore();
   const fetchBusinesses = useSettingsStore((state) => state.fetchBusinesses);
   const fetchTransactions = useCashBookStore((state) => state.fetchTransactions);
+  const fetchCustomerCashTransactions = useCustomerDetailsStore((state) => state.fetchCustomerCashTransactions);
   const [accessState, setAccessState] = useState<'checking' | 'allowed' | 'error'>('checking');
 
   useEffect(() => {
@@ -61,6 +63,13 @@ export default function CustomerDetailsContainer() {
         setDefaultUser(customer.id);
         setCustomerId(customer.id);
         await fetchTransactions();
+        try {
+          await fetchCustomerCashTransactions(customer.id);
+        } catch (error) {
+          // The customer page should remain accessible if the optional customer-only ledger
+          // table has not been installed in Supabase yet.
+          console.error('Customer-only cash transaction history failed to load:', error);
+        }
 
         if (isCurrent) setAccessState('allowed');
       } catch (error) {
@@ -73,7 +82,7 @@ export default function CustomerDetailsContainer() {
     return () => {
       isCurrent = false;
     };
-  }, [urlParamId, locale, router, fetchBusinesses, fetchTransactions,  setDefaultUser, setCustomerId]);
+  }, [urlParamId, locale, router, fetchBusinesses, fetchTransactions, fetchCustomerCashTransactions, setDefaultUser, setCustomerId]);
 
   if (accessState === 'checking') {
     return (
@@ -95,7 +104,7 @@ export default function CustomerDetailsContainer() {
   }
 
   return (
-    <div className="w-full max-w-7xl 2xl:max-w-[1500px] mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 space-y-5 sm:space-y-6 pb-28 sm:pb-20 transition-colors duration-200">
+    <div className="w-full max-w-7xl 2xl:max-w-375 mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 space-y-5 sm:space-y-6 pb-28 sm:pb-20 transition-colors duration-200">
       <Link
         href={`/${locale}/customers`}
         className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-content-secondary hover:text-content-primary hover:bg-surface-hover transition-colors"
@@ -112,6 +121,7 @@ export default function CustomerDetailsContainer() {
         {/* Left Column: Client Name, Currency Tabs & Balance Summary (Sticky on Laptop/Desktop) */}
         <div className="lg:col-span-5 xl:col-span-4 space-y-4 lg:sticky lg:top-20">
           <ClientNameCard />
+          <CustomerCashTransactionActions />
           <CustomerCurrencyTabs />
           <CustomerBalanceCard />
         </div>
