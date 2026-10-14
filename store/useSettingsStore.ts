@@ -14,7 +14,7 @@ interface BusinessRow {
   is_active: boolean | null;
   supported_currencies: string | string[] | null;
   owner_email?: string | null;
-  user_id?: string | null;
+  user_id?: string | null; 
 }
 
 interface CustomerRow {
@@ -644,6 +644,10 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
   updateUser: async (id, name, phone, address, description) => {
     await getSignedInUser();
+    const currentCustomer = get().customers.find((customer) => customer.id === id);
+    if (currentCustomer?.isSystemDefault) {
+      throw new Error('The Exchange Account cannot be renamed.');
+    }
     const numericId = Number(id);
 
     const updatePayload: Record<string, unknown> = {
@@ -673,7 +677,22 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
   deleteUser: async (id) => {
     await getSignedInUser();
+    const currentCustomer = get().customers.find((customer) => customer.id === id);
+    if (currentCustomer?.isSystemDefault) {
+      throw new Error('The Exchange Account cannot be deleted.');
+    }
     const numericId = Number(id);
+
+    // customer_ledger_transactions has an ON DELETE CASCADE foreign key. Refuse
+    // deletion when ledger rows exist so deleting a customer never deletes them.
+    const { count, error: ledgerLookupError } = await supabaseClient
+      .from('customer_ledger_transactions')
+      .select('id', { count: 'exact', head: true })
+      .eq('customer_id', isNaN(numericId) ? id : numericId);
+    if (ledgerLookupError) throw new Error(ledgerLookupError.message);
+    if ((count ?? 0) > 0) {
+      throw new Error('This customer has ledger transactions and cannot be deleted.');
+    }
 
     const { error } = await supabaseClient
       .from('customers')
