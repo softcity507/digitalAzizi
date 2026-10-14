@@ -8,7 +8,6 @@ import Link from 'next/link'
 import {
   Fingerprint,
   ShieldCheck,
-  Smartphone,
   CheckCircle2,
   AlertCircle,
   Loader2,
@@ -324,18 +323,7 @@ export default function RegisterBiometric() {
             )}
           </div>
 
-          <div className="text-right">
-            <span
-              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
-                supported
-                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                  : 'bg-slate-500/10 text-slate-500 border border-slate-500/20'
-              }`}
-            >
-              <Smartphone className="w-3.5 h-3.5" />
-              {supported ? 'WebAuthn Ready' : 'Unsupported'}
-            </span>
-          </div>
+           
         </div>
 
         {/* SECTION 1: App Lock Toggle */}

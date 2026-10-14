@@ -45,4 +45,22 @@ export async function verifyAndAuthorizeAction(userId: string): Promise<boolean>
   }
 }
 
+/**
+ * Verifies user 4-digit PIN code against server.
+ */
+export async function verifyPinAction(userId: string, pin: string): Promise<boolean> {
+  try {
+    const res = await fetch('/api/auth/security/pin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'verify', pin, userId }),
+    })
+    const data = await res.json().catch(() => ({ verified: false }))
+    return Boolean(data.verified)
+  } catch (error) {
+    console.error('PIN verification error:', error)
+    return false
+  }
+}
+
 export default verifyAndAuthorizeAction

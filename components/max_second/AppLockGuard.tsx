@@ -16,6 +16,8 @@ import { useRouter } from 'next/navigation'
 
 export const APP_LOCK_KEY = 'digitalazizi_app_lock_enabled'
 export const IS_LOCKED_KEY = 'digitalazizi_session_locked'
+export const LAST_AUTH_TIME_KEY = 'digitalazizi_last_auth_time'
+export const ONE_HOUR_MS = 60 * 60 * 1000 // 1 hour in milliseconds
 
 export default function AppLockGuard({ children }: { children?: React.ReactNode }) {
   const [isLockEnabled, setIsLockEnabled] = useState(false)
@@ -28,6 +30,15 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
   const [shake, setShake] = useState(false)
   const router = useRouter()
   const isBiometricAttempting = useRef(false)
+
+  // Mark session unlocked and reset 1-hour timer
+  const markUnlocked = useCallback(() => {
+    sessionStorage.removeItem(IS_LOCKED_KEY)
+    localStorage.setItem(LAST_AUTH_TIME_KEY, Date.now().toString())
+    setIsLocked(false)
+    setPinInput('')
+    setPinError('')
+  }, [])
 
   // 1. Check user session & lock setting on mount
   useEffect(() => {
@@ -43,9 +54,15 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
         if (data.success && data.user && mounted) {
           setCurrentUser(data.user)
 
-          // If lock is enabled and session was previously marked locked
-          if (enabled && sessionStorage.getItem(IS_LOCKED_KEY) === 'true') {
+          // Check if session was previously locked or if 1 hour has elapsed
+          const lastAuth = localStorage.getItem(LAST_AUTH_TIME_KEY)
+          const isTimeout = lastAuth ? Date.now() - parseInt(lastAuth, 10) >= ONE_HOUR_MS : false
+
+          if (enabled && (sessionStorage.getItem(IS_LOCKED_KEY) === 'true' || isTimeout)) {
+            sessionStorage.setItem(IS_LOCKED_KEY, 'true')
             setIsLocked(true)
+          } else if (!lastAuth) {
+            localStorage.setItem(LAST_AUTH_TIME_KEY, Date.now().toString())
           }
         }
       } catch (err) {
@@ -75,7 +92,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
     }
   }, [])
 
-  // 2. Lock application when user goes outside (visibilitychange / blur / pagehide)
+  // 2. Lock application when user goes outside (visibilitychange / pagehide)
   useEffect(() => {
     if (!isLockEnabled || !currentUser) return
 
@@ -100,7 +117,41 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
     }
   }, [isLockEnabled, currentUser])
 
-  // 3. Unlock with Biometrics
+  // 3. 1-Hour Inactivity / Session Timer: auto-locks after 1 hour of session time
+  useEffect(() => {
+    if (!isLockEnabled || !currentUser) return
+
+    const checkOneHourTimeout = () => {
+      const lastAuthStr = localStorage.getItem(LAST_AUTH_TIME_KEY)
+      if (lastAuthStr) {
+        const lastAuth = parseInt(lastAuthStr, 10)
+        if (Date.now() - lastAuth >= ONE_HOUR_MS) {
+          sessionStorage.setItem(IS_LOCKED_KEY, 'true')
+          setIsLocked(true)
+        }
+      } else {
+        localStorage.setItem(LAST_AUTH_TIME_KEY, Date.now().toString())
+      }
+    }
+
+    // Check immediately and then every 15 seconds
+    checkOneHourTimeout()
+    const timer = setInterval(checkOneHourTimeout, 15000)
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        checkOneHourTimeout()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
+
+    return () => {
+      clearInterval(timer)
+      document.removeEventListener('visibilitychange', handleVisibility)
+    }
+  }, [isLockEnabled, currentUser])
+
+  // 4. Unlock with Biometrics
   const triggerBiometricUnlock = useCallback(async () => {
     if (!currentUser || isBiometricAttempting.current) return
     isBiometricAttempting.current = true
@@ -110,9 +161,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
     try {
       const success = await verifyAndAuthorizeAction(currentUser.id)
       if (success) {
-        sessionStorage.removeItem(IS_LOCKED_KEY)
-        setIsLocked(false)
-        setPinInput('')
+        markUnlocked()
       } else {
         setPinError('Biometric verification failed. Please enter your PIN.')
       }
@@ -122,7 +171,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
       setVerifyingBiometric(false)
       isBiometricAttempting.current = false
     }
-  }, [currentUser])
+  }, [currentUser, markUnlocked])
 
   // Auto trigger biometrics once when lock screen opens
   useEffect(() => {
@@ -134,7 +183,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
     }
   }, [isLocked, currentUser, triggerBiometricUnlock])
 
-  // 4. Submit PIN verification
+  // 5. Submit PIN verification
   const handleVerifyPin = async (pinToVerify: string) => {
     if (!currentUser || pinToVerify.length < 4 || verifyingPin) return
     setVerifyingPin(true)
@@ -153,9 +202,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
 
       const data = await res.json()
       if (data.verified) {
-        sessionStorage.removeItem(IS_LOCKED_KEY)
-        setIsLocked(false)
-        setPinInput('')
+        markUnlocked()
       } else {
         setPinError('Incorrect PIN code. Try again.')
         setShake(true)
