@@ -335,7 +335,7 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
         .order('transaction_date', { ascending: false });
       if (error) throw error;
 
-      const entries = (data ?? []).map((row) => fromCashbookRow(row as Record<string, unknown>));
+      const entries = ((data ?? []) as Record<string, unknown>[]).map((row) => fromCashbookRow(row));
       const selectedDate = get().selectedDate;
       const dateToShow = entries.some((entry) => entry.date === selectedDate)
         ? selectedDate

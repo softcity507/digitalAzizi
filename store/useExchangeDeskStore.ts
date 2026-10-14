@@ -353,7 +353,7 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
         .in('mode', ['BUY', 'SELL'])
         .order('transaction_date', { ascending: false });
       if (error) throw error;
-      const entries = (data ?? []).map((row) => fromCashbookExchangeRow(row as Record<string, unknown>));
+      const entries = ((data ?? []) as Record<string, unknown>[]).map((row) => fromCashbookExchangeRow(row));
       set({ exchanges: entries, isLoading: false, loadError: null });
       entries.forEach((entry) => syncCustomerLedger(entry, entry.id));
     } catch (error) {

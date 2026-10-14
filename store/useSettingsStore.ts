@@ -328,10 +328,10 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       data = fallback.data;
     }
 
-    const mapped = (data ?? []).map((business) => mapBusinessRow(business as BusinessRow));
+    const mapped = (data ?? []).map((business: BusinessRow) => mapBusinessRow(business));
 
     // Ensure at least one business is marked active if available
-    if (mapped.length > 0 && !mapped.some((b) => b.isActive)) {
+    if (mapped.length > 0 && !mapped.some((b: BusinessProfile) => b.isActive)) {
       mapped[0].isActive = true;
     }
 
