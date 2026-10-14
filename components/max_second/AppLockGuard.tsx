@@ -25,6 +25,8 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
   const [currentUser, setCurrentUser] = useState<{ id: string; email?: string; name?: string } | null>(null)
   const [pinInput, setPinInput] = useState('')
   const [pinError, setPinError] = useState('')
+  const [hasPin, setHasPin] = useState(false)
+  const [hasCredentials, setHasCredentials] = useState(false)
   const [verifyingPin, setVerifyingPin] = useState(false)
   const [verifyingBiometric, setVerifyingBiometric] = useState(false)
   const [shake, setShake] = useState(false)
@@ -53,6 +55,17 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
         const data = await res.json()
         if (data.success && data.user && mounted) {
           setCurrentUser(data.user)
+
+          const securityRes = await fetch('/api/auth/security/pin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'status', userId: data.user.id }),
+          })
+          const securityData = await securityRes.json()
+          if (securityData.success && mounted) {
+            setHasPin(Boolean(securityData.status?.hasPin))
+            setHasCredentials(Boolean(securityData.status?.hasCredentials))
+          }
 
           // Check if session was previously locked or if 1 hour has elapsed
           const lastAuth = localStorage.getItem(LAST_AUTH_TIME_KEY)
@@ -153,7 +166,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
 
   // 4. Unlock with Biometrics
   const triggerBiometricUnlock = useCallback(async () => {
-    if (!currentUser || isBiometricAttempting.current) return
+    if (!currentUser || !hasCredentials || isBiometricAttempting.current) return
     isBiometricAttempting.current = true
     setVerifyingBiometric(true)
     setPinError('')
@@ -171,7 +184,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
       setVerifyingBiometric(false)
       isBiometricAttempting.current = false
     }
-  }, [currentUser, markUnlocked])
+  }, [currentUser, hasCredentials, markUnlocked])
 
   // Auto trigger biometrics once when lock screen opens
   useEffect(() => {
@@ -185,7 +198,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
 
   // 5. Submit PIN verification
   const handleVerifyPin = async (pinToVerify: string) => {
-    if (!currentUser || pinToVerify.length < 4 || verifyingPin) return
+    if (!currentUser || !hasPin || pinToVerify.length < 4 || verifyingPin) return
     setVerifyingPin(true)
     setPinError('')
 
@@ -273,12 +286,12 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
               <h2 className="text-xl font-bold text-content-primary">Application Locked</h2>
               <p className="text-xs sm:text-sm text-content-muted">
                 {currentUser?.name ? `Welcome back, ${currentUser.name}.` : 'Secure Session'}{' '}
-                Please authenticate using Fingerprint / Face ID or enter your PIN.
+                Unlock with your registered device authenticator{hasPin ? ' or optional PIN' : ''}.
               </p>
             </div>
 
             {/* Biometric Quick Button */}
-            <button
+            {hasCredentials && <button
               type="button"
               onClick={triggerBiometricUnlock}
               disabled={verifyingBiometric}
@@ -295,17 +308,17 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
                   Tap to Verify Biometric Sensor
                 </>
               )}
-            </button>
+            </button>}
 
             {/* Divider */}
-            <div className="w-full flex items-center gap-3 text-xs uppercase tracking-wider text-content-muted font-bold">
+            {hasPin && <div className="w-full flex items-center gap-3 text-xs uppercase tracking-wider text-content-muted font-bold">
               <div className="flex-1 h-px bg-surface-border" />
               <span>Or Enter PIN Code</span>
               <div className="flex-1 h-px bg-surface-border" />
-            </div>
+            </div>}
 
             {/* PIN Code Dots Display */}
-            <div className="flex items-center justify-center gap-3 py-1">
+            {hasPin && <div className="flex items-center justify-center gap-3 py-1">
               {[0, 1, 2, 3].map((idx) => {
                 const filled = pinInput.length > idx
                 return (
@@ -319,7 +332,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
                   />
                 )
               })}
-            </div>
+            </div>}
 
             {/* Error Message */}
             {pinError && (
@@ -330,7 +343,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
             )}
 
             {/* Numeric Keypad */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-3 w-full max-w-[280px]">
+            {hasPin && <div className="grid grid-cols-3 gap-2 sm:gap-3 w-full max-w-[280px]">
               {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
                 <button
                   key={digit}
@@ -371,7 +384,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
               >
                 <Delete className="w-5 h-5" />
               </button>
-            </div>
+            </div>}
 
             {/* Bottom Actions: Sign Out */}
             <div className="pt-2 w-full border-t border-surface-border flex items-center justify-between text-xs text-content-muted">

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react'
 import { startRegistration, browserSupportsWebAuthn } from '@simplewebauthn/browser'
-import { supabaseClient } from '@/lib/supabaseClient'
 import verifyAndAuthorizeAction from '@/components/max_second/verifyAndAuthorizeAction'
 import Link from 'next/link'
 import {
@@ -30,6 +29,7 @@ export default function RegisterBiometric() {
   // App lock & PIN states
   const [isAppLock, setIsAppLock] = useState(false)
   const [hasPin, setHasPin] = useState(false)
+  const [hasCredentials, setHasCredentials] = useState(false)
   const [pinInput, setPinInput] = useState('')
   const [pinConfirm, setPinConfirm] = useState('')
   const [savingPin, setSavingPin] = useState(false)
@@ -44,27 +44,13 @@ export default function RegisterBiometric() {
         setSupported(browserSupportsWebAuthn())
         setIsAppLock(localStorage.getItem(APP_LOCK_KEY) === 'true')
 
+        // Use the same canonical app user ID as AppLockGuard and the OAuth session.
+        // Supabase Auth UUIDs can differ from the public.users ID used by security APIs.
         let userObj: { id: string; email?: string; name?: string } | null = null
-
-        // Check Supabase Auth Client
-        const { data: authData } = await supabaseClient.auth.getUser()
-        if (authData?.user) {
-          userObj = {
-            id: authData.user.id,
-            email: authData.user.email,
-            name: authData.user.user_metadata?.name || authData.user.email?.split('@')[0],
-          }
-        } else {
-          // Fallback to application session endpoint
-          const res = await fetch('/api/auth/me')
-          const data = await res.json()
-          if (data.success && data.user) {
-            userObj = {
-              id: data.user.id,
-              email: data.user.email,
-              name: data.user.name,
-            }
-          }
+        const res = await fetch('/api/auth/me')
+        const data = await res.json()
+        if (data.success && data.user) {
+          userObj = { id: data.user.id, email: data.user.email, name: data.user.name }
         }
 
         if (userObj && mounted) {
@@ -79,6 +65,7 @@ export default function RegisterBiometric() {
           const pinData = await pinRes.json()
           if (pinData?.status) {
             setHasPin(Boolean(pinData.status.hasPin))
+            setHasCredentials(Boolean(pinData.status.hasCredentials))
           }
         }
       } catch (err) {
@@ -97,9 +84,8 @@ export default function RegisterBiometric() {
   // Toggle App Lock
   const handleToggleAppLock = () => {
     const nextVal = !isAppLock
-    if (nextVal && !hasPin) {
-      setShowPinInput(true)
-      setMessage({ type: 'info', text: 'Please set a 4-digit PIN code below to enable App Lock.' })
+    if (nextVal && !hasPin && !hasCredentials) {
+      setMessage({ type: 'info', text: 'Set a PIN or register a device authenticator before enabling App Lock.' })
       return
     }
     setIsAppLock(nextVal)
@@ -207,9 +193,10 @@ export default function RegisterBiometric() {
       const verification = await verificationRes.json()
 
       if (verification.verified) {
+        setHasCredentials(true)
         setMessage({
           type: 'success',
-          text: 'Biometric authenticator (Fingerprint / Face ID / Windows Hello) was successfully saved to user_credentials!',
+          text: 'Biometric authenticator (Fingerprint / Face ID / Windows Hello) was successfully saved',
         })
       } else {
         setMessage({
@@ -247,7 +234,7 @@ export default function RegisterBiometric() {
       if (verified) {
         setMessage({
           type: 'success',
-          text: 'Biometric authorization successful! Your fingerprint key is verified against user_credentials.',
+          text: 'Biometric authorization successful! Your fingerprint key is verified   ',
         })
       } else {
         setMessage({
@@ -299,7 +286,7 @@ export default function RegisterBiometric() {
             <div>
               <p className="font-semibold">Hardware or Browser Not Supported</p>
               <p className="text-xs mt-0.5 opacity-90">
-                This browser or device does not support WebAuthn biometrics. You can still use your 4-digit PIN code for lock security.
+                This browser or device does not support WebAuth biometrics. You can still use your 4-digit PIN code for lock security.
               </p>
             </div>
           </div>

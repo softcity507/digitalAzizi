@@ -43,6 +43,7 @@ export default function PreferencesSection() {
     return false;
   });
   const [hasPin, setHasPin] = useState(false);
+  const [hasCredentials, setHasCredentials] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
@@ -60,6 +61,7 @@ export default function PreferencesSection() {
       .then((data) => {
         if (data.success && data.status) {
           setHasPin(Boolean(data.status.hasPin));
+          setHasCredentials(Boolean(data.status.hasCredentials));
         }
       })
       .catch(() => {});
@@ -81,9 +83,9 @@ export default function PreferencesSection() {
 
   const toggleAppLock = () => {
     if (!isAppLock) {
-      // Turning ON: if no PIN exists, prompt PIN creation first
-      if (!hasPin) {
-        setShowPinModal(true);
+      // Either a fallback PIN or a registered device authenticator is sufficient.
+      if (!hasPin && !hasCredentials) {
+        router.push(`/${currentLocale}/settings/biometrics`);
         return;
       }
       localStorage.setItem(APP_LOCK_KEY, 'true');
@@ -215,7 +217,7 @@ export default function PreferencesSection() {
               )}
             </div>
             <p className="text-xs text-content-muted">
-              Auto-locks app when leaving or switching tabs. Requires Fingerprint / Face ID or PIN to unlock.
+              Auto-locks when you leave the app. Unlock with a registered authenticator or optional PIN.
             </p>
           </div>
 

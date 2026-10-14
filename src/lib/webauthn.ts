@@ -44,7 +44,7 @@ export async function resolveUserUUID(userIdOrEmail: string): Promise<string | n
     } catch {
       // ignore
     }
-    return cleanId;
+    return null;
   }
 
   // 2. Query users table by email
@@ -56,19 +56,6 @@ export async function resolveUserUUID(userIdOrEmail: string): Promise<string | n
       .maybeSingle();
 
     if (userByEmail?.id) return userByEmail.id;
-  } catch {
-    // ignore
-  }
-
-  // 3. Fallback: try finding first user if single user setup or create
-  try {
-    const { data: anyUser } = await adminSupabase
-      .from('users')
-      .select('id')
-      .limit(1)
-      .maybeSingle();
-
-    if (anyUser?.id) return anyUser.id;
   } catch {
     // ignore
   }
@@ -175,40 +162,34 @@ export async function getUserCredentials(userIdOrEmail: string): Promise<StoredC
  */
 export async function saveUserCredential(userIdOrEmail: string, credential: StoredCredential): Promise<void> {
   const resolvedUuid = await resolveUserUUID(userIdOrEmail);
+  if (!resolvedUuid) {
+    throw new Error('Could not find this account in public.users. Sign out and sign in again, then retry biometric setup.');
+  }
 
-  // Keep in memory
-  const existing = memoryCredentialStore.get(userIdOrEmail) || [];
-  const updated = existing.filter((c) => c.id !== credential.id);
+  const pubKeyBytes = isoBase64URL.toBuffer(credential.publicKey);
+  const byteaHex = '\\x' + Buffer.from(pubKeyBytes).toString('hex');
+  const { error } = await adminSupabase.from('user_credentials').upsert(
+    {
+      user_id: resolvedUuid,
+      credential_id: credential.id,
+      public_key: byteaHex,
+      counter: credential.counter,
+      device_type: credential.deviceType || 'singleDevice',
+    },
+    { onConflict: 'credential_id' }
+  );
+
+  if (error) {
+    console.error('Failed to save to user_credentials in Supabase:', error);
+    throw new Error(`Database rejected biometric credential: ${error.message}`);
+  }
+
+  // Use the in-memory fallback only after Supabase confirms the upsert.
+  const existing = memoryCredentialStore.get(resolvedUuid) || [];
+  const updated = existing.filter((item) => item.id !== credential.id);
   updated.push(credential);
-  memoryCredentialStore.set(userIdOrEmail, updated);
-  if (resolvedUuid && resolvedUuid !== userIdOrEmail) {
-    memoryCredentialStore.set(resolvedUuid, updated);
-  }
-
-  // Save to public.user_credentials
-  if (resolvedUuid) {
-    try {
-      const pubKeyBytes = isoBase64URL.toBuffer(credential.publicKey);
-      const byteaHex = '\\x' + Buffer.from(pubKeyBytes).toString('hex');
-
-      const { error } = await adminSupabase.from('user_credentials').upsert(
-        {
-          user_id: resolvedUuid,
-          credential_id: credential.id,
-          public_key: byteaHex,
-          counter: credential.counter,
-          device_type: credential.deviceType || 'singleDevice',
-        },
-        { onConflict: 'credential_id' }
-      );
-
-      if (error) {
-        console.error('Failed to save to user_credentials in Supabase:', error.message);
-      }
-    } catch (err) {
-      console.warn('Exception saving user_credential:', err);
-    }
-  }
+  memoryCredentialStore.set(resolvedUuid, updated);
+  if (userIdOrEmail !== resolvedUuid) memoryCredentialStore.set(userIdOrEmail, updated);
 }
 
 /**
