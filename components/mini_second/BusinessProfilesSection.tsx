@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { Pencil, Trash2, Check, X, ArrowRightLeft, AlertTriangle, Plus, Loader2 } from 'lucide-react';
 import { CurrencyCode } from '@/types/customer';
+import verifyAndAuthorizeAction, { verifyPinAction } from '@/components/max_second/verifyAndAuthorizeAction';
 
 const AVAILABLE_CURRENCIES: CurrencyCode[] = [
   'AFN',
@@ -37,6 +38,12 @@ export default function BusinessProfilesSection() {
   // Local state for delete confirmation modal
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [databaseError, setDatabaseError] = useState<string | null>(null);
+  const [verification, setVerification] = useState<{ action: 'edit' | 'save' | 'delete'; id: string } | null>(null);
+  const [verificationUserId, setVerificationUserId] = useState('');
+  const [hasPin, setHasPin] = useState(false);
+  const [hasCredentials, setHasCredentials] = useState(false);
+  const [verificationPin, setVerificationPin] = useState('');
+  const [verifying, setVerifying] = useState(false);
 
   useEffect(() => {
     let isCurrent = true;
@@ -80,21 +87,90 @@ export default function BusinessProfilesSection() {
     }
   };
 
+  const requestVerification = async (action: 'edit' | 'save' | 'delete', id: string) => {
+    setDatabaseError(null);
+    try {
+      const userRes = await fetch('/api/auth/me');
+      const userData = await userRes.json();
+      if (!userRes.ok || !userData.success || !userData.user?.id) {
+        throw new Error('Please sign in again to verify this action.');
+      }
+      const statusRes = await fetch('/api/auth/security/pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'status', userId: userData.user.id }),
+      });
+      const statusData = await statusRes.json();
+      if (!statusRes.ok || !statusData.success) throw new Error(statusData.error || 'Could not load verification methods.');
+      const pinConfigured = Boolean(statusData.status?.hasPin);
+      const authenticatorConfigured = Boolean(statusData.status?.hasCredentials);
+      if (!pinConfigured && !authenticatorConfigured) {
+        throw new Error('Set a PIN or register an authenticator in Settings > Biometrics before editing or deleting businesses.');
+      }
+      setVerificationUserId(userData.user.id);
+      setHasPin(pinConfigured);
+      setHasCredentials(authenticatorConfigured);
+      setVerificationPin('');
+      setVerification({ action, id });
+    } catch (error) {
+      setDatabaseError(error instanceof Error ? error.message : 'Unable to start verification.');
+    }
+  };
+
+  const finishVerifiedAction = async () => {
+    if (!verification) return;
+    const pending = verification;
+    setVerification(null);
+    setVerificationPin('');
+    try {
+      if (pending.action === 'edit') {
+        const business = businesses.find((item) => item.id === pending.id);
+        if (!business) return;
+        setEditingId(business.id);
+        setEditName(business.name);
+        setEditSubtitle(business.subtitle);
+      } else if (pending.action === 'save') {
+        if (!editName.trim()) return;
+        await updateBusiness(pending.id, editName, editSubtitle);
+        setEditingId(null);
+      } else {
+        await deleteBusiness(pending.id);
+        setDeleteId(null);
+      }
+    } catch (error) {
+      setDatabaseError(error instanceof Error ? error.message : `Unable to ${pending.action} business profile.`);
+    }
+  };
+
+  const verifyWithBiometric = async () => {
+    if (!verificationUserId || verifying) return;
+    setVerifying(true);
+    try {
+      if (await verifyAndAuthorizeAction(verificationUserId)) await finishVerifiedAction();
+      else setDatabaseError('Authenticator verification failed or was cancelled. Try again or use your PIN.');
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  const verifyWithPin = async () => {
+    if (!verificationUserId || verificationPin.length < 4 || verifying) return;
+    setVerifying(true);
+    try {
+      if (await verifyPinAction(verificationUserId, verificationPin)) await finishVerifiedAction();
+      else setDatabaseError('Incorrect PIN. Please try again.');
+    } finally {
+      setVerifying(false);
+    }
+  };
+
   const handleStartEdit = (b: { id: string; name: string; subtitle: string }) => {
-    setEditingId(b.id);
-    setEditName(b.name);
-    setEditSubtitle(b.subtitle);
+    void requestVerification('edit', b.id);
   };
 
   const handleSaveEdit = async (id: string) => {
     if (!editName.trim()) return;
-    setDatabaseError(null);
-    try {
-      await updateBusiness(id, editName, editSubtitle);
-      setEditingId(null);
-    } catch (error) {
-      setDatabaseError(error instanceof Error ? error.message : 'Unable to update business profile.');
-    }
+    void requestVerification('save', id);
   };
 
   const handleCancelEdit = () => {
@@ -103,13 +179,7 @@ export default function BusinessProfilesSection() {
 
   const confirmDelete = async () => {
     if (deleteId) {
-      setDatabaseError(null);
-      try {
-        await deleteBusiness(deleteId);
-        setDeleteId(null);
-      } catch (error) {
-        setDatabaseError(error instanceof Error ? error.message : 'Unable to delete business profile.');
-      }
+      void requestVerification('delete', deleteId);
     }
   };
 
@@ -420,6 +490,61 @@ export default function BusinessProfilesSection() {
                 {t('delete')}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {verification && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-sm rounded-2xl border border-surface-border bg-surface p-5 shadow-2xl space-y-4">
+            <div>
+              <h4 className="text-sm font-bold text-content-primary">Verify it’s you</h4>
+              <p className="mt-1 text-xs text-content-muted">
+                Confirm with your registered authenticator or PIN before {verification.action === 'delete' ? 'deleting' : verification.action === 'save' ? 'saving changes to' : 'editing'} this business.
+              </p>
+            </div>
+
+            {hasCredentials && (
+              <button
+                type="button"
+                onClick={() => void verifyWithBiometric()}
+                disabled={verifying}
+                className="w-full rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+              >
+                {verifying ? 'Verifying…' : 'Verify with fingerprint / device key'}
+              </button>
+            )}
+
+            {hasPin && (
+              <form onSubmit={(event) => { event.preventDefault(); void verifyWithPin(); }} className="space-y-2">
+                <label htmlFor="business-verification-pin" className="block text-xs font-semibold text-content-muted">Or enter your security PIN</label>
+                <input
+                  id="business-verification-pin"
+                  type="password"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={6}
+                  autoComplete="current-password"
+                  value={verificationPin}
+                  onChange={(event) => setVerificationPin(event.target.value.replace(/\D/g, ''))}
+                  className="w-full rounded-xl border border-surface-border bg-surface-subtle px-3 py-2 text-center tracking-widest text-content-primary"
+                  placeholder="Enter PIN"
+                />
+                <button type="submit" disabled={verifying || verificationPin.length < 4} className="w-full rounded-xl bg-surface-subtle px-4 py-2.5 text-sm font-semibold text-content-primary disabled:opacity-50">
+                  Verify PIN
+                </button>
+              </form>
+            )}
+
+            {databaseError && <p role="alert" className="text-xs text-red-400">{databaseError}</p>}
+            <button
+              type="button"
+              onClick={() => { setVerification(null); setVerificationPin(''); }}
+              disabled={verifying}
+              className="w-full rounded-xl px-4 py-2 text-xs font-semibold text-content-muted hover:bg-surface-subtle disabled:opacity-50"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}
