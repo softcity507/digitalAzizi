@@ -1,9 +1,11 @@
 'use client';
 
-import { useSyncExternalStore, useTransition } from 'react';
+import { useState, useEffect, useSyncExternalStore, useTransition } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { LANGUAGES, SupportedLocale } from '@/i18n/languages';
+import { Fingerprint, KeyRound, ShieldCheck, X, Loader2, Check } from 'lucide-react';
+import { APP_LOCK_KEY } from '@/components/max_second/AppLockGuard';
 
 const getThemeSnapshot = () => {
   if (typeof window === 'undefined') return true;
@@ -33,6 +35,36 @@ export default function PreferencesSection() {
 
   const isDark = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, () => true);
 
+  // App Lock & Biometrics State
+  const [isAppLock, setIsAppLock] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(APP_LOCK_KEY) === 'true';
+    }
+    return false;
+  });
+  const [hasPin, setHasPin] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [newPin, setNewPin] = useState('');
+  const [confirmPin, setConfirmPin] = useState('');
+  const [pinModalError, setPinModalError] = useState('');
+  const [savingPin, setSavingPin] = useState(false);
+
+  useEffect(() => {
+    // Fetch user security status
+    fetch('/api/auth/security/pin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'status' }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.status) {
+          setHasPin(Boolean(data.status.hasPin));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const toggleDarkMode = () => {
     const nextDark = !isDark;
     if (nextDark) {
@@ -45,6 +77,64 @@ export default function PreferencesSection() {
       localStorage.setItem('theme', 'light');
     }
     window.dispatchEvent(new Event('themechange'));
+  };
+
+  const toggleAppLock = () => {
+    if (!isAppLock) {
+      // Turning ON: if no PIN exists, prompt PIN creation first
+      if (!hasPin) {
+        setShowPinModal(true);
+        return;
+      }
+      localStorage.setItem(APP_LOCK_KEY, 'true');
+      setIsAppLock(true);
+      window.dispatchEvent(new Event('app_lock_setting_changed'));
+    } else {
+      // Turning OFF
+      localStorage.setItem(APP_LOCK_KEY, 'false');
+      setIsAppLock(false);
+      window.dispatchEvent(new Event('app_lock_setting_changed'));
+    }
+  };
+
+  const handleSavePin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPinModalError('');
+
+    if (newPin.length < 4) {
+      setPinModalError('PIN must be at least 4 digits');
+      return;
+    }
+    if (newPin !== confirmPin) {
+      setPinModalError('PINs do not match');
+      return;
+    }
+
+    setSavingPin(true);
+    try {
+      const res = await fetch('/api/auth/security/pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'set', pin: newPin }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setHasPin(true);
+        localStorage.setItem(APP_LOCK_KEY, 'true');
+        setIsAppLock(true);
+        window.dispatchEvent(new Event('app_lock_setting_changed'));
+        setShowPinModal(false);
+        setNewPin('');
+        setConfirmPin('');
+      } else {
+        setPinModalError(data.error || 'Failed to save PIN');
+      }
+    } catch {
+      setPinModalError('Network error while saving PIN');
+    } finally {
+      setSavingPin(false);
+    }
   };
 
   const handleLanguageChange = (newLocale: string) => {
@@ -110,7 +200,155 @@ export default function PreferencesSection() {
             ))}
           </select>
         </div>
+
+        {/* Biometric & PIN App Lock Toggle */}
+        <div className="p-4 sm:p-5 flex items-center justify-between gap-3">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <h4 className="text-xs sm:text-sm font-bold text-content-primary">
+                App Lock (Biometrics & PIN)
+              </h4>
+              {isAppLock && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                  <ShieldCheck className="w-3 h-3" /> Active
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-content-muted">
+              Auto-locks app when leaving or switching tabs. Requires Fingerprint / Face ID or PIN to unlock.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            role="switch"
+            aria-checked={isAppLock}
+            onClick={toggleAppLock}
+            className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+              isAppLock ? 'bg-sky-500' : 'bg-slate-600'
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                isAppLock ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
+
+        {/* Biometric & PIN Management Links */}
+        <div className="p-4 sm:p-5 flex items-center justify-between gap-3 flex-wrap bg-surface-subtle/50">
+          <div className="space-y-0.5">
+            <h4 className="text-xs sm:text-sm font-semibold text-content-primary flex items-center gap-1.5">
+              <Fingerprint className="w-4 h-4 text-sky-500" />
+              Fingerprint & Security Keys
+            </h4>
+            <p className="text-xs text-content-muted">
+              {hasPin ? 'PIN code is configured.' : 'No PIN code configured yet.'}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowPinModal(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface hover:bg-surface-border text-content-primary text-xs font-semibold transition-colors border border-surface-border cursor-pointer shadow-sm"
+            >
+              <KeyRound className="w-3.5 h-3.5" />
+              {hasPin ? 'Change PIN' : 'Set PIN'}
+            </button>
+
+            <a
+              href={`/${currentLocale}/settings/biometrics`}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 text-xs font-semibold transition-colors border border-sky-500/20"
+            >
+              <Fingerprint className="w-3.5 h-3.5" />
+              Configure Sensors →
+            </a>
+          </div>
+        </div>
       </div>
+
+      {/* Set PIN Modal */}
+      {showPinModal && (
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-sm bg-surface border border-surface-border rounded-3xl p-6 shadow-2xl space-y-5 animate-scale-up">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5 text-content-primary font-bold text-base">
+                <div className="p-2 rounded-xl bg-sky-500/10 text-sky-500">
+                  <KeyRound className="w-5 h-5" />
+                </div>
+                <h3>{hasPin ? 'Change 4-Digit PIN' : 'Set 4-Digit Security PIN'}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPinModal(false)}
+                className="p-1 rounded-lg hover:bg-surface-subtle text-content-muted cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-xs text-content-muted">
+              This PIN allows you to unlock Digital Azizi when biometric scanning is unavailable or when returning to the app.
+            </p>
+
+            <form onSubmit={handleSavePin} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-content-primary">New PIN (4 digits)</label>
+                <input
+                  type="password"
+                  maxLength={6}
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={newPin}
+                  onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
+                  placeholder="••••"
+                  className="w-full tracking-widest text-center text-xl font-bold py-2.5 px-3 rounded-xl bg-surface-subtle border border-surface-border text-content-primary focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-content-primary">Confirm PIN</label>
+                <input
+                  type="password"
+                  maxLength={6}
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={confirmPin}
+                  onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ''))}
+                  placeholder="••••"
+                  className="w-full tracking-widest text-center text-xl font-bold py-2.5 px-3 rounded-xl bg-surface-subtle border border-surface-border text-content-primary focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  required
+                />
+              </div>
+
+              {pinModalError && (
+                <p className="text-xs text-rose-500 font-semibold">{pinModalError}</p>
+              )}
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowPinModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-content-muted hover:bg-surface-subtle"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingPin || newPin.length < 4}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white text-xs font-bold shadow-md cursor-pointer"
+                >
+                  {savingPin ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                  Save & Enable Lock
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
