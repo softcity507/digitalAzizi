@@ -22,67 +22,66 @@ export async function POST(req: NextRequest) {
     const email = (body.email || ADMIN_EMAIL).trim().toLowerCase();
     const name = body.name || email.split('@')[0] || 'User';
     const avatarUrl = body.avatar_url || '';
-    const subscriptionDays = body.subscription_days || '7';
-
     const role: UserRole = email === ADMIN_EMAIL ? 'admin' : 'user';
-    const subscriptionExpiresAt = calculateExpiryDate(subscriptionDays);
     const now = new Date().toISOString();
+    const { data: existingUser, error: lookupError } = await supabase
+      .from('users')
+      .select('*')
+      .ilike('email', email)
+      .maybeSingle();
 
-    const userData: AppUser = {
-      id: `usr_${Buffer.from(email).toString('hex').slice(0, 16)}`,
-      email,
-      name,
-      avatar_url: avatarUrl,
-      role,
-      subscription_days: subscriptionDays,
-      subscription_expires_at: subscriptionExpiresAt,
-      created_at: now,
-      updated_at: now,
-    };
+    if (lookupError) {
+      return NextResponse.json({ success: false, error: 'Could not verify subscription. Please try again.' }, { status: 503 });
+    }
 
-    let dbSaved = false;
-    let dbErrorMessage = '';
-
-    // Direct Upsert into Supabase 'users' table
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .upsert(
-          {
-            email: userData.email,
-            name: userData.name,
-            avatar_url: userData.avatar_url,
-            role: userData.role,
-            subscription_days: userData.subscription_days,
-            subscription_expires_at: userData.subscription_expires_at,
-            updated_at: now,
-          },
-          { onConflict: 'email' }
-        )
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Supabase users insert error:', error);
-        dbErrorMessage = error.message;
-      } else if (data) {
-        dbSaved = true;
-        userData.id = String(data.id || userData.id);
-        userData.role = (data.role as UserRole) || userData.role;
-        userData.subscription_days = String(data.subscription_days || userData.subscription_days);
-        userData.subscription_expires_at = data.subscription_expires_at || userData.subscription_expires_at;
-        await ensureDefaultBusiness(email, name);
+    let userData: AppUser;
+    if (existingUser) {
+      userData = {
+        id: String(existingUser.id),
+        email: existingUser.email,
+        name: existingUser.name || name,
+        avatar_url: existingUser.avatar_url || avatarUrl,
+        role: (existingUser.role as UserRole) || role,
+        subscription_days: String(existingUser.subscription_days || '7'),
+        subscription_expires_at: existingUser.subscription_expires_at,
+        created_at: existingUser.created_at,
+        updated_at: existingUser.updated_at,
+      };
+      if (userData.role !== 'admin' && new Date(userData.subscription_expires_at).getTime() <= Date.now()) {
+        return NextResponse.json({ success: false, error: 'Your subscription has expired. Contact the administrator to renew it.' }, { status: 403 });
       }
-    } catch (dbError) {
-      console.error('Supabase exception:', dbError);
-      dbErrorMessage = dbError instanceof Error ? dbError.message : 'Database error';
+      await supabase.from('users').update({ name, avatar_url: avatarUrl, updated_at: now }).eq('id', userData.id);
+    } else {
+      const subscriptionDays = '7';
+      const subscriptionExpiresAt = calculateExpiryDate(subscriptionDays);
+      const { data: createdUser, error: createError } = await supabase.from('users').insert({
+        email, name, avatar_url: avatarUrl, role,
+        subscription_days: subscriptionDays,
+        subscription_expires_at: subscriptionExpiresAt,
+        updated_at: now,
+      }).select().single();
+      if (createError || !createdUser) {
+        return NextResponse.json({ success: false, error: 'Could not create your account. Please try again.' }, { status: 503 });
+      }
+      userData = {
+        id: String(createdUser.id), email: createdUser.email, name: createdUser.name || name,
+        avatar_url: createdUser.avatar_url || avatarUrl, role: (createdUser.role as UserRole) || role,
+        subscription_days: String(createdUser.subscription_days || '7'),
+        subscription_expires_at: createdUser.subscription_expires_at,
+        created_at: createdUser.created_at, updated_at: createdUser.updated_at,
+      };
+    }
+
+    try {
+      await ensureDefaultBusiness(email, name);
+    } catch (businessError) {
+      console.error('Default business creation error:', businessError);
     }
 
     const response = NextResponse.json({
       success: true,
       user: userData,
-      dbSaved,
-      dbError: dbErrorMessage || undefined,
+      dbSaved: true,
       message: `Signed in successfully as ${role}`,
     });
 

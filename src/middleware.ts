@@ -3,7 +3,7 @@ import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from '@/i18n/request';
 
 const PUBLIC_FILE = /\.(.*)$/;
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. Skip internal assets, static files, and public auth APIs
@@ -26,6 +26,32 @@ export function middleware(request: NextRequest) {
   // 3. Read Google login session cookie
   const authUserCookie = request.cookies.get('auth_user_email')?.value;
   const isAuthenticated = Boolean(authUserCookie && authUserCookie.trim().length > 0);
+
+  if (isAuthenticated && !isLandingPage) {
+    try {
+      const sessionResponse = await fetch(new URL('/api/auth/me', request.url), {
+        headers: { cookie: request.headers.get('cookie') || '' },
+        cache: 'no-store',
+      });
+      if (sessionResponse.status === 403) {
+        const loginUrl = new URL(`/${locale}`, request.url);
+        loginUrl.searchParams.set('auth_error', 'Your subscription has expired. Contact the administrator to renew it.');
+        const response = NextResponse.redirect(loginUrl);
+        response.cookies.delete('auth_user_email');
+        response.cookies.delete('auth_user_role');
+        return response;
+      }
+      if (!sessionResponse.ok) {
+        const loginUrl = new URL(`/${locale}`, request.url);
+        loginUrl.searchParams.set('auth_error', 'Could not verify subscription. Please try again.');
+        return NextResponse.redirect(loginUrl);
+      }
+    } catch {
+      const loginUrl = new URL(`/${locale}`, request.url);
+      loginUrl.searchParams.set('auth_error', 'Could not verify subscription. Please try again.');
+      return NextResponse.redirect(loginUrl);
+    }
+  }
 
   // 4. Private Route Guard: If not logged in, block all routes and redirect to Google login landing page
   if (!isAuthenticated && !isLandingPage) {

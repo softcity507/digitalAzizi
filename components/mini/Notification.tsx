@@ -2,63 +2,42 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useCashBookStore } from '@/store/useCashBookStore';
-import { useSettingsStore } from '@/store/useSettingsStore';
-import type { CashBookEntry } from '@/types/cashbook';
+import type { AppUser } from '@/types/auth';
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
-
-function formatRelativeTime(timestamp: number, now: number) {
-  const minutes = Math.max(0, Math.floor((now - timestamp) / 60_000));
-  if (minutes < 1) return 'Just now';
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return 'Yesterday';
-}
-
-function getTransactionTitle(transaction: CashBookEntry) {
-  if (transaction.type === 'exchange') {
-    return transaction.fromCustomer && transaction.toCustomer
-      ? `${transaction.fromCustomer} → ${transaction.toCustomer}`
-      : transaction.customerName || 'Currency exchange';
-  }
-  return transaction.customerName || 'Customer transaction';
-}
-
-function getTransactionDetail(transaction: CashBookEntry) {
-  if (transaction.type === 'exchange' && transaction.exchangeDetails) {
-    const { fromAmount, fromCurrency, toAmount, toCurrency, rate } = transaction.exchangeDetails;
-    return `${fromAmount.toLocaleString()} ${fromCurrency} → ${toAmount.toLocaleString()} ${toCurrency} @ ${rate}`;
-  }
-
-  const label = transaction.type === 'cash_in' ? 'Cash In' : 'Cash Out';
-  const sign = transaction.type === 'cash_in' ? '+' : '−';
-  return `${label} ${sign}${transaction.amount.toLocaleString()} ${transaction.currency}`;
-}
-
-function getTransactionColor(type: CashBookEntry['type']) {
-  if (type === 'cash_in') return 'text-credit';
-  if (type === 'cash_out') return 'text-debit';
-  return 'text-brand';
-}
 
 export default function Notification() {
   const t = useTranslations('Header');
   const [isOpen, setIsOpen] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+  const [user, setUser] = useState<AppUser | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const transactions = useCashBookStore((state) => state.transactions);
-  const fetchTransactions = useCashBookStore((state) => state.fetchTransactions);
-  const businesses = useSettingsStore((state) => state.businesses);
-  const activeBusiness = businesses.find((business) => business.isActive) || businesses[0];
+
+  const refreshSubscription = () => {
+    void fetch('/api/auth/me')
+      .then(async (response) => {
+        const result = await response.json();
+        return result?.user ? result.user as AppUser : null;
+      })
+      .then(setUser)
+      .catch(() => setUser(null));
+  };
 
   useEffect(() => {
-    if (!activeBusiness?.id) return;
-    void fetchTransactions().catch((error: unknown) => {
-      console.warn('Notification transactions could not be loaded:', error instanceof Error ? error.message : error);
-    });
-  }, [fetchTransactions, activeBusiness?.id]);
+    let cancelled = false;
+    void fetch('/api/auth/me')
+      .then(async (response) => {
+        const result = await response.json();
+        return result?.user ? result.user as AppUser : null;
+      })
+      .then((currentUser) => {
+        if (!cancelled) setUser(currentUser);
+      })
+      .catch(() => {
+        if (!cancelled) setUser(null);
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 60_000);
@@ -75,16 +54,18 @@ export default function Notification() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const notifications = useMemo(
-    () => transactions
-      .filter((transaction) => {
-        if (activeBusiness && transaction.businessId && transaction.businessId !== activeBusiness.id) return false;
-        return transaction.createdAt <= now && now - transaction.createdAt < DAY_IN_MS;
-      })
-      .sort((a, b) => b.createdAt - a.createdAt),
-    [transactions, activeBusiness, now],
-  );
+  const daysRemaining = useMemo(() => {
+    if (!user?.subscription_expires_at) return null;
+    const expiry = new Date(user.subscription_expires_at).getTime();
+    if (!Number.isFinite(expiry)) return null;
+    const grantedDays = Number.parseInt(user.subscription_days, 10);
+    const totalDays = Number.isFinite(grantedDays) && grantedDays >= 0 ? grantedDays : 7;
+    const remaining = Math.max(0, expiry - now);
+    const days = Math.min(totalDays, Math.ceil(remaining / DAY_IN_MS));
+    return days;
+  }, [user, now]);
 
+  const notifications = daysRemaining === null ? [] : [daysRemaining];
   const hasUnread = notifications.length > 0 && !isOpen;
 
   return (
@@ -92,27 +73,16 @@ export default function Notification() {
       <button
         onClick={() => {
           setIsOpen((previous) => !previous);
+          refreshSubscription();
         }}
         aria-label={t('notifications')}
         aria-expanded={isOpen}
         className="relative flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-full bg-surface-subtle hover:bg-surface-hover text-content-primary border border-surface-border transition-all duration-200 active:scale-95 shadow-sm"
       >
-        <svg
-          className="w-5 h-5 text-content-secondary group-hover:text-content-primary transition-colors"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.75}
-            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-          />
+        <svg className="w-5 h-5 text-content-secondary group-hover:text-content-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
         </svg>
-
-        {hasUnread && notifications.length > 0 && (
+        {hasUnread && (
           <span className="absolute top-2 right-2 flex h-2.5 w-2.5" aria-hidden="true">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-debit-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-debit-500" />
@@ -129,36 +99,22 @@ export default function Notification() {
                 {notifications.length} New
               </span>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              aria-label={t('closeNotifications')}
-              className="text-xs text-content-muted hover:text-content-primary"
-            >
+            <button onClick={() => setIsOpen(false)} aria-label={t('closeNotifications')} className="text-xs text-content-muted hover:text-content-primary">
               ×
             </button>
           </div>
 
           <div className="space-y-2.5 max-h-72 overflow-y-auto">
-            {notifications.length === 0 ? (
+            {daysRemaining === null ? (
               <p className="py-5 text-center text-xs text-content-muted">{t('noNotifications')}</p>
-            ) : notifications.map((item) => (
-              <div
-                key={item.id}
-                className="flex flex-col gap-1 p-2.5 rounded-xl bg-surface-subtle hover:bg-surface-hover border border-surface-border/50 transition-colors"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-semibold text-content-primary truncate">
-                    {getTransactionTitle(item)}
-                  </span>
-                  <span className="text-[10px] text-content-muted whitespace-nowrap">
-                    {formatRelativeTime(item.createdAt, now)}
-                  </span>
-                </div>
-                <p className={`text-xs ${getTransactionColor(item.type)} font-medium`}>
-                  {getTransactionDetail(item)}
+            ) : (
+              <div className="flex flex-col gap-1 p-2.5 rounded-xl bg-surface-subtle border border-surface-border/50">
+                <span className="text-xs font-semibold text-content-primary">Subscription expiry</span>
+                <p className="text-xs text-debit font-medium">
+                  You have only {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} remaining
                 </p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       )}

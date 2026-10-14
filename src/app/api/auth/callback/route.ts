@@ -68,29 +68,37 @@ export async function GET(request: NextRequest) {
         const avatarUrl = user.user_metadata?.avatar_url || '';
         const role: UserRole = email === ADMIN_EMAIL ? 'admin' : 'user';
 
-        const expiryDate = new Date();
-        expiryDate.setDate(expiryDate.getDate() + 7);
-        const subscriptionExpiresAt = expiryDate.toISOString();
         const now = new Date().toISOString();
+        const { data: existingUser, error: lookupError } = await adminDb
+          .from('users').select('*').ilike('email', email).maybeSingle();
 
-        // Cache code to guard against immediate second firing
+        if (lookupError) {
+          return NextResponse.redirect(`${origin}/?auth_error=${encodeURIComponent('Could not verify subscription. Please try again.')}`);
+        }
+
+        if (existingUser && role !== 'admin' && new Date(existingUser.subscription_expires_at).getTime() <= Date.now()) {
+          const response = NextResponse.redirect(`${origin}/?auth_error=${encodeURIComponent('Your subscription has expired. Contact the administrator to renew it.')}`);
+          response.cookies.delete('auth_user_email');
+          response.cookies.delete('auth_user_role');
+          return response;
+        }
+
+        if (existingUser) {
+          await adminDb.from('users').update({ name, avatar_url: avatarUrl, updated_at: now }).eq('id', existingUser.id);
+        } else {
+          const expiryDate = new Date();
+          expiryDate.setDate(expiryDate.getDate() + 7);
+          const { error: createError } = await adminDb.from('users').insert({
+            email, name, avatar_url: avatarUrl, role, subscription_days: '7',
+            subscription_expires_at: expiryDate.toISOString(), updated_at: now,
+          });
+          if (createError) {
+            return NextResponse.redirect(`${origin}/?auth_error=${encodeURIComponent('Could not create your account. Please try again.')}`);
+          }
+        }
+
+        // Cache code to guard against React StrictMode / duplicate callback requests.
         exchangedCodes.set(code, { email, role, timestamp: Date.now() });
-
-        // Upsert in public.users table using adminDb to ensure RLS bypass
-        await adminDb
-          .from('users')
-          .upsert(
-            {
-              email,
-              name,
-              avatar_url: avatarUrl,
-              role,
-              subscription_days: '7',
-              subscription_expires_at: subscriptionExpiresAt,
-              updated_at: now,
-            },
-            { onConflict: 'email' }
-          );
 
         try {
           await ensureDefaultBusiness(email, name, user.id);

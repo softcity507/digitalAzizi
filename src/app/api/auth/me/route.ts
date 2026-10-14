@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { AppUser, UserRole } from '@/types/auth';
 
-const ADMIN_EMAIL = (process.env.APP_ADMIN_EMAIL || 'sadaqatali507bscs@gmail.com').trim().toLowerCase();
+const ADMIN_EMAIL = (process.env.APP_ADMIN_EMAIL || process.env.NEXT_PUBLIC_APP_ADMIN_EMAIL || 'developai507@gmail.com').trim().toLowerCase();
 
 export async function GET(req: NextRequest) {
   try {
@@ -24,12 +24,15 @@ export async function GET(req: NextRequest) {
     };
 
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('users')
         .select('*')
         .ilike('email', email)
         .maybeSingle();
 
+      if (error) {
+        return NextResponse.json({ success: false, error: 'Could not verify subscription.' }, { status: 503 });
+      }
       if (data) {
         user = {
           id: String(data.id || user.id),
@@ -42,9 +45,19 @@ export async function GET(req: NextRequest) {
           created_at: data.created_at,
           updated_at: data.updated_at,
         };
+      } else {
+        return NextResponse.json({ success: false, error: 'Account not found.' }, { status: 403 });
       }
     } catch {
-      // Use in-memory user fallback
+      return NextResponse.json({ success: false, error: 'Could not verify subscription.' }, { status: 503 });
+    }
+
+    const isSubscriptionActive = user.role === 'admin' || new Date(user.subscription_expires_at).getTime() > Date.now();
+    if (!isSubscriptionActive) {
+      const response = NextResponse.json({ success: false, user, error: 'Your subscription has expired. Contact the administrator to renew it.' }, { status: 403 });
+      response.cookies.delete('auth_user_email');
+      response.cookies.delete('auth_user_role');
+      return response;
     }
 
     return NextResponse.json({ success: true, user });
