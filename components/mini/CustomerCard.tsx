@@ -108,27 +108,63 @@ export default function CustomerCard({
   };
 
   return (
-    <div className={`group flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-surface border border-surface-border shadow-sm hover:border-brand/40 hover:bg-surface-hover/50 transition-all duration-200 ${className}`}>
+    <div className={`group relative flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-surface border border-surface-border shadow-sm hover:border-brand/40 hover:bg-surface-hover/50 transition-all duration-200 ${className}`}>
+      {/* Clickable Link area for Customer Details */}
       <Link
         href={`/${locale}/details?id=${customer.id}`}
         onClick={handleCardClick}
-        className="flex min-w-0 flex-1 items-center justify-between cursor-pointer"
+        className="flex min-w-0 flex-1 items-center justify-between cursor-pointer pr-12"
       >
-      {/* Left Column: Customer Details */}
-      <div className="flex flex-col items-start gap-1 pr-3">
-        <div className="flex items-center gap-2 flex-wrap">
-          <h3 className="text-sm sm:text-base font-bold text-content-primary group-hover:text-brand transition-colors">
-            {customer.name}
-          </h3>
-           {canManage && (
-        <div className="ml-3 flex shrink-0 items-center gap-2">
+        {/* Left Column: Customer Details */}
+        <div className="flex flex-col items-start gap-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="text-sm sm:text-base font-bold text-content-primary group-hover:text-brand transition-colors">
+              {customer.name}
+            </h3>
+            {customer.badge && (
+              <span className="px-2 py-0.5 text-[10px] font-semibold rounded-md bg-brand/15 text-brand border border-brand/30">
+                {customer.badge}
+              </span>
+            )}
+          </div>
+
+          {customer.phone && (
+            <span className="text-[11px] font-mono text-content-muted">
+              {customer.phone}
+            </span>
+          )}
+        </div>
+
+        {/* Right Column: Currency Balances */}
+        <div className="flex flex-col items-end gap-0.5 text-right font-mono flex-shrink-0">
+          {customer.balances.map((bal, idx) => (
+            <div key={idx} className="flex items-center gap-1.5 text-xs sm:text-sm font-bold">
+              <span className="text-[10px] text-content-muted font-normal uppercase">
+                {bal.currency}
+              </span>
+              <span className={bal.isCredit ? 'text-credit' : 'text-debit'}>
+                {bal.amount}
+              </span>
+            </div>
+          ))}
+        </div>
+      </Link>
+
+      {/* Delete Button positioned absolutely outside the Link wrapper */}
+      {canManage && (
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center">
           <button
             type="button"
-            className="rounded-lg   text-xs font-semibold text-red-600 hover:bg-red-50 curser-hover transition-colors p-1.5"
-            onClick={() => { setDeleteError(null); setShowDeleteConfirm(true); }}
+            className="rounded-lg text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors p-2"
+            onClick={(e) => {
+              e.stopPropagation(); // Stop event from bubbling up to the Link
+              e.preventDefault();  // Prevent default link action
+              setDeleteError(null);
+              setShowDeleteConfirm(true);
+            }}
+            aria-label="Delete customer"
           >
-             
-             <svg
+            <svg
               className="w-4 h-4"
               fill="none"
               stroke="currentColor"
@@ -141,47 +177,12 @@ export default function CustomerCard({
                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
               />
             </svg>
- 
-           </button>
+          </button>
         </div>
       )}
-          {customer.badge && (
-            <span className="px-2 py-0.5 text-[10px] font-semibold rounded-md bg-brand/15 text-brand border border-brand/30">
-              {customer.badge}
-            </span>
-          )}
-        </div>
-
-        {/* {customer.subtitle && (
-          <span className="text-xs text-content-secondary font-medium">
-            {customer.subtitle}
-          </span>
-        )} */}
-
-        {customer.phone && (
-          <span className="text-[11px] font-mono text-content-muted">
-            {customer.phone}
-          </span>
-        )}
-      </div>
-
-      {/* Right Column: Currency Balances (Mapped using .map) */}
-      <div className="flex flex-col items-end gap-0.5 text-right font-mono flex-shrink-0">
-        {customer.balances.map((bal, idx) => (
-          <div key={idx} className="flex items-center gap-1.5 text-xs sm:text-sm font-bold">
-            <span className="text-[10px] text-content-muted font-normal uppercase">
-              {bal.currency}
-            </span>
-            <span className={bal.isCredit ? 'text-credit' : 'text-debit'}>
-              {bal.amount}
-            </span>
-          </div>
-        ))}
-      </div>
-      </Link>
      
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="presentation">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="presentation" onClick={(e) => e.stopPropagation()}>
           <div role="dialog" aria-modal="true" aria-labelledby={`delete-customer-${customer.id}`} className="w-full max-w-sm space-y-4 rounded-2xl border border-surface-border bg-surface p-5 shadow-xl">
             <div className="flex items-center gap-3">
               <div className="rounded-xl border border-red-500/30 bg-red-500/15 p-2.5 text-red-400"><AlertTriangle className="h-5 w-5" /></div>
@@ -199,7 +200,7 @@ export default function CustomerCard({
         </div>
       )}
       {verification && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4" onClick={(e) => e.stopPropagation()}>
           <div role="dialog" aria-modal="true" aria-labelledby={`verify-customer-${customer.id}`} className="w-full max-w-sm space-y-4 rounded-2xl border border-surface-border bg-surface p-5 shadow-2xl">
             <div>
               <h4 id={`verify-customer-${customer.id}`} className="text-sm font-bold text-content-primary">Verify it’s you</h4>
