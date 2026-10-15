@@ -42,6 +42,10 @@
 
   --exchange: #d97706;
   --exchange-subtle: #fef3c7;
+  --whatsapp-surface: #dcfce7;
+  --whatsapp-surface-hover: #bbf7d0;
+  --whatsapp-text: #166534;
+  --whatsapp-icon: #16a34a;
 
   /* Explicit #000 & #fff definitions */
   --color-black: #000000;
@@ -92,6 +96,10 @@
 
   --exchange: #facc15;
   --exchange-subtle: rgba(250, 204, 21, 0.15);
+  --whatsapp-surface: #064e3b;
+  --whatsapp-surface-hover: #065f46;
+  --whatsapp-text: #d1fae5;
+  --whatsapp-icon: #34d399;
 
   /* Explicit #000 & #fff definitions */
   --color-black: #000000;
@@ -102,6 +110,19 @@ body {
   background-color: var(--canvas);
   color: var(--text-primary);
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.whatsapp-contact-link {
+  background-color: var(--whatsapp-surface);
+  color: var(--whatsapp-text);
+}
+
+.whatsapp-contact-link:hover {
+  background-color: var(--whatsapp-surface-hover);
+}
+
+.whatsapp-contact-icon {
+  color: var(--whatsapp-icon);
 }
 
 /* react-toastify skin follows the app theme; per-toast inline colors can override it. */

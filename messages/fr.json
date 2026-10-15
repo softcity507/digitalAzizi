@@ -12,7 +12,8 @@
     "details": "Détails",
     "cashBook": "Livre de Caisse",
     "exchange": "Change",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "about": "À propos"
   },
   "HomePage": {
     "title": "Bonjour le monde!",
@@ -330,10 +331,9 @@
     "subtitle": "Sous-titre",
     "defaultActive": "Actif par défaut"
   },
-
-   "about": {
+  "about": {
     "title": "Centre Juridique et de Sécurité",
-    "subtitle": "DigitalAzizi حقوقي او امنيتي کچه",
+    "subtitle": "Centre juridique et de sécurité DigitalAzizi",
     "protectionScore": "Score de protection : 90%",
     "verified": "VÉRIFIÉ",
     "encryptedDb": "Base de données chiffrée AES-256 • Anti-altération actif",
@@ -344,6 +344,13 @@
     "copyright": "Copyright © 2026 Azizullah Munsif. Tous droits réservés.",
     "description": "DigitalAzizi est un grand livre numérique avancé et axé sur le hors-ligne (Livre de comptes), une comptabilité financière multidevise, un assistant vocal et une plateforme de synchronisation cloud conçue pour les entreprises, commerçants et particuliers du monde entier.",
     "descriptionPashto": "DigitalAzizi est un système financier et comptable avancé pour les entreprises et les boutiques, conçu et géré par l'honorable Azizullah Munsif.",
+    "developerLabel": "Développeur et propriétaire",
+    "contactDeveloper": "Écrire au développeur",
+    "languagesTitle": "Disponible en {count} langues",
+    "languagesSubtitle": "Touchez une langue pour traduire toute l’interface, y compris les écritures de droite à gauche.",
+    "currentLanguage": "Actuelle",
+    "noResults": "Aucune section ne correspond à « {query} ».",
+    "clearSearch": "Effacer la recherche",
     "sections": {
       "aboutUs": {
         "title": "1. À propos de DigitalAzizi",

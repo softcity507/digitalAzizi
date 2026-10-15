@@ -12,7 +12,8 @@
     "details": "Details",
     "cashBook": "Cash Book",
     "exchange": "Exchange",
-    "settings": "Settings"
+    "settings": "Settings",
+    "about": "About"
   },
   "HomePage": {
     "title": "Hello world!",
@@ -343,6 +344,13 @@
     "copyright": "Copyright © 2026 Azizullah Munsif. All Rights Reserved.",
     "description": "DigitalAzizi is an advanced, offline-first digital ledger (Khata Book), multi-currency financial accounting, voice-enabled assistant, and cloud synchronization platform engineered for modern businesses, merchants, and individuals worldwide.",
     "descriptionPashto": "DigitalAzizi is an advanced financial and accounting system for businesses and shops, designed and managed by the honorable Azizullah Munsif.",
+    "developerLabel": "Developer & Owner",
+    "contactDeveloper": "Email the developer",
+    "languagesTitle": "Available in {count} languages",
+    "languagesSubtitle": "Tap a language to switch the entire interface, including right-to-left scripts.",
+    "currentLanguage": "Current",
+    "noResults": "No sections match “{query}”.",
+    "clearSearch": "Clear search",
     "sections": {
       "aboutUs": {
         "title": "1. About DigitalAzizi",

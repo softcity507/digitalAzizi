@@ -12,7 +12,8 @@
     "details": "Detaylar",
     "cashBook": "Kasa Defteri",
     "exchange": "Döviz",
-    "settings": "Ayarlar"
+    "settings": "Ayarlar",
+    "about": "Hakkında"
   },
   "HomePage": {
     "title": "Merhaba Dünya!",
@@ -332,7 +333,7 @@
   },
   "about": {
     "title": "Yasal ve Güvenlik Merkezi",
-    "subtitle": "DigitalAzizi حقوقي او امنيتي کچه",
+    "subtitle": "DigitalAzizi Hukuk ve Güvenlik Merkezi",
     "protectionScore": "Koruma Puanı: %90",
     "verified": "DOĞRULANDI",
     "encryptedDb": "AES-256 Şifreli Veritabanı • Kurcalama Karşıtı Aktif",
@@ -343,6 +344,13 @@
     "copyright": "Telif Hakkı © 2026 Azizullah Munsif. Tüm Hakları Saklıdır.",
     "description": "DigitalAzizi, modern işletmeler, tüccarlar ve dünya çapındaki bireyler için geliştirilmiş gelişmiş, çevrimdışı öncelikli bir dijital defter (Cari Hesap), çok para birimli finansal muhasebe, ses destekli asistan ve bulut senkronizasyon platformudur.",
     "descriptionPashto": "DigitalAzizi, saygıdeğer Azizullah Munsif tarafından tasarlanan ve yönetilen, işletmeler ve dükkanlar için gelişmiş bir finansal ve muhasebe sistemidir.",
+    "developerLabel": "Geliştirici ve Sahibi",
+    "contactDeveloper": "Geliştiriciye e-posta gönderin",
+    "languagesTitle": "{count} dilde kullanılabilir",
+    "languagesSubtitle": "Tüm arayüzü değiştirmek için bir dile dokunun; sağdan sola yazılan diller dahil.",
+    "currentLanguage": "Geçerli",
+    "noResults": "“{query}” ile eşleşen bölüm yok.",
+    "clearSearch": "Aramayı temizle",
     "sections": {
       "aboutUs": {
         "title": "1. DigitalAzizi Hakkında",

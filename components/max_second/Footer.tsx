@@ -39,7 +39,7 @@ export default function Footer({ className = '', activeHref }: FooterProps) {
         {/* Main Footer Bar: Left (Logo), Center (Page Links), Right (System/Status or Info) */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           {/* 1. Left: DigitalAzizi Logo */}
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <Logo size="md" />
           </div>
 
@@ -61,6 +61,7 @@ export default function Footer({ className = '', activeHref }: FooterProps) {
                 </Link>
               );
             })}
+             
           </nav>
 
           {/* 3. Right: Copyright with Dynamic Year */}

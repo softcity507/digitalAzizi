@@ -9,6 +9,7 @@ interface LandingFooterProps {
 
 export default function LandingFooter({ className = '' }: LandingFooterProps) {
   const t = useTranslations('Landing');
+  const tAbout = useTranslations('about');
   const locale = useLocale();
 
   return (
@@ -47,6 +48,12 @@ export default function LandingFooter({ className = '' }: LandingFooterProps) {
         <p className="text-[10px] sm:text-[11px] text-content-muted">
           {t('compliance')}
         </p>
+        <Link
+          href={`/${locale}/about`}
+          className="inline-block text-[11px] sm:text-xs font-semibold text-brand hover:text-brand-hover hover:underline underline-offset-2 transition-colors"
+        >
+          {tAbout('title')}
+        </Link>
       </div>
     </footer>
   );

@@ -21,11 +21,13 @@ export async function proxy(request: NextRequest) {
   const locale = isLocale ? firstSegment : DEFAULT_LOCALE;
   const routePath = isLocale ? segments.slice(1).join('/') : segments.join('/');
   const isLandingPage = routePath === '' || routePath === 'page';
+  // Legal & developer info must stay readable before sign-in and after a trial ends.
+  const isPublicPage = routePath === 'about';
 
   const authUserCookie = request.cookies.get('auth_user_email')?.value;
   const isAuthenticated = Boolean(authUserCookie && authUserCookie.trim().length > 0);
 
-  if (isAuthenticated && !isLandingPage) {
+  if (isAuthenticated && !isLandingPage && !isPublicPage) {
     try {
       const sessionResponse = await fetch(new URL('/api/auth/me', request.url), {
         headers: { cookie: request.headers.get('cookie') || '' },
@@ -52,7 +54,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  if (!isAuthenticated && !isLandingPage) {
+  if (!isAuthenticated && !isLandingPage && !isPublicPage) {
     const loginUrl = new URL(`/${locale}`, request.url);
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
