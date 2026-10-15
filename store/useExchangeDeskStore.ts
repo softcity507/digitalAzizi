@@ -392,6 +392,15 @@ export const useExchangeDeskStore = create<ExchangeDeskState>((set, get) => ({
     set((state) => ({
       exchanges: [savedEntry, ...state.exchanges],
       notificationMessage: `Committed ${gAmt.toLocaleString()} ${giveCurrency} at ${rate} to ${computedGetAmount.toLocaleString()} ${getCurrency}`,
+      customerId: '',
+      type: 'SELL',
+      giveAmount: '',
+      giveCurrency: '',
+      calcMode: 'multiply',
+      exchangeRate: '',
+      getCurrency: '',
+      memo: '',
+      serialNo: '',
     }));
     syncCustomerLedger(savedEntry, savedEntry.id);
     return true;

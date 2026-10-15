@@ -6,6 +6,7 @@ import { useExchangeDeskStore } from './useExchangeDeskStore';
 import { useCashBookStore } from './useCashBookStore';
 import type { SupportedLocale } from '@/i18n/languages';
 import { supabaseClient } from '@/lib/supabaseClient';
+import { FREE_TRIAL_LIMITS } from '@/lib/planLimits';
 
 interface BusinessRow {
   id: number | string;
@@ -30,6 +31,21 @@ interface CustomerRow {
   business_id: number | string | null;
   recycle?: boolean | null;
   delete_date?: string | null;
+}
+
+interface BusinessNameRow {
+  id: number | string;
+  name: string | null;
+  recycle: boolean | null;
+}
+
+interface CustomerLimitRow {
+  id: number | string;
+  description: string | null;
+}
+
+interface CustomerNameRow {
+  name: string | null;
 }
 
 const DEFAULT_EXCHANGE_ACCOUNT_DESCRIPTION = 'Default exchange account';
@@ -315,39 +331,31 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     const { id: userId, email: ownerEmail } = await getSignedInUser();
 
     // Query businesses where user_id matches, or fallback to owner_email
-    const res = await supabaseClient
-      .from('businesses')
-      .select('id, name, subtitle, is_active, supported_currencies, owner_email, user_id, recycle, delete_date')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: true });
-
-    let data = res.data;
-    const error = res.error;
-
-    if (!error && (!data || data.length === 0)) {
-      const fallback = await supabaseClient
+    const [userResult, emailResult] = await Promise.all([
+      supabaseClient
+        .from('businesses')
+        .select('id, name, subtitle, is_active, supported_currencies, owner_email, user_id, recycle, delete_date')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: true }),
+      supabaseClient
         .from('businesses')
         .select('id, name, subtitle, is_active, supported_currencies, owner_email, user_id, recycle, delete_date')
         .ilike('owner_email', ownerEmail)
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: true }),
+    ]);
 
-      if (!fallback.error && fallback.data && fallback.data.length > 0) {
-        data = fallback.data;
-      }
+    const userBusinesses = (userResult.data ?? []) as BusinessRow[];
+    const emailBusinesses = (emailResult.data ?? []) as BusinessRow[];
+    if ((userResult.error || emailResult.error) && userBusinesses.length === 0 && emailBusinesses.length === 0) {
+      const messages = [userResult.error?.message, emailResult.error?.message].filter(Boolean).join('; ');
+      throw new Error(`Could not load businesses: ${messages}`);
     }
+    const businessRows = new Map<string, BusinessRow>();
+    [...userBusinesses, ...emailBusinesses].forEach((business: BusinessRow) => {
+      businessRows.set(String(business.id), business);
+    });
 
-    if (error && (!data || data.length === 0)) {
-      const fallback = await supabaseClient
-        .from('businesses')
-        .select('id, name, subtitle, is_active, supported_currencies, owner_email, user_id, recycle, delete_date')
-        .ilike('owner_email', ownerEmail)
-        .order('created_at', { ascending: true });
-
-      if (fallback.error) throw new Error(fallback.error.message || error.message);
-      data = fallback.data;
-    }
-
-    const allBusinesses: BusinessProfile[] = (data ?? []).map(
+    const allBusinesses: BusinessProfile[] = [...businessRows.values()].map(
       (business: BusinessRow): BusinessProfile => mapBusinessRow(business)
     );
     const mapped = allBusinesses.filter((business) => !business.recycle);
@@ -494,6 +502,28 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       throw new Error('Please select exactly 3 supported currencies.');
     }
     const { id: userId, email: ownerEmail } = await getSignedInUser();
+    const { data: accountBusinesses, error: countError } = await supabaseClient
+      .from('businesses')
+      .select('id, name, recycle')
+      .eq('user_id', userId);
+    if (countError) throw new Error(`Could not verify business limit: ${countError.message}`);
+    let ownedBusinesses: BusinessNameRow[] = (accountBusinesses ?? []) as BusinessNameRow[];
+    if (ownedBusinesses.length === 0) {
+      const { data: emailBusinesses, error: fallbackError } = await supabaseClient
+        .from('businesses')
+        .select('id, name, recycle')
+        .ilike('owner_email', ownerEmail);
+      if (fallbackError) throw new Error(`Could not verify business names: ${fallbackError.message}`);
+      ownedBusinesses = (emailBusinesses ?? []) as BusinessNameRow[];
+    }
+    const normalizedBusinessName = name.trim().toLowerCase();
+    if (ownedBusinesses.some((business: BusinessNameRow) => !business.recycle && business.name?.trim().toLowerCase() === normalizedBusinessName)) {
+      throw new Error('A business with this name already exists in your account.');
+    }
+    const totalBusinesses = Math.max(ownedBusinesses.filter((business: BusinessNameRow) => !business.recycle).length, get().businesses.length);
+    if (totalBusinesses >= FREE_TRIAL_LIMITS.businesses) {
+      throw new Error(`Free trial limit reached: you can create up to ${FREE_TRIAL_LIMITS.businesses} businesses.`);
+    }
     const isFirstBusiness = get().businesses.length === 0;
 
     if (isFirstBusiness) {
@@ -577,6 +607,31 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       throw new Error('No active business found. Please create or select a business first.');
     }
     const currentBizId = Number(activeBiz.id);
+    const businessIds = get().businesses.map((business) => Number(business.id)).filter(Number.isSafeInteger);
+    const { data: customerRows, error: countError } = await supabaseClient
+      .from('customers')
+      .select('id, description')
+      .in('business_id', businessIds)
+      .eq('recycle', false);
+    if (countError) throw new Error(`Could not verify customer limit: ${countError.message}`);
+    const typedCustomerRows = (customerRows ?? []) as CustomerLimitRow[];
+    const totalCustomers = typedCustomerRows.filter(
+      (row: CustomerLimitRow) => row.description !== DEFAULT_EXCHANGE_ACCOUNT_DESCRIPTION
+    ).length;
+    if (totalCustomers >= FREE_TRIAL_LIMITS.customers) {
+      throw new Error(`Free trial limit reached: you can create up to ${FREE_TRIAL_LIMITS.customers} customers across your businesses.`);
+    }
+    const { data: businessCustomers, error: duplicateError } = await supabaseClient
+      .from('customers')
+      .select('name')
+      .eq('business_id', currentBizId)
+      .eq('recycle', false);
+    if (duplicateError) throw new Error(`Could not verify customer names: ${duplicateError.message}`);
+    const normalizedCustomerName = name.trim().toLowerCase();
+    const typedBusinessCustomers = (businessCustomers ?? []) as CustomerNameRow[];
+    if (typedBusinessCustomers.some((customer: CustomerNameRow) => customer.name?.trim().toLowerCase() === normalizedCustomerName)) {
+      throw new Error('A customer with this name already exists in this business.');
+    }
 
     const parts = subtitle.split('•').map((p) => p.trim());
     const descriptionText = parts[0] || notes;

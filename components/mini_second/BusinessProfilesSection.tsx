@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { Pencil, Trash2, Check, X, ArrowRightLeft, AlertTriangle, Plus, Loader2 } from 'lucide-react';
 import { CurrencyCode } from '@/types/customer';
+import { FREE_TRIAL_LIMITS } from '@/lib/planLimits';
 import verifyAndAuthorizeAction, { verifyPinAction } from '@/components/max_second/verifyAndAuthorizeAction';
 
 const AVAILABLE_CURRENCIES: CurrencyCode[] = [
@@ -23,6 +24,7 @@ const AVAILABLE_CURRENCIES: CurrencyCode[] = [
 export default function BusinessProfilesSection() {
   const t = useTranslations('Settings');
   const { businesses, customers, fetchBusinesses, setActiveBusiness, addBusiness, updateBusiness, deleteBusiness } = useSettingsStore();
+  const canCreateBusiness = businesses.length < FREE_TRIAL_LIMITS.businesses;
 
   // State for adding a new business
   const [isAdding, setIsAdding] = useState(false);
@@ -70,6 +72,11 @@ export default function BusinessProfilesSection() {
   const handleCreateBusiness = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName.trim() || isCreating) return;
+    const normalizedName = newName.trim().toLowerCase();
+    if (businesses.some((business) => business.name.trim().toLowerCase() === normalizedName)) {
+      setDatabaseError('A business with this name already exists in your account.');
+      return;
+    }
     setIsCreating(true);
     setDatabaseError(null);
     try {
@@ -203,12 +210,17 @@ export default function BusinessProfilesSection() {
           <span className="text-[11px] font-mono font-medium text-content-muted">
             {t('activeBooksCount', { count: businesses.length })}
           </span>
+          <p className="text-[10px] text-content-muted">
+            Free trial: {businesses.length}/{FREE_TRIAL_LIMITS.businesses} businesses
+          </p>
         </div>
 
         <button
           type="button"
           onClick={() => setIsAdding(!isAdding)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-400 hover:bg-sky-500 text-slate-950 text-xs font-bold shadow-sm transition-all cursor-pointer"
+          disabled={!isAdding && !canCreateBusiness}
+          title={!canCreateBusiness ? `Free trial limit: ${FREE_TRIAL_LIMITS.businesses} businesses` : undefined}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-400 hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 text-xs font-bold shadow-sm transition-all cursor-pointer"
         >
           {isAdding ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
           <span>{isAdding ? t('cancel') : t('addNewBusiness')}</span>
@@ -441,7 +453,7 @@ export default function BusinessProfilesSection() {
                     {t('currenciesSupported')}
                   </span>
                   <span className="text-[10px] font-bold text-sky-400 bg-sky-400/10 px-2 py-0.5 rounded-md border border-sky-400/20">
-                    {t('customersCount', { count: customers.filter((c) => c.businessId === b.id).length })}
+                    {t('customersCount', { count: customers.filter((c) => c.businessId === b.id && !c.isSystemDefault).length })}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">

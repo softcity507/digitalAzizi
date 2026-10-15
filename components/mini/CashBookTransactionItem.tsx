@@ -16,6 +16,20 @@ export default function CashBookTransactionItem({
 
   const isCashIn = transaction.type === 'cash_in';
   const isExchange = transaction.type === 'exchange';
+  const exchangeDetails = transaction.exchangeDetails;
+  const customerReceivesFromCurrency = exchangeDetails?.exchangeType === 'BUY';
+  const creditAmount = exchangeDetails
+    ? customerReceivesFromCurrency ? exchangeDetails.fromAmount : exchangeDetails.toAmount
+    : 0;
+  const creditCurrency = exchangeDetails
+    ? customerReceivesFromCurrency ? exchangeDetails.fromCurrency : exchangeDetails.toCurrency
+    : '';
+  const debitAmount = exchangeDetails
+    ? customerReceivesFromCurrency ? exchangeDetails.toAmount : exchangeDetails.fromAmount
+    : 0;
+  const debitCurrency = exchangeDetails
+    ? customerReceivesFromCurrency ? exchangeDetails.toCurrency : exchangeDetails.fromCurrency
+    : '';
 
   const formatAmount = () => {
     const formatted = transaction.amount.toLocaleString('en-US');
@@ -45,21 +59,34 @@ export default function CashBookTransactionItem({
         </div>
 
         {/* Right Side: Amount & Currency */}
-        <div className="text-right rtl:text-left shrink-0">
-          <div
-            className={`font-mono font-bold text-sm sm:text-base md:text-lg tracking-tight ${isCashIn
-                ? 'text-[#34d399]'
-                : isExchange
-                  ? 'text-[#38bdf8]'
-                  : 'text-[#fda4af]'
-              }`}
-          >
-            {formatAmount()}
+        {isExchange && exchangeDetails ? (
+          <div className="shrink-0 flex flex-col items-end rtl:items-start gap-0.5 text-right rtl:text-left font-mono">
+            <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold" title="Customer credit">
+              <span className="text-[10px] text-content-muted font-normal uppercase">{creditCurrency}</span>
+              <span className="text-credit">+{creditAmount.toLocaleString('en-US')}</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold" title="Customer debit">
+              <span className="text-[10px] text-content-muted font-normal uppercase">{debitCurrency}</span>
+              <span className="text-debit">−{debitAmount.toLocaleString('en-US')}</span>
+            </div>
           </div>
-          <div className="text-[10px] sm:text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-            {transaction.currency}
+        ) : (
+          <div className="text-right rtl:text-left shrink-0">
+            <div
+              className={`font-mono font-bold text-sm sm:text-base md:text-lg tracking-tight ${isCashIn
+                  ? 'text-[#34d399]'
+                  : isExchange
+                    ? 'text-[#38bdf8]'
+                    : 'text-[#fda4af]'
+                }`}
+            >
+              {formatAmount()}
+            </div>
+            <div className="text-[10px] sm:text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+              {transaction.currency}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Bottom Manner Row: Type Badge, Time/Serial, and Action Buttons */}

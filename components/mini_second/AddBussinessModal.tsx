@@ -7,7 +7,7 @@ import { CurrencyCode } from '@/types/customer';
 
 export default function AddBussinessModal() {
   const t = useTranslations('Settings');
-  const { activeModal, closeModal, addUser, businesses } = useSettingsStore();
+  const { activeModal, closeModal, addUser, businesses, customers } = useSettingsStore();
   const [saveError, setSaveError] = useState<string | null>(null);
   const activeBusiness = businesses.find((business) => business.isActive) || businesses[0];
   const businessCurrencies = activeBusiness?.supportedCurrencies ?? [];
@@ -47,6 +47,13 @@ export default function AddBussinessModal() {
     if (!trimmedFirst) return;
 
     const fullName = [trimmedFirst, trimmedLast].filter(Boolean).join(' ');
+    const normalizedName = fullName.toLowerCase();
+    if (customers.some((customer) =>
+      customer.businessId === activeBusiness?.id && customer.name.trim().toLowerCase() === normalizedName
+    )) {
+      setSaveError('A customer with this name already exists in this business.');
+      return;
+    }
     const fullSubtitle = [
       amountDescription.trim(),
       phone.trim(),

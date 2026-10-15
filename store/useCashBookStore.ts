@@ -4,6 +4,7 @@ import { CustomerTransaction } from '@/types/customer';
 import { useSettingsStore } from './useSettingsStore';
 import { useCustomerDetailsStore } from './useCustomerDetailsStore';
 import { supabaseClient } from '@/lib/supabaseClient';
+import { fromCalendarDate, getTodayCalendarDate, toCalendarDate } from '@/lib/calendarDate';
 
 export type CurrencyFilterType = 'ALL' | CurrencyCode;
 export type ModalType = 'cash_in' | 'cash_out' | 'exchange' | 'edit' | 'delete' | null;
@@ -310,7 +311,7 @@ interface CashBookState {
 }
 
 export const useCashBookStore = create<CashBookState>((set, get) => ({
-  selectedDate: new Date().toISOString().split('T')[0],
+  selectedDate: getTodayCalendarDate(),
   filterCurrency: 'ALL',
   selectedCustomerId: null,
   searchQuery: '',
@@ -336,11 +337,7 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
       if (error) throw error;
 
       const entries = ((data ?? []) as Record<string, unknown>[]).map((row) => fromCashbookRow(row));
-      const selectedDate = get().selectedDate;
-      const dateToShow = entries.some((entry) => entry.date === selectedDate)
-        ? selectedDate
-        : entries[0]?.date ?? selectedDate;
-      set({ transactions: entries, selectedDate: dateToShow, isLoading: false, loadError: null });
+      set({ transactions: entries, isLoading: false, loadError: null });
       entries.forEach(replaceCustomerLedgerTransactions);
     } catch (error) {
       set({ transactions: [], isLoading: false, loadError: error instanceof Error ? error.message : String(error) });
@@ -359,21 +356,21 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
   setSelectedDate: (date: string) => set({ selectedDate: date }),
 
   prevDay: () => {
-    const current = new Date(get().selectedDate);
+    const current = fromCalendarDate(get().selectedDate);
     current.setDate(current.getDate() - 1);
-    const prevDateStr = current.toISOString().split('T')[0];
+    const prevDateStr = toCalendarDate(current);
     set({ selectedDate: prevDateStr });
   },
 
   nextDay: () => {
-    const current = new Date(get().selectedDate);
+    const current = fromCalendarDate(get().selectedDate);
     current.setDate(current.getDate() + 1);
-    const nextDateStr = current.toISOString().split('T')[0];
+    const nextDateStr = toCalendarDate(current);
     set({ selectedDate: nextDateStr });
   },
 
   setToday: () => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayCalendarDate();
     set({ selectedDate: today });
   },
 
@@ -504,7 +501,9 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
       if (tx.date !== selectedDate) return false;
 
       // 4. Currency filter
-      if (filterCurrency !== 'ALL' && tx.currency !== filterCurrency) return false;
+      if (filterCurrency !== 'ALL' && tx.currency !== filterCurrency &&
+        !(tx.type === 'exchange' && tx.exchangeDetails &&
+          (tx.exchangeDetails.fromCurrency === filterCurrency || tx.exchangeDetails.toCurrency === filterCurrency))) return false;
 
       // 5. Search query filter
       if (searchQuery.trim() !== '') {
@@ -512,8 +511,10 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
         const matchesName = tx.customerName.toLowerCase().includes(q);
         const matchesMemo = tx.memo ? tx.memo.toLowerCase().includes(q) : false;
         const matchesSerial = tx.serialNo ? tx.serialNo.toLowerCase().includes(q) : false;
-        const matchesAmount = tx.amount.toString().includes(q);
-        const matchesCurrency = tx.currency.toLowerCase().includes(q);
+        const matchesAmount = tx.amount.toString().includes(q) ||
+          (tx.exchangeDetails && (tx.exchangeDetails.fromAmount.toString().includes(q) || tx.exchangeDetails.toAmount.toString().includes(q)));
+        const matchesCurrency = tx.currency.toLowerCase().includes(q) ||
+          (tx.exchangeDetails && (tx.exchangeDetails.fromCurrency.toLowerCase().includes(q) || tx.exchangeDetails.toCurrency.toLowerCase().includes(q)));
         if (!matchesName && !matchesMemo && !matchesSerial && !matchesAmount && !matchesCurrency) {
           return false;
         }
@@ -557,8 +558,13 @@ export const useCashBookStore = create<CashBookState>((set, get) => ({
         addAmount('cashOut', tx.currency, tx.amount);
       } else if (tx.type === 'exchange' && tx.exchangeDetails) {
         const { fromCurrency, fromAmount, toCurrency, toAmount } = tx.exchangeDetails;
-        addAmount('cashOut', fromCurrency, fromAmount);
-        addAmount('cashIn', toCurrency, toAmount);
+        if (tx.exchangeDetails.exchangeType === 'BUY') {
+          addAmount('cashIn', fromCurrency, fromAmount);
+          addAmount('cashOut', toCurrency, toAmount);
+        } else {
+          addAmount('cashOut', fromCurrency, fromAmount);
+          addAmount('cashIn', toCurrency, toAmount);
+        }
       }
     });
 

@@ -13,7 +13,10 @@ export default function CustomerTransactionItemCard({ transaction }: ItemProps) 
   const { openModal } = useCustomerDetailsStore();
 
   const isCredit = transaction.isCredit;
-  const formattedAmount = `${isCredit ? '+' : '-'}${transaction.amount.toLocaleString()} ${transaction.currency}`;
+  const signedAmount = `${isCredit ? '+' : '−'}${transaction.amount.toLocaleString()}`;
+  const formattedAmount = transaction.category === 'exchange'
+    ? `${transaction.currency} ${signedAmount}`
+    : `${signedAmount} ${transaction.currency}`;
 
   const getCategoryStyles = () => {
     switch (transaction.category) {

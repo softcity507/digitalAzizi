@@ -25,7 +25,7 @@ import type { CashBookEntry } from '@/types/cashbook';
 import PdfExportButton from '@/components/shared/PdfExportButton';
 
 export default function CashBookContainer() {
-  const { getFilteredTransactions, editingTransaction, fetchTransactions, isLoading, loadError } = useCashBookStore();
+  const { getFilteredTransactions, editingTransaction, fetchTransactions, isLoading, loadError, selectedDate, activeModal } = useCashBookStore();
   const activeBusiness = useSettingsStore((state) =>
     state.businesses.find((business) => business.isActive) || state.businesses[0]
   );
@@ -84,8 +84,13 @@ export default function CashBookContainer() {
           const { fromCurrency, fromAmount, toCurrency, toAmount } = tx.exchangeDetails;
           movements[fromCurrency] ??= { credit: 0, debit: 0 };
           movements[toCurrency] ??= { credit: 0, debit: 0 };
-          movements[fromCurrency].debit += fromAmount;
-          movements[toCurrency].credit += toAmount;
+          if (tx.exchangeDetails.exchangeType === 'BUY') {
+            movements[fromCurrency].credit += fromAmount;
+            movements[toCurrency].debit += toAmount;
+          } else {
+            movements[fromCurrency].debit += fromAmount;
+            movements[toCurrency].credit += toAmount;
+          }
         } else if (tx.type === 'cash_in') {
           movements[tx.currency] ??= { credit: 0, debit: 0 };
           movements[tx.currency].credit += tx.amount;
@@ -234,9 +239,9 @@ export default function CashBookContainer() {
       </div>
 
       {/* Interactive Modals */}
-      <CashInModal />
-      <CashOutModal />
-      <ExchangeModal />
+      <CashInModal key={`cash-in-${selectedDate}-${activeModal}`} />
+      <CashOutModal key={`cash-out-${selectedDate}-${activeModal}`} />
+      <ExchangeModal key={`exchange-${selectedDate}-${activeModal}`} />
       <EditTransactionModal key={editingTransaction?.id || 'idle'} />
       <DeleteConfirmModal />
       <AddBussinessModal />

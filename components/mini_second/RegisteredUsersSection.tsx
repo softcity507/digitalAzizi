@@ -3,14 +3,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import { FREE_TRIAL_LIMITS } from '@/lib/planLimits';
 
 export default function RegisteredUsersSection() {
   const t = useTranslations('Settings');
-  const { users, setDefaultUser, openModal } = useSettingsStore();
+  const { users, customers, setDefaultUser, openModal } = useSettingsStore();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const defaultUser = users.find((u) => u.isDefault) || users[0];
+  const canAddCustomer = customers.filter((customer) => !customer.isSystemDefault).length < FREE_TRIAL_LIMITS.customers;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -145,7 +147,8 @@ export default function RegisteredUsersSection() {
               <button
                 type="button"
                 onClick={() => openModal('add_customer')}
-                className="w-full py-2.5 px-4 rounded-xl bg-surface hover:bg-surface-hover border border-surface-border text-xs sm:text-sm font-bold text-content-primary transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer group"
+                disabled={!canAddCustomer}
+                className="w-full py-2.5 px-4 rounded-xl bg-surface hover:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed border border-surface-border text-xs sm:text-sm font-bold text-content-primary transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer group"
               >
                 <span className="w-4 h-4 rounded-md bg-brand/15 text-brand flex items-center justify-center font-bold text-xs shrink-0 group-hover:bg-brand/25 transition-colors">
                   +

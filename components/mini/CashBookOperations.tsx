@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useCashBookStore } from '@/store/useCashBookStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { showDynamicToast } from '@/components/max_second/DynamicToast';
+import { FREE_TRIAL_LIMITS } from '@/lib/planLimits';
 
 export default function CashBookOperations() {
   const t = useTranslations('CashBook');
@@ -14,8 +15,10 @@ export default function CashBookOperations() {
   const openSettingsModal = useSettingsStore((state) => state.openModal);
   const activeBusinessId = businesses.find((business) => business.isActive)?.id || businesses[0]?.id;
   const activeCustomerCount = activeBusinessId
-    ? customers.filter((customer) => customer.businessId === activeBusinessId).length
-    : customers.length;
+    ? customers.filter((customer) => customer.businessId === activeBusinessId && !customer.isSystemDefault).length
+    : customers.filter((customer) => !customer.isSystemDefault).length;
+  const totalCustomerCount = customers.filter((customer) => !customer.isSystemDefault).length;
+  const canAddCustomer = totalCustomerCount < FREE_TRIAL_LIMITS.customers;
 
   const openCustomerOperation = (modal: 'cash_in' | 'cash_out' | 'exchange') => {
     const requiredCustomers = modal === 'exchange' ? 2 : 1;
@@ -70,13 +73,17 @@ export default function CashBookOperations() {
       <button
         type="button"
         onClick={() => openSettingsModal('add_customer')}
-        className="w-full h-11 sm:h-12 rounded-2xl bg-surface-subtle hover:bg-surface-hover border border-surface-border active:scale-[0.99] text-content-primary font-bold text-xs sm:text-sm transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer shadow-sm group"
+        disabled={!canAddCustomer}
+        className="w-full h-11 sm:h-12 rounded-2xl bg-surface-subtle hover:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed border border-surface-border active:scale-[0.99] text-content-primary font-bold text-xs sm:text-sm transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer shadow-sm group"
       >
         <span className="w-5 h-5 rounded-lg bg-brand/15 text-brand flex items-center justify-center font-bold text-xs shrink-0 group-hover:bg-brand/25 transition-colors">
           +
         </span>
         <span className="truncate">{tSettings('addNewCustomer')}</span>
       </button>
+      <p className="text-center text-[10px] text-content-muted">
+        Free trial customers: {totalCustomerCount}/{FREE_TRIAL_LIMITS.customers}
+      </p>
     </div>
   );
 }

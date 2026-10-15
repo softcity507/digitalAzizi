@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useCashBookStore } from '@/store/useCashBookStore';
+import { getTodayCalendarDate } from '@/lib/calendarDate';
 
 export default function CashBookDateBar() {
   const t = useTranslations('CashBook');
@@ -17,9 +18,9 @@ export default function CashBookDateBar() {
       const [year, month, day] = dateStr.split('-').map(Number);
       const date = new Date(year, month - 1, day);
       return date.toLocaleDateString(locale || 'en-GB', {
-        weekday: 'short',
+        weekday: 'long',
         day: '2-digit',
-        month: 'short',
+        month: 'long',
         year: 'numeric',
       });
     } catch {
@@ -27,8 +28,7 @@ export default function CashBookDateBar() {
     }
   };
 
-  const isToday =
-    selectedDate === new Date().toISOString().split('T')[0];
+  const isToday = selectedDate === getTodayCalendarDate();
 
   return (
     <div className="flex items-center justify-between gap-2 sm:gap-3 w-full">
@@ -65,7 +65,7 @@ export default function CashBookDateBar() {
           <svg className="w-4 h-4 text-[#38bdf8] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          <span className="truncate">{formatDateDisplay(selectedDate)}</span>
+          <span className="whitespace-nowrap text-[11px] sm:text-sm">{formatDateDisplay(selectedDate)}</span>
         </button>
 
         {/* Hidden date picker input for native cross-browser modal calendar */}
