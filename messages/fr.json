@@ -329,5 +329,62 @@
     "clickToToggle": "Cliquer pour basculer",
     "subtitle": "Sous-titre",
     "defaultActive": "Actif par défaut"
+  },
+
+   "about": {
+    "title": "Centre Juridique et de Sécurité",
+    "subtitle": "DigitalAzizi حقوقي او امنيتي کچه",
+    "protectionScore": "Score de protection : 90%",
+    "verified": "VÉRIFIÉ",
+    "encryptedDb": "Base de données chiffrée AES-256 • Anti-altération actif",
+    "searchPlaceholder": "Rechercher des termes juridiques...",
+    "appName": "DigitalAzizi",
+    "owner": "Azizullah Munsif",
+    "email": "Azizullah0703@gmail.com",
+    "copyright": "Copyright © 2026 Azizullah Munsif. Tous droits réservés.",
+    "description": "DigitalAzizi est un grand livre numérique avancé et axé sur le hors-ligne (Livre de comptes), une comptabilité financière multidevise, un assistant vocal et une plateforme de synchronisation cloud conçue pour les entreprises, commerçants et particuliers du monde entier.",
+    "descriptionPashto": "DigitalAzizi est un système financier et comptable avancé pour les entreprises et les boutiques, conçu et géré par l'honorable Azizullah Munsif.",
+    "sections": {
+      "aboutUs": {
+        "title": "1. À propos de DigitalAzizi",
+        "subtitle": "Informations sur DigitalAzizi"
+      },
+      "copyrightNotice": {
+        "title": "2. Avis de Copyright",
+        "subtitle": "Avis de copyright et de propriété intellectuelle",
+        "text": "Cette application et tous ses composants, y compris le code source, la base de données, l'interface utilisateur, les graphiques, les icônes, les algorithmes, les rapports, les documents, les logos, la logique commerciale et toute la propriété intellectuelle associée, sont la propriété exclusive d'Azizullah Munsif.",
+        "restriction": "Aucun individu, entreprise, organisation, développeur ou système d'intelligence artificielle (IA) ne peut copier, cloner, modifier, reproduire, distribuer, procéder à l'ingénierie inverse, publier, vendre ou créer une application similaire basée sur ce travail sans l'autorisation écrite préalable du propriétaire.",
+        "violation": "Toute utilisation non autorisée constitue une violation des lois applicables sur le droit d'auteur et la propriété intellectuelle et peut entraîner des poursuites judiciaires civiles et pénales.",
+        "allRightsReserved": "Tous droits réservés dans le monde entier."
+      },
+      "privacyPolicy": {
+        "title": "3. Politique de Confidentialité",
+        "subtitle": "Politique de confidentialité et de secret",
+        "intro": "DigitalAzizi valorise la confidentialité des utilisateurs. Toutes les transactions commerciales, entrées de grand livre, détails des clients et registres de solde sont stockés localement sur votre appareil avec un chiffrement AES-256.",
+        "dataCollectionTitle": "Collecte de données :",
+        "point1": "Nous ne vendons, ne louons ni ne partageons vos données financières avec des tiers.",
+        "point2": "La sauvegarde cloud optionnelle utilise le chiffrement SSL authentifié par Firebase, exclusivement détenu et accessible par votre compte.",
+        "point3": "Les autorisations de caméra et de stockage sont demandées uniquement pour joindre des reçus de transaction et exporter des rapports financiers PDF."
+      },
+      "termsOfService": {
+        "title": "4. Conditions d'Utilisation",
+        "subtitle": "Conditions d'utilisation",
+        "agreement": "En installant ou en utilisant DigitalAzizi, vous acceptez de vous conformer à tous les termes établis par le propriétaire, Azizullah Munsif.",
+        "prohibitedActionsTitle": "Actions prohibées :",
+        "action1": "Décompilation, ingénierie inverse ou extraction du code source.",
+        "action2": "Utilisation de scripts automatisés ou de modèles d'IA pour extraire les flux de travail de l'application.",
+        "action3": "Rebranding ou redistribution de DigitalAzizi sous un autre nom.",
+        "disclaimerTitle": "Avertissement :",
+        "disclaimerText": "L'application est fournnie EN L'ÉTAT (AS IS) pour un enregistrement financier professionnel. L'utilisateur reste responsable des saisies manuelles exactes."
+      },
+      "eula": {
+        "title": "5. Contrat de Licence Utilisateur Final (EULA)",
+        "subtitle": "Contrat de licence utilisateur",
+        "intro": "Ce Contrat de Licence Utilisateur Final (EULA) est un contrat juridique entre vous (le titulaire de la licence) et le propriétaire, Azizullah Munsif.",
+        "grantOfLicense": "Octroi de licence : Licence d'utilisation personnelle et commerciale non exclusive et non transférable.",
+        "ownership": "Propriété : Tous les droits, titres et intérêts relatifs à DigitalAzizi restent la propriété exclusive d'Azizullah Munsif.",
+        "termination": "Résiliation : Toute reproduction non autorisée résilie automatiquement cette licence et entraîne des poursuites judiciaires."
+      }
+    }
   }
 }

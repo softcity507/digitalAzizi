@@ -329,5 +329,61 @@
     "clickToToggle": "Click to toggle",
     "subtitle": "Subtitle",
     "defaultActive": "Default Active"
+  },
+  "about": {
+    "title": "Legal & Security Center",
+    "subtitle": "DigitalAzizi Legal & Security Center",
+    "protectionScore": "Protection Score: 90%",
+    "verified": "VERIFIED",
+    "encryptedDb": "AES-256 Encrypted DB • Anti-Tampering Active",
+    "searchPlaceholder": "Search Legal Terms...",
+    "appName": "DigitalAzizi",
+    "owner": "Azizullah Munsif",
+    "email": "Azizullah0703@gmail.com",
+    "copyright": "Copyright © 2026 Azizullah Munsif. All Rights Reserved.",
+    "description": "DigitalAzizi is an advanced, offline-first digital ledger (Khata Book), multi-currency financial accounting, voice-enabled assistant, and cloud synchronization platform engineered for modern businesses, merchants, and individuals worldwide.",
+    "descriptionPashto": "DigitalAzizi is an advanced financial and accounting system for businesses and shops, designed and managed by the honorable Azizullah Munsif.",
+    "sections": {
+      "aboutUs": {
+        "title": "1. About DigitalAzizi",
+        "subtitle": "Information about DigitalAzizi"
+      },
+      "copyrightNotice": {
+        "title": "2. Copyright Notice",
+        "subtitle": "Copyright and Intellectual Property Notice",
+        "text": "This application and all of its components, including source code, database, user interface, graphics, icons, algorithms, reports, documents, logos, business logic, and all associated intellectual property, are the exclusive property of Azizullah Munsif.",
+        "restriction": "No individual, company, organization, developer, or Artificial Intelligence (AI) system may copy, clone, modify, reproduce, distribute, reverse engineer, publish, sell, or create any similar application based on this work without the prior written permission of the owner.",
+        "violation": "Any unauthorized use constitutes a violation of applicable copyright and intellectual property laws and may result in civil and criminal legal action.",
+        "allRightsReserved": "All rights are reserved worldwide."
+      },
+      "privacyPolicy": {
+        "title": "3. Privacy Policy",
+        "subtitle": "Privacy and Confidentiality Policy",
+        "intro": "DigitalAzizi values user privacy. All business transactions, ledger entries, customer details, and balance records are stored locally on your device with AES-256 encryption.",
+        "dataCollectionTitle": "Data Collection:",
+        "point1": "We do NOT sell, lease, or share your financial data with third parties.",
+        "point2": "Optional Cloud Backup uses Firebase authenticated SSL encryption exclusively owned and accessed by your account.",
+        "point3": "Camera & Storage permissions are requested only for attaching transaction receipts and exporting PDF financial reports."
+      },
+      "termsOfService": {
+        "title": "4. Terms of Service",
+        "subtitle": "Conditions of Use",
+        "agreement": "By installing or using DigitalAzizi, you agree to comply with all terms set forth by the owner, Azizullah Munsif.",
+        "prohibitedActionsTitle": "Prohibited Actions:",
+        "action1": "Decompiling, reverse engineering, or extracting source code.",
+        "action2": "Using automated scripts or AI models to scrape app workflows.",
+        "action3": "Re-branding or redistributing DigitalAzizi under any other name.",
+        "disclaimerTitle": "Disclaimer:",
+        "disclaimerText": "The application is provided AS IS for professional financial recording. The user remains responsible for accurate manual entries."
+      },
+      "eula": {
+        "title": "5. End User License Agreement (EULA)",
+        "subtitle": "End User License Agreement",
+        "intro": "This End User License Agreement (EULA) is a legal contract between you (the licensee) and the owner, Azizullah Munsif.",
+        "grantOfLicense": "Grant of License: Non-exclusive, non-transferable personal and commercial usage license.",
+        "ownership": "Ownership: All rights, title, and interest in DigitalAzizi remain solely with Azizullah Munsif.",
+        "termination": "Termination: Unauthorized reproduction terminates this license automatically and invites legal proceedings."
+      }
+    }
   }
 }

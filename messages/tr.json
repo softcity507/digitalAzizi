@@ -329,5 +329,61 @@
     "clickToToggle": "Geçiş için tıklayın",
     "subtitle": "Alt başlık",
     "defaultActive": "Varsayılan Aktif"
+  },
+  "about": {
+    "title": "Yasal ve Güvenlik Merkezi",
+    "subtitle": "DigitalAzizi حقوقي او امنيتي کچه",
+    "protectionScore": "Koruma Puanı: %90",
+    "verified": "DOĞRULANDI",
+    "encryptedDb": "AES-256 Şifreli Veritabanı • Kurcalama Karşıtı Aktif",
+    "searchPlaceholder": "Yasal Terimleri Ara...",
+    "appName": "DigitalAzizi",
+    "owner": "Azizullah Munsif",
+    "email": "Azizullah0703@gmail.com",
+    "copyright": "Telif Hakkı © 2026 Azizullah Munsif. Tüm Hakları Saklıdır.",
+    "description": "DigitalAzizi, modern işletmeler, tüccarlar ve dünya çapındaki bireyler için geliştirilmiş gelişmiş, çevrimdışı öncelikli bir dijital defter (Cari Hesap), çok para birimli finansal muhasebe, ses destekli asistan ve bulut senkronizasyon platformudur.",
+    "descriptionPashto": "DigitalAzizi, saygıdeğer Azizullah Munsif tarafından tasarlanan ve yönetilen, işletmeler ve dükkanlar için gelişmiş bir finansal ve muhasebe sistemidir.",
+    "sections": {
+      "aboutUs": {
+        "title": "1. DigitalAzizi Hakkında",
+        "subtitle": "DigitalAzizi hakkında bilgiler"
+      },
+      "copyrightNotice": {
+        "title": "2. Telif Hakkı Bildirimi",
+        "subtitle": "Telif Hakkı ve Fikri Mülkiyet Bildirimi",
+        "text": "Bu uygulama ve kaynak kod, veritabanı, kullanıcı arayüzü, grafikler, simgeler, algoritmalar, raporlar, belgeler, logolar, iş mantığı ve ilgili tüm fikri mülkiyet dahil olmak üzere tüm bileşenleri Azizullah Munsif'in münhasır mülkiyetindedir.",
+        "restriction": "Hiçbir birey, şirket, kuruluş, geliştirici veya Yapay Zeka (AI) sistemi, sahibinin önceden yazılı izni olmaksızın bu çalışmaya dayanarak benzer bir uygulamayı kopyalayamaz, klonlayamaz, değiştiremez, çoğaltamaz, dağıtamaz, tersine mühendislik yapamaz, yayınlayamaz, satamaz veya oluşturamaz.",
+        "violation": "Herhangi bir izinsiz kullanım, geçerli telif hakkı ve fikri mülkiyet yasalarının ihlalini teşkil eder ve hukuki ve cezai yasal işlemle sonuçlanabilir.",
+        "allRightsReserved": "Dünya çapında tüm hakları saklıdır."
+      },
+      "privacyPolicy": {
+        "title": "3. Gizlilik Politikası",
+        "subtitle": "Gizlilik ve Mahremiyet Politikası",
+        "intro": "DigitalAzizi, kullanıcı gizliliğine değer verir. Tüm ticari işlemler, defter girişleri, müşteri detayları ve bakiye kayıtları, AES-256 şifrelemesi ile cihazınızda yerel olarak saklanır.",
+        "dataCollectionTitle": "Veri Toplama:",
+        "point1": "Finansal verilerinizi üçüncü taraflara satmıyor, kiralamıyor veya paylaşmıyoruz.",
+        "point2": "İsteğe bağlı Bulut Yedekleme, yalnızca hesabınıza ait olan ve erişilebilen Firebase kimlik doğrulamalı SSL şifrelemesini kullanır.",
+        "point3": "Kamera ve Depolama izinleri yalnızca işlem makbuzlarını eklemek ve PDF finansal raporları dışarı aktarmak için istenir."
+      },
+      "termsOfService": {
+        "title": "4. Hizmet Şartları",
+        "subtitle": "Kullanım Koşulları",
+        "agreement": "DigitalAzizi'yi yükleyerek veya kullanarak, sahibi Azizullah Munsif tarafından belirlenen tüm şartlara uymayı kabul etmiş olursunuz.",
+        "prohibitedActionsTitle": "Yasaklanan Eylemler:",
+        "action1": "Kaynak kodunu deordine etmek, tersine mühendislik yapmak veya çıkarmak.",
+        "action2": "Uygulama iş akışlarını kazımak için otomatik komut dosyaları veya AI modelleri kullanmak.",
+        "action3": "DigitalAzizi'yi başka bir ad altında yeniden markalamak veya yeniden dağıtmak.",
+        "disclaimerTitle": "Sorumluluk Reddi:",
+        "disclaimerText": "Uygulama, profesyonel finansal kayıt için OLDUĞU GİBİ (AS IS) sağlanır. Doğru manuel girişlerden kullanıcı sorumludur."
+      },
+      "eula": {
+        "title": "5. Son Kullanıcı Lisans Sözleşmesi (EULA)",
+        "subtitle": "Son Kullanıcı Lisans Sözleşmesi",
+        "intro": "Bu Son Kullanıcı Lisans Sözleşmesi (EULA), siz (lisans alan) ile sahibi Azizullah Munsif arasında yasal bir sözleşmedir.",
+        "grantOfLicense": "Lisans Verilmesi: Münhasır olmayan, devredilemeyen kişisel ve ticari kullanım lisansı.",
+        "ownership": "Sahiplik: DigitalAzizi'deki tüm haklar, unvanlar ve çıkarlar yalnızca Azizullah Munsif'e aittir.",
+        "termination": "Fesih: Yetkisiz çoğaltma, bu lisansı otomatik olarak fesheder ve yasal işlemleri davet eder."
+      }
+    }
   }
 }
