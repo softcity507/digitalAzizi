@@ -6,6 +6,9 @@ export interface BusinessProfile {
   subtitle: string;
   isActive: boolean;
   supportedCurrencies: CurrencyCode[];
+  recycle?: boolean;
+  deleteDate?: string | null;
+  customerCount?: number;
 }
 
 export interface AppAdminProfile {

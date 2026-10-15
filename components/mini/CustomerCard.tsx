@@ -188,7 +188,7 @@ export default function CustomerCard({
               <div className="rounded-xl border border-red-500/30 bg-red-500/15 p-2.5 text-red-400"><AlertTriangle className="h-5 w-5" /></div>
               <div>
                 <h4 id={`delete-customer-${customer.id}`} className="text-sm font-bold text-content-primary">Delete customer?</h4>
-                <p className="text-xs text-content-muted">Delete {customer.name}? Customers with ledger transactions cannot be deleted.</p>
+                <p className="text-xs text-content-muted">Move {customer.name} to the recycle bin? It will be permanently deleted after 15 days unless restored.</p>
               </div>
             </div>
             {deleteError && <p role="alert" className="text-xs text-red-500">{deleteError}</p>}

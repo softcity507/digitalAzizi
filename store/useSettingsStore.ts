@@ -15,6 +15,8 @@ interface BusinessRow {
   supported_currencies: string | string[] | null;
   owner_email?: string | null;
   user_id?: string | null; 
+  recycle?: boolean | null;
+  delete_date?: string | null;
 }
 
 interface CustomerRow {
@@ -26,10 +28,17 @@ interface CustomerRow {
   firstpayment: Record<string, number> | null;
   description: string | null;
   business_id: number | string | null;
+  recycle?: boolean | null;
+  delete_date?: string | null;
 }
 
 const DEFAULT_EXCHANGE_ACCOUNT_DESCRIPTION = 'Default exchange account';
 const exchangeAccountCreation = new Map<string, Promise<CustomerRow>>();
+const getRecycleDate = () => {
+  const date = new Date();
+  date.setDate(date.getDate() + 15);
+  return date.toISOString().slice(0, 10);
+};
 
 const mapCustomerRow = (row: CustomerRow): { user: RegisteredUser; customer: CustomerAccount } => {
   const slugId = String(row.id);
@@ -64,6 +73,8 @@ const mapCustomerRow = (row: CustomerRow): { user: RegisteredUser; customer: Cus
     subtitle,
     phone: row.phone || undefined,
     businessId: row.business_id ? String(row.business_id) : undefined,
+    recycle: Boolean(row.recycle),
+    deleteDate: row.delete_date ?? null,
     isSystemDefault,
     balances,
   };
@@ -121,6 +132,8 @@ const mapBusinessRow = (business: BusinessRow): BusinessProfile => ({
   subtitle: business.subtitle ?? '',
   isActive: Boolean(business.is_active),
   supportedCurrencies: parseBusinessCurrencies(business.supported_currencies),
+  recycle: Boolean(business.recycle),
+  deleteDate: business.delete_date ?? null,
 });
 
 const ensureDefaultExchangeCustomer = (business: BusinessProfile): Promise<CustomerRow> => {
@@ -226,6 +239,8 @@ interface SettingsState {
   businesses: BusinessProfile[];
   users: RegisteredUser[];
   customers: CustomerAccount[];
+  recycledBusinesses: BusinessProfile[];
+  recycledCustomers: CustomerAccount[];
   auditLogs: AuditLogItem[];
   lastSynced: string;
   activeModal: SettingsModalType;
@@ -267,6 +282,8 @@ interface SettingsState {
     supportedCurrencies?: CurrencyCode[]
   ) => Promise<void>;
   deleteBusiness: (id: string) => Promise<void>;
+  restoreCustomer: (id: string) => Promise<void>;
+  restoreBusiness: (id: string) => Promise<void>;
   openEditBusiness: (business: BusinessProfile) => void;
   triggerBackup: () => void;
   triggerRestore: () => void;
@@ -285,6 +302,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   businesses: [],
   users: [],
   customers: [],
+  recycledBusinesses: [],
+  recycledCustomers: [],
   auditLogs: [],
   lastSynced: '',
   activeModal: null,
@@ -298,7 +317,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     // Query businesses where user_id matches, or fallback to owner_email
     const res = await supabaseClient
       .from('businesses')
-      .select('id, name, subtitle, is_active, supported_currencies, owner_email, user_id')
+      .select('id, name, subtitle, is_active, supported_currencies, owner_email, user_id, recycle, delete_date')
       .eq('user_id', userId)
       .order('created_at', { ascending: true });
 
@@ -308,7 +327,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     if (!error && (!data || data.length === 0)) {
       const fallback = await supabaseClient
         .from('businesses')
-        .select('id, name, subtitle, is_active, supported_currencies, owner_email, user_id')
+        .select('id, name, subtitle, is_active, supported_currencies, owner_email, user_id, recycle, delete_date')
         .ilike('owner_email', ownerEmail)
         .order('created_at', { ascending: true });
 
@@ -320,7 +339,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     if (error && (!data || data.length === 0)) {
       const fallback = await supabaseClient
         .from('businesses')
-        .select('id, name, subtitle, is_active, supported_currencies, owner_email, user_id')
+        .select('id, name, subtitle, is_active, supported_currencies, owner_email, user_id, recycle, delete_date')
         .ilike('owner_email', ownerEmail)
         .order('created_at', { ascending: true });
 
@@ -328,14 +347,17 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       data = fallback.data;
     }
 
-    const mapped = (data ?? []).map((business: BusinessRow) => mapBusinessRow(business));
+    const allBusinesses: BusinessProfile[] = (data ?? []).map(
+      (business: BusinessRow): BusinessProfile => mapBusinessRow(business)
+    );
+    const mapped = allBusinesses.filter((business) => !business.recycle);
 
     // Ensure at least one business is marked active if available
     if (mapped.length > 0 && !mapped.some((b: BusinessProfile) => b.isActive)) {
       mapped[0].isActive = true;
     }
 
-    set({ businesses: mapped });
+    set({ businesses: mapped, recycledBusinesses: allBusinesses.filter((business) => business.recycle) });
     await get().fetchCustomers();
   },
 
@@ -371,7 +393,15 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       useExchangeDeskStore.getState().registerCustomer(customer.id, customer.name, currencies);
     });
 
-    set({ users: mappedUsers, customers: mappedCustomers });
+    set((state) => ({
+      users: mappedUsers.filter((user) => !customerRows.find((row) => String(row.id) === user.id)?.recycle),
+      customers: mappedCustomers.filter((customer) => !customer.recycle),
+      recycledCustomers: mappedCustomers.filter((customer) => customer.recycle),
+      recycledBusinesses: state.recycledBusinesses.map((business) => ({
+        ...business,
+        customerCount: customerRows.filter((row) => String(row.business_id) === business.id).length,
+      })),
+    }));
 
     const activeBiz = get().businesses.find((b) => b.isActive) || get().businesses[0];
     if (activeBiz) {
@@ -645,6 +675,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   updateUser: async (id, name, phone, address, description) => {
     await getSignedInUser();
     const currentCustomer = get().customers.find((customer) => customer.id === id);
+    if (!currentCustomer) throw new Error('Customer not found.');
     if (currentCustomer?.isSystemDefault) {
       throw new Error('The Exchange Account cannot be renamed.');
     }
@@ -678,25 +709,16 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   deleteUser: async (id) => {
     await getSignedInUser();
     const currentCustomer = get().customers.find((customer) => customer.id === id);
+    if (!currentCustomer) throw new Error('Customer not found.');
     if (currentCustomer?.isSystemDefault) {
       throw new Error('The Exchange Account cannot be deleted.');
     }
     const numericId = Number(id);
 
-    // customer_ledger_transactions has an ON DELETE CASCADE foreign key. Refuse
-    // deletion when ledger rows exist so deleting a customer never deletes them.
-    const { count, error: ledgerLookupError } = await supabaseClient
-      .from('customer_ledger_transactions')
-      .select('id', { count: 'exact', head: true })
-      .eq('customer_id', isNaN(numericId) ? id : numericId);
-    if (ledgerLookupError) throw new Error(ledgerLookupError.message);
-    if ((count ?? 0) > 0) {
-      throw new Error('This customer has ledger transactions and cannot be deleted.');
-    }
-
+    const deleteDate = getRecycleDate();
     const { error } = await supabaseClient
       .from('customers')
-      .delete()
+      .update({ recycle: true, delete_date: deleteDate })
       .eq('id', isNaN(numericId) ? id : numericId);
 
     if (error) throw new Error(error.message);
@@ -704,6 +726,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     set((s) => ({
       users: s.users.filter((u) => u.id !== id),
       customers: s.customers.filter((c) => c.id !== id),
+      recycledCustomers: [...s.recycledCustomers, { ...currentCustomer, recycle: true, deleteDate }],
     }));
   },
 
@@ -752,10 +775,12 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
   deleteBusiness: async (id) => {
     await getSignedInUser();
-
+    const deleteDate = getRecycleDate();
+    const target = get().businesses.find((business) => business.id === id);
+    if (!target) throw new Error('Business profile not found.');
     const { error } = await supabaseClient
       .from('businesses')
-      .delete()
+      .update({ recycle: true, delete_date: deleteDate })
       .eq('id', id);
 
     if (error) throw new Error(error.message);
@@ -784,12 +809,51 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
       return {
         businesses: nextBusinesses,
+        recycledBusinesses: [...s.recycledBusinesses, {
+          ...target,
+          recycle: true,
+          deleteDate,
+          customerCount: s.customers.filter((customer) => customer.businessId === id).length,
+        }],
         users: nextUsers,
         customers: nextCustomers,
         activeModal: null,
         editingBusiness: null,
       };
     });
+  },
+
+  restoreCustomer: async (id) => {
+    await getSignedInUser();
+    const numericId = Number(id);
+    const { error } = await supabaseClient.from('customers').update({ recycle: false, delete_date: null }).eq('id', Number.isNaN(numericId) ? id : numericId);
+    if (error) throw new Error(error.message);
+    set((s) => {
+      const customer = s.recycledCustomers.find((item) => item.id === id);
+      if (!customer) return {};
+      return {
+        recycledCustomers: s.recycledCustomers.filter((item) => item.id !== id),
+        customers: [...s.customers, { ...customer, recycle: false, deleteDate: null }],
+        users: [...s.users, { id, name: customer.name, subtitle: customer.subtitle ?? '', roleTag: 'Customer', isDefault: false }],
+      };
+    });
+  },
+
+  restoreBusiness: async (id) => {
+    await getSignedInUser();
+    const businessToRestore = get().recycledBusinesses.find((item) => item.id === id);
+    const { error } = await supabaseClient.from('businesses').update({ recycle: false, delete_date: null, is_active: false }).eq('id', id);
+    if (error) throw new Error(error.message);
+    if (!businessToRestore) return;
+    set((s) => {
+      const business = s.recycledBusinesses.find((item) => item.id === id);
+      if (!business) return {};
+      return {
+        recycledBusinesses: s.recycledBusinesses.filter((item) => item.id !== id),
+        businesses: [...s.businesses, { ...business, isActive: false, recycle: false, deleteDate: null }],
+      };
+    });
+    await get().fetchCustomers();
   },
 
   openEditBusiness: (business) => {

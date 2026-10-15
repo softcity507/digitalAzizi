@@ -6,6 +6,7 @@ import BusinessProfilesSection from '@/components/mini_second/BusinessProfilesSe
 import PreferencesSection from '@/components/mini_second/PreferencesSection';
 // import CloudBackupSection from '@/components/mini_second/CloudBackupSection';
 import SignOutSection from '@/components/mini_second/SignOutSection';
+import RecycleBinSection from '@/components/mini_second/RecycleBinSection';
 import AddCustomerModal from '@/components/mini_second/AddCustomerModal';
 import AuditLogModal from '@/components/mini_second/AuditLogModal';
 
@@ -26,6 +27,7 @@ export default function SettingsHubContainer() {
         {/* Right Column: Preferences, Cloud Backup & Sign Out */}
         <div className="lg:col-span-7 xl:col-span-7 space-y-5">
           <PreferencesSection />
+          <RecycleBinSection />
           {/* <CloudBackupSection /> */}
           <SignOutSection />
         </div>

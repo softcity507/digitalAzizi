@@ -8,6 +8,8 @@ create table public.businesses (
   subtitle text null,
   user_id uuid not null,
   deleted_at timestamp with time zone null,
+  recycle boolean not null default false,
+  delete_date date null,
   constraint businesses_pkey primary key (id)
 ) TABLESPACE pg_default;
 

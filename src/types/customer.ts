@@ -34,6 +34,8 @@ export interface CustomerAccount {
   badge?: string;
   isSystemDefault?: boolean;
   businessId?: string;
+  recycle?: boolean;
+  deleteDate?: string | null;
   balances: CustomerBalance[];
 }
 
