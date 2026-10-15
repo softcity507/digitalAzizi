@@ -1,11 +1,9 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+ import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Logo from '@/components/mini/Logo';
-import { NAV_ITEMS_CONFIG } from '@/data/navigation';
-
+ 
 interface FooterProps {
   className?: string;
   activeHref?: string;
@@ -44,25 +42,7 @@ export default function Footer({ className = '', activeHref }: FooterProps) {
           </div>
 
           {/* 2. Center: All Page Navigation Links */}
-          <nav className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 p-1.5 bg-surface-subtle/80 backdrop-blur rounded-2xl border border-surface-border">
-            {NAV_ITEMS_CONFIG.map((item) => {
-              const active = isCurrentActive(item.href);
-              return (
-                <Link
-                  key={item.key}
-                  href={localizedHref(item.href)}
-                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 select-none ${
-                    active
-                      ? 'bg-surface text-brand shadow-sm border border-surface-border'
-                      : 'text-content-secondary hover:text-content-primary hover:bg-surface-hover/60'
-                  }`}
-                >
-                  {t(item.key)}
-                </Link>
-              );
-            })}
-             
-          </nav>
+         
 
           {/* 3. Right: Copyright with Dynamic Year */}
           <div className="text-center md:text-right select-none">
