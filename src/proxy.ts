@@ -33,7 +33,8 @@ export async function proxy(request: NextRequest) {
       });
       if (sessionResponse.status === 403) {
         const loginUrl = new URL(`/${locale}`, request.url);
-        loginUrl.searchParams.set('auth_error', 'Your subscription has expired. Contact the administrator to renew it.');
+        loginUrl.searchParams.set('auth_error', 'Your free trial has ended. Contact the administrator to request more subscription days.');
+        if (authUserCookie) loginUrl.searchParams.set('expired_email', authUserCookie);
         const response = NextResponse.redirect(loginUrl);
         response.cookies.delete('auth_user_email');
         response.cookies.delete('auth_user_role');

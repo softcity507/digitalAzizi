@@ -35,10 +35,10 @@ export default function AuthCard({ className = '', onSuccess }: AuthCardProps) {
         />
       </div>
 
-      {/* Legacy Password Retirment Notice */}
+      {/* Trial and subscription notice */}
       <NoticeCard
-        title={t('legacyNoticeTitle') || 'Legacy password logins retired'}
-        description={t('legacyNoticeDesc') || 'Authorized dealers authenticate strictly via Google Authentication to prevent unauthorized tampering.'}
+        title="7-day free trial"
+        description="Your trial starts when your account is created. When it ends, contact the administrator to request more subscription days."
       />
     </div>
   );

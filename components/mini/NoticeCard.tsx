@@ -7,8 +7,8 @@ interface NoticeCardProps {
 }
 
 export default function NoticeCard({
-  title = 'Legacy password logins retired',
-  description = 'Authorized hawala dealers authenticate strictly via 2-Factor Google Enterprise Auth to prevent unauthorized balance tampering.',
+  title = '7-day free trial',
+  description = 'Your subscription starts when your account is created. After the trial ends, contact the administrator to request more days. The administrator updates your subscription days in the database.',
   className = '',
 }: NoticeCardProps) {
   return (

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { ensureDefaultBusiness } from '@/lib/ensureDefaultBusiness';
 import { AppUser, GoogleLoginPayload, UserRole } from '@/types/auth';
+import { getSubscriptionExpiry } from '@/lib/subscription';
 
 const ADMIN_EMAIL = (
   process.env.APP_ADMIN_EMAIL ||
@@ -43,12 +44,16 @@ export async function POST(req: NextRequest) {
         avatar_url: existingUser.avatar_url || avatarUrl,
         role: (existingUser.role as UserRole) || role,
         subscription_days: String(existingUser.subscription_days || '7'),
-        subscription_expires_at: existingUser.subscription_expires_at,
+        subscription_expires_at: getSubscriptionExpiry(
+          existingUser.created_at,
+          existingUser.subscription_days,
+          existingUser.subscription_expires_at,
+        ),
         created_at: existingUser.created_at,
         updated_at: existingUser.updated_at,
       };
       if (userData.role !== 'admin' && new Date(userData.subscription_expires_at).getTime() <= Date.now()) {
-        return NextResponse.json({ success: false, error: 'Your subscription has expired. Contact the administrator to renew it.' }, { status: 403 });
+        return NextResponse.json({ success: false, error: 'Your 7-day free trial has ended. Contact the administrator to request more subscription days.' }, { status: 403 });
       }
       await supabase.from('users').update({ name, avatar_url: avatarUrl, updated_at: now }).eq('id', userData.id);
     } else {

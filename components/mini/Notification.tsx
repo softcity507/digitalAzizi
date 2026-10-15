@@ -67,6 +67,8 @@ export default function Notification() {
 
   const notifications = daysRemaining === null ? [] : [daysRemaining];
   const hasUnread = notifications.length > 0 && !isOpen;
+  const grantedDays = Number.parseInt(user?.subscription_days || '7', 10);
+  const daysUsed = Math.max(0, (Number.isFinite(grantedDays) ? grantedDays : 7) - (daysRemaining ?? 0));
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -109,9 +111,9 @@ export default function Notification() {
               <p className="py-5 text-center text-xs text-content-muted">{t('noNotifications')}</p>
             ) : (
               <div className="flex flex-col gap-1 p-2.5 rounded-xl bg-surface-subtle border border-surface-border/50">
-                <span className="text-xs font-semibold text-content-primary">Subscription expiry</span>
+                <span className="text-xs font-semibold text-content-primary">Subscription usage</span>
                 <p className="text-xs text-debit font-medium">
-                  You have only {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} remaining
+                  {daysUsed} days used · {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} remaining
                 </p>
               </div>
             )}

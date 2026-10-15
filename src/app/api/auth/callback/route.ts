@@ -3,6 +3,7 @@ import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { supabase as adminDb } from '@/lib/supabase';
 import { ensureDefaultBusiness } from '@/lib/ensureDefaultBusiness';
 import { UserRole } from '@/types/auth';
+import { getSubscriptionExpiry } from '@/lib/subscription';
 
 const ADMIN_EMAIL = (
   process.env.APP_ADMIN_EMAIL ||
@@ -76,8 +77,11 @@ export async function GET(request: NextRequest) {
           return NextResponse.redirect(`${origin}/?auth_error=${encodeURIComponent('Could not verify subscription. Please try again.')}`);
         }
 
-        if (existingUser && role !== 'admin' && new Date(existingUser.subscription_expires_at).getTime() <= Date.now()) {
-          const response = NextResponse.redirect(`${origin}/?auth_error=${encodeURIComponent('Your subscription has expired. Contact the administrator to renew it.')}`);
+        const subscriptionExpiry = existingUser
+          ? getSubscriptionExpiry(existingUser.created_at, existingUser.subscription_days, existingUser.subscription_expires_at)
+          : null;
+        if (existingUser && role !== 'admin' && (!subscriptionExpiry || new Date(subscriptionExpiry).getTime() <= Date.now())) {
+          const response = NextResponse.redirect(`${origin}/?auth_error=${encodeURIComponent('Your 7-day free trial has ended. Please contact the administrator to renew your subscription.')}&expired_email=${encodeURIComponent(email)}`);
           response.cookies.delete('auth_user_email');
           response.cookies.delete('auth_user_role');
           return response;

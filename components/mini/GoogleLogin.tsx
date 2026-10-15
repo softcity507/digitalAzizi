@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import MiniLoader from '@/components/mini_second/MiniLoader';
@@ -8,6 +8,8 @@ import { authApi } from '@/callapi/auth';
 import { AppUser } from '@/types/auth';
 
 const DEFAULT_ADMIN = process.env.NEXT_PUBLIC_APP_ADMIN_EMAIL || 'developai507@gmail.com';
+const SUBSCRIPTION_RETRY_KEY = 'digitalazizi_subscription_retry';
+const RETRY_WAIT_MS = 5 * 60 * 1000;
 interface GoogleLoginProps {
   className?: string;
   label?: string;
@@ -29,8 +31,61 @@ export default function GoogleLogin({
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [customEmail, setCustomEmail] = useState(DEFAULT_ADMIN);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [retryAt, setRetryAt] = useState<number | null>(null);
+  const [retrySeconds, setRetrySeconds] = useState(0);
 
   const targetUrl = `/${locale}${redirectTo}`;
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const query = new URLSearchParams(window.location.search);
+      const authError = query.get('auth_error');
+      const expiredEmail = query.get('expired_email')?.trim().toLowerCase();
+      if (authError) setErrorMsg(authError);
+
+      let retry: { email?: string; until?: number } | null = null;
+      try {
+        const saved = window.localStorage.getItem(SUBSCRIPTION_RETRY_KEY);
+        retry = saved ? JSON.parse(saved) as { email?: string; until?: number } : null;
+      } catch {
+        window.localStorage.removeItem(SUBSCRIPTION_RETRY_KEY);
+      }
+
+      if (expiredEmail) {
+        retry = { email: expiredEmail, until: Date.now() + RETRY_WAIT_MS };
+        window.localStorage.setItem(SUBSCRIPTION_RETRY_KEY, JSON.stringify(retry));
+      }
+      if (retry?.until && retry.until > Date.now()) setRetryAt(retry.until);
+      else window.localStorage.removeItem(SUBSCRIPTION_RETRY_KEY);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!retryAt) return;
+    const updateCountdown = () => {
+      const seconds = Math.max(0, Math.ceil((retryAt - Date.now()) / 1000));
+      setRetrySeconds(seconds);
+      if (seconds === 0) {
+        setRetryAt(null);
+        window.localStorage.removeItem(SUBSCRIPTION_RETRY_KEY);
+      }
+    };
+    const timer = window.setInterval(updateCountdown, 1000);
+    return () => window.clearInterval(timer);
+  }, [retryAt]);
+
+  const startRetryCooldown = (email: string) => {
+    const until = Date.now() + RETRY_WAIT_MS;
+    window.localStorage.setItem(SUBSCRIPTION_RETRY_KEY, JSON.stringify({ email: email.trim().toLowerCase(), until }));
+    setRetryAt(until);
+  };
+
+  const clearRetryCooldown = () => {
+    window.localStorage.removeItem(SUBSCRIPTION_RETRY_KEY);
+    setRetryAt(null);
+  };
 
   const executeLoginWithEmail = async (email: string) => {
     setIsLoading(true);
@@ -42,6 +97,7 @@ export default function GoogleLogin({
       });
 
       if (res.success && res.user) {
+        clearRetryCooldown();
         setShowAccountModal(false);
         if (onSuccess) {
           onSuccess(res.user);
@@ -50,6 +106,9 @@ export default function GoogleLogin({
         }
       } else {
         setErrorMsg(res.error || 'Authentication failed');
+        if (res.error?.toLowerCase().includes('subscription has expired')) {
+          startRetryCooldown(email);
+        }
       }
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Login failed');
@@ -59,7 +118,8 @@ export default function GoogleLogin({
   };
 
   const handleSignInClick = async () => {
-    if (isLoading) return;
+    if (isLoading || retryAt) return;
+    clearRetryCooldown();
     setIsLoading(true);
     setErrorMsg(null);
 
@@ -87,7 +147,7 @@ export default function GoogleLogin({
         <button
           type="button"
           onClick={handleSignInClick}
-          disabled={isLoading}
+          disabled={isLoading || Boolean(retryAt)}
           aria-label={buttonLabel}
           className={`group relative w-full flex items-center justify-center gap-3.5 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#ea4335] via-[#e53929] to-[#d93025] hover:from-[#f05144] hover:to-[#e13b2d] active:scale-[0.99] text-white font-bold text-sm sm:text-base shadow-lg shadow-red-500/20 hover:shadow-red-500/35 border border-red-400/30 transition-all duration-200 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed ${className}`}
         >
@@ -113,13 +173,18 @@ export default function GoogleLogin({
           </div>
 
           <span className="tracking-tight select-none">
-            {isLoading ? <MiniLoader size="xs" variant="white" text="Connecting..." /> : buttonLabel}
+            {isLoading ? <MiniLoader size="xs" variant="white" text="Connecting..." /> : retryAt ? `Retry in ${Math.floor(retrySeconds / 60)}:${String(retrySeconds % 60).padStart(2, '0')}` : buttonLabel}
           </span>
         </button>
 
         {errorMsg && (
           <p className="text-xs text-center text-red-500 dark:text-red-400 font-medium">
             {errorMsg}
+          </p>
+        )}
+        {retryAt && (
+          <p className="text-xs text-center text-amber-500 font-medium">
+            Subscription access is checked again after the five-minute wait. Contact the administrator to increase subscription_days in the database.
           </p>
         )}
       </div>
@@ -157,6 +222,7 @@ export default function GoogleLogin({
               <button
                 type="button"
                 onClick={() => executeLoginWithEmail(DEFAULT_ADMIN)}
+                disabled={Boolean(retryAt)}
                 className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-surface-subtle hover:bg-surface-hover border border-surface-border text-left transition-all"
               >
                 <div className="flex items-center gap-3">
@@ -189,7 +255,7 @@ export default function GoogleLogin({
                 <button
                   type="button"
                   onClick={() => executeLoginWithEmail(customEmail)}
-                  disabled={!customEmail.includes('@')}
+                  disabled={!customEmail.includes('@') || Boolean(retryAt)}
                   className="px-4 py-2.5 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand-hover disabled:opacity-50"
                 >
                   {t('continue')}

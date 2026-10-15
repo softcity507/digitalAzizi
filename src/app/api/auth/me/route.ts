@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { AppUser, UserRole } from '@/types/auth';
+import { getSubscriptionExpiry } from '@/lib/subscription';
 
 const ADMIN_EMAIL = (process.env.APP_ADMIN_EMAIL || process.env.NEXT_PUBLIC_APP_ADMIN_EMAIL || 'developai507@gmail.com').trim().toLowerCase();
 
@@ -41,7 +42,7 @@ export async function GET(req: NextRequest) {
           avatar_url: data.avatar_url,
           role: (data.role as UserRole) || user.role,
           subscription_days: String(data.subscription_days || '7'),
-          subscription_expires_at: data.subscription_expires_at || user.subscription_expires_at,
+          subscription_expires_at: getSubscriptionExpiry(data.created_at, data.subscription_days, data.subscription_expires_at || user.subscription_expires_at),
           created_at: data.created_at,
           updated_at: data.updated_at,
         };
@@ -54,7 +55,7 @@ export async function GET(req: NextRequest) {
 
     const isSubscriptionActive = user.role === 'admin' || new Date(user.subscription_expires_at).getTime() > Date.now();
     if (!isSubscriptionActive) {
-      const response = NextResponse.json({ success: false, user, error: 'Your subscription has expired. Contact the administrator to renew it.' }, { status: 403 });
+      const response = NextResponse.json({ success: false, user, error: 'Your 7-day free trial has ended. Contact the administrator to request more subscription days.' }, { status: 403 });
       response.cookies.delete('auth_user_email');
       response.cookies.delete('auth_user_role');
       return response;
