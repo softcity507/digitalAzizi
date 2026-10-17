@@ -1,5 +1,7 @@
 import { CurrencyCode } from './customer';
 
+export const SYSTEM_DEFAULT_BUSINESS_SUBTITLE = 'Default business created by the system';
+
 export interface BusinessProfile {
   id: string;
   name: string;

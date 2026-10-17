@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import { SYSTEM_DEFAULT_BUSINESS_SUBTITLE } from '@/types/settings';
 import { Pencil, Trash2, Check, X, ArrowRightLeft, AlertTriangle, Plus, Loader2 } from 'lucide-react';
 import { CurrencyCode } from '@/types/customer';
 import { FREE_TRIAL_LIMITS } from '@/lib/planLimits';
@@ -336,6 +337,7 @@ export default function BusinessProfilesSection() {
       <div className="space-y-3">
         {businesses.map((b) => {
           const isEditing = editingId === b.id;
+          const isSystemDefault = b.subtitle.trim() === SYSTEM_DEFAULT_BUSINESS_SUBTITLE;
 
           return (
             <div
@@ -433,15 +435,16 @@ export default function BusinessProfilesSection() {
                         <Pencil className="w-4 h-4" />
                       </button>
 
-                      {/* Delete (Trash) Icon Button - Opens Confirmation Modal */}
-                      <button
-                        type="button"
-                        onClick={() => setDeleteId(b.id)}
-                        title={t('deleteBusiness')}
-                        className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 transition-colors cursor-pointer"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      {!isSystemDefault && (
+                        <button
+                          type="button"
+                          onClick={() => setDeleteId(b.id)}
+                          title={t('deleteBusiness')}
+                          className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </>
                   )}
                 </div>

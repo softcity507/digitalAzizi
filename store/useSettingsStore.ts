@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { BusinessProfile, AppAdminProfile, RegisteredUser, AuditLogItem } from '@/types/settings';
+import { BusinessProfile, AppAdminProfile, RegisteredUser, AuditLogItem, SYSTEM_DEFAULT_BUSINESS_SUBTITLE } from '@/types/settings';
 import { CustomerAccount, CurrencyCode, CustomerBalance } from '@/types/customer';
 import { useCustomerDetailsStore } from './useCustomerDetailsStore';
 import { useExchangeDeskStore } from './useExchangeDeskStore';
@@ -833,6 +833,9 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     const deleteDate = getRecycleDate();
     const target = get().businesses.find((business) => business.id === id);
     if (!target) throw new Error('Business profile not found.');
+    if (target.subtitle.trim() === SYSTEM_DEFAULT_BUSINESS_SUBTITLE) {
+      throw new Error('The system-created default business cannot be deleted.');
+    }
     const { error } = await supabaseClient
       .from('businesses')
       .update({ recycle: true, delete_date: deleteDate })

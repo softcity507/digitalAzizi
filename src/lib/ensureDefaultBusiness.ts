@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { SYSTEM_DEFAULT_BUSINESS_SUBTITLE } from '@/types/settings';
 
 export async function ensureDefaultBusiness(email: string, displayName: string, userId?: string) {
   const ownerEmail = email.trim().toLowerCase();
@@ -36,7 +37,7 @@ export async function ensureDefaultBusiness(email: string, displayName: string, 
     user_id: finalUserId,
     owner_email: ownerEmail,
     name: `${businessName}'s Business`,
-    subtitle: 'Default business created by the system',
+    subtitle: SYSTEM_DEFAULT_BUSINESS_SUBTITLE,
     is_active: true,
     supported_currencies: 'AFN, USD, PKR',
   });
