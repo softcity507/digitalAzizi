@@ -13,15 +13,15 @@ export const WHATSAPP_CONTACTS: WhatsAppContact[] = [
   {
     id: '1',
     name: 'Azizullah Munsif',
-    number: '93703070307',
-    displayNumber: '+93 70 307 0307',
+    number: '+93 70 526 9096',
+    displayNumber: '+93 70 526 9096',
     role: 'Owner & Support',
   },
   {
     id: '2',
     name: 'DigitalAzizi Support',
-    number: '93700000000',
-    displayNumber: '+93 70 000 0000',
+    number: '+92 312 8339505',
+    displayNumber: '+92 312 8339505',
     role: 'Technical Assistance',
   },
 ];
