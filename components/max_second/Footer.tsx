@@ -1,33 +1,20 @@
 'use client';
 
  import { usePathname } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
 import Logo from '@/components/mini/Logo';
  
 interface FooterProps {
   className?: string;
-  activeHref?: string;
 }
 
-export default function Footer({ className = '', activeHref }: FooterProps) {
+export default function Footer({ className = '' }: FooterProps) {
   const pathname = usePathname();
-  const locale = useLocale();
-  const t = useTranslations('Navigation');
   const currentYear = new Date().getFullYear();
 
   const isLandingPage = /^\/[a-z]{2,3}\/?$/.test(pathname);
   if (isLandingPage) {
     return null;
   }
-
-  const localizedHref = (href: string) => `/${locale}${href}`;
-  const routePath = pathname.replace(new RegExp(`^/${locale}(?=/|$)`), '') || '/';
-
-  const isCurrentActive = (itemHref: string) => {
-    if (activeHref) return activeHref === itemHref;
-    if (itemHref === '/customers') return routePath === '/customers' || routePath === '/';
-    return routePath.startsWith(itemHref);
-  };
 
   return (
     <footer
@@ -40,9 +27,6 @@ export default function Footer({ className = '', activeHref }: FooterProps) {
           <div className="shrink-0">
             <Logo size="md" />
           </div>
-
-          {/* 2. Center: All Page Navigation Links */}
-         
 
           {/* 3. Right: Copyright with Dynamic Year */}
           <div className="text-center md:text-right select-none">

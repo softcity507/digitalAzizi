@@ -342,7 +342,7 @@
     "owner": "Azizullah Munsif",
     "email": "Azizullah0703@gmail.com",
     "copyright": "Copyright © 2026 Azizullah Munsif. All Rights Reserved.",
-    "description": "DigitalAzizi is an advanced, offline-first digital ledger (Khata Book), multi-currency financial accounting, voice-enabled assistant, and cloud synchronization platform engineered for modern businesses, merchants, and individuals worldwide.",
+    "description": "DigitalAzizi is an advanced, online-first digital ledger (Khata Book), multi-currency financial accounting, voice-enabled assistant, and cloud synchronization platform engineered for modern businesses, merchants, and individuals worldwide.",
     "descriptionPashto": "DigitalAzizi is an advanced financial and accounting system for businesses and shops, designed and managed by the honorable Azizullah Munsif.",
     "developerLabel": "Developer & Owner",
     "contactDeveloper": "Email the developer",
@@ -391,7 +391,40 @@
         "grantOfLicense": "Grant of License: Non-exclusive, non-transferable personal and commercial usage license.",
         "ownership": "Ownership: All rights, title, and interest in DigitalAzizi remain solely with Azizullah Munsif.",
         "termination": "Termination: Unauthorized reproduction terminates this license automatically and invites legal proceedings."
-      }
+      },
+      "limitationOfLiability": {
+  "title": "6. Limitation of Liability",
+  "subtitle": "Liability and Disclaimer of Warranties",
+  "text": "DigitalAzizi is provided on an \"AS IS\" basis. While we use industry-standard AES-256 encryption to secure your data locally, the owner, Azizullah Munsif, shall not be liable for any data loss, financial loss, or damages resulting from device theft, device damage, unauthorized access, or incorrect manual entries made by the user. You are solely responsible for maintaining your own device backups."
+},
+"governingLaw": {
+  "title": "7. Governing Law",
+  "subtitle": "Jurisdiction and Legal Framework",
+  "text": "These Terms and all legal documents of DigitalAzizi shall be governed by and construed in accordance with the laws of Afghanistan. Any disputes arising from the use of this application shall be subject to the jurisdiction of the courts of Afghanistan."
+},
+"dataDeletion": {
+  "title": "8. Data Deletion and Account Termination Policy",
+  "subtitle": "Account and Data Removal Controls",
+  "text": "You have full control over your data. You can permanently delete all your local and cloud data at any time by going to Settings > Delete Account and Data. Upon deletion, all ledger entries, customer records, and cloud backups associated with your account will be permanently removed and cannot be recovered. For assistance, please contact us."
+},
+"ageRestriction": {
+  "title": "9. Age Restriction",
+  "subtitle": "User Age Requirements",
+  "text": "This application is not intended for children under the age of 13. By using DigitalAzizi, you confirm that you are at least 13 years of age or older. We do not knowingly collect data from children."
+},
+"contactUs": {
+  "title": "10. Contact Us",
+  "subtitle": "Get in Touch with Support",
+  "intro": "If you have any questions regarding these legal terms, privacy, or copyright, please contact us at:",
+  "email": "Email: support@digitalazizi.com",
+  "owner": "Owner: Azizullah Munsif",
+  "website": "Website: https://digitalazizi.com"
+},
+"changesToTerms": {
+  "title": "11. Changes to These Terms",
+  "subtitle": "Updates and Modifications",
+  "text": "We may update our Legal Terms from time to time. We will notify you of any changes by posting the new terms on this page and updating the \"Last Updated\" date. You are advised to review this page periodically for any changes. Your continued use of the application after changes constitutes your acceptance of the new terms."
+}
     }
   }
 }

@@ -342,7 +342,7 @@
     "owner": "Azizullah Munsif",
     "email": "Azizullah0703@gmail.com",
     "copyright": "Telif Hakkı © 2026 Azizullah Munsif. Tüm Hakları Saklıdır.",
-    "description": "DigitalAzizi, modern işletmeler, tüccarlar ve dünya çapındaki bireyler için geliştirilmiş gelişmiş, çevrimdışı öncelikli bir dijital defter (Cari Hesap), çok para birimli finansal muhasebe, ses destekli asistan ve bulut senkronizasyon platformudur.",
+    "description": "DigitalAzizi, modern işletmeler, tüccarlar ve dünya çapındaki bireyler için geliştirilmiş gelişmiş, çevrimiçi öncelikli bir dijital defter (Cari Hesap), çok para birimli finansal muhasebe, ses destekli asistan ve bulut senkronizasyon platformudur.",
     "descriptionPashto": "DigitalAzizi, saygıdeğer Azizullah Munsif tarafından tasarlanan ve yönetilen, işletmeler ve dükkanlar için gelişmiş bir finansal ve muhasebe sistemidir.",
     "developerLabel": "Geliştirici ve Sahibi",
     "contactDeveloper": "Geliştiriciye e-posta gönderin",
@@ -391,7 +391,40 @@
         "grantOfLicense": "Lisans Verilmesi: Münhasır olmayan, devredilemeyen kişisel ve ticari kullanım lisansı.",
         "ownership": "Sahiplik: DigitalAzizi'deki tüm haklar, unvanlar ve çıkarlar yalnızca Azizullah Munsif'e aittir.",
         "termination": "Fesih: Yetkisiz çoğaltma, bu lisansı otomatik olarak fesheder ve yasal işlemleri davet eder."
-      }
+      },
+      "limitationOfLiability": {
+  "title": "6. Sorumluluk Sınırlaması",
+  "subtitle": "Sorumluluk ve Garanti Reddi",
+  "text": "DigitalAzizi \"OLDUĞU GİBİ\" sağlanır. Verilerinizi yerel olarak güvence altına almak için endüstri standardı AES-256 şifrelemesi kullansak bile, sahip Azizullah Munsif; cihaz hırsızlığı, cihaz hasarı, yetkisiz erişim veya kullanıcı tarafından yapılan yanlış manuel girişler sonucunda oluşan hiçbir veri kaybından, mali kayıttan veya zarardan sorumlu tutulamaz. Kendi cihaz yedeklemelerinizi sürdürmekten yalnızca siz sorumlusunuz."
+},
+"governingLaw": {
+  "title": "7. Uygulanacak Hukuk",
+  "subtitle": "Yargı Yetkisi ve Yasal Çerçeve",
+  "text": "Bu Koşullar ve DigitalAzizi'nin tüm yasal belgeleri Afganistan yasalarına göre yönetilecek ve yorumlanacaktır. Bu uygulamanın kullanımından doğan her türlü uyuşmazlık Afganistan mahkemelerinin yargı yetkisine tabi olacaktır."
+},
+"dataDeletion": {
+  "title": "8. Veri Silme ve Hesap Sonlandırma Politikası",
+  "subtitle": "Hesap ve Veri Kaldırma Kontrolleri",
+  "text": "Verileriniz üzerinde tam kontrole sahipsiniz. Ayarlar > Hesabı ve Verileri Sil bölümüne giderek yerel ve bulut verilerinizi istediğiniz zaman kalıcı olarak silebilirsiniz. Silme işleminden sonra, hesabınızla ilişkili tüm defter kayıtları, müşteri kayıtları ve bulut yedeklemeleri kalıcı olarak kaldırılacak ve kurtarılamayacaktır. Yardım için lütfen bizimle iletişime geçin."
+},
+"ageRestriction": {
+  "title": "9. Yaş Sınırlandırması",
+  "subtitle": "Kullanıcı Yaş Gereksinimleri",
+  "text": "Bu uygulama 13 yaşın altındaki çocuklar için tasarlanmamıştır. DigitalAzizi'yi kullanarak en az 13 yaşında veya daha büyük olduğunuzu onaylamış olursunuz. Bilerek çocuklardan veri toplamıyoruz."
+},
+"contactUs": {
+  "title": "10. Bize Ulaşın",
+  "subtitle": "Destek ile İletişime Geçin",
+  "intro": "Bu yasal koşullar, gizlilik veya telif hakkı ile ilgili herhangi bir sorunuz varsa, lütfen bizimle iletişime geçin:",
+  "email": "E-posta: support@digitalazizi.com",
+  "owner": "Sahip: Azizullah Munsif",
+  "website": "Web Sitesi: https://digitalazizi.com"
+},
+"changesToTerms": {
+  "title": "11. Bu Koşullardaki Değişiklikler",
+  "subtitle": "Güncellemeler ve Değişiklikler",
+  "text": "Yasal Koşullarımızı zaman zaman güncelleyebiliriz. Yeni koşulları bu sayfada yayınlayarak ve \"Son Güncelleme\" tarihini güncelleyerek sizi her türlü değişiklikten haberdar edeceğiz. Herhangi bir değişiklik için bu sayfayı periyodik olarak incelemeniz tavsiye edilir. Değişikliklerden sonra uygulamayı kullanmaya devam etmeniz, yeni koşulları kabul ettiğiniz anlamına gelir."
+}
     }
   }
 }

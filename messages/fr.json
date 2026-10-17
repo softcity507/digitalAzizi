@@ -342,7 +342,7 @@
     "owner": "Azizullah Munsif",
     "email": "Azizullah0703@gmail.com",
     "copyright": "Copyright © 2026 Azizullah Munsif. Tous droits réservés.",
-    "description": "DigitalAzizi est un grand livre numérique avancé et axé sur le hors-ligne (Livre de comptes), une comptabilité financière multidevise, un assistant vocal et une plateforme de synchronisation cloud conçue pour les entreprises, commerçants et particuliers du monde entier.",
+    "description": "DigitalAzizi est un grand livre numérique avancé privilégiant le fonctionnement en ligne (Livre de comptes), une comptabilité financière multidevise, un assistant vocal et une plateforme de synchronisation cloud conçue pour les entreprises, commerçants et particuliers du monde entier.",
     "descriptionPashto": "DigitalAzizi est un système financier et comptable avancé pour les entreprises et les boutiques, conçu et géré par l'honorable Azizullah Munsif.",
     "developerLabel": "Développeur et propriétaire",
     "contactDeveloper": "Écrire au développeur",
@@ -391,7 +391,40 @@
         "grantOfLicense": "Octroi de licence : Licence d'utilisation personnelle et commerciale non exclusive et non transférable.",
         "ownership": "Propriété : Tous les droits, titres et intérêts relatifs à DigitalAzizi restent la propriété exclusive d'Azizullah Munsif.",
         "termination": "Résiliation : Toute reproduction non autorisée résilie automatiquement cette licence et entraîne des poursuites judiciaires."
-      }
+      },
+      "limitationOfLiability": {
+  "title": "6. Limitation de responsabilité",
+  "subtitle": "Responsabilité et exclusion de garanties",
+  "text": "DigitalAzizi est fourni « en l'état ». Bien que nous utilisions le cryptage AES-256 standard de l'industrie pour sécuriser vos données localement, le propriétaire, Azizullah Munsif, ne pourra être tenu responsable de toute perte de données, perte financière ou dommage résultant d'un vol d'appareil, de dommages matériels, d'un accès non autorisé ou d'entrées manuelles incorrectes effectuées par l'utilisateur. Vous êtes seul responsable du maintien de vos propres sauvegardes d'appareils."
+},
+"governingLaw": {
+  "title": "7. Droit applicable",
+  "subtitle": "Juridiction et cadre juridique",
+  "text": "Les présentes conditions et tous les documents juridiques de DigitalAzizi sont régis et interprétés conformément aux lois de l'Afghanistan. Tout litige découlant de l'utilisation de cette application sera soumis à la juridiction des tribunaux afghans."
+},
+"dataDeletion": {
+  "title": "8. Politique de suppression des données et de résiliation de compte",
+  "subtitle": "Contrôles de suppression de compte et de données",
+  "text": "Vous avez le contrôle total de vos données. Vous pouvez supprimer définitivement toutes vos données locales et cloud à tout moment en allant dans Paramètres > Supprimer le compte et les données. Lors de la suppression, toutes les écritures du grand livre, les dossiers clients et les sauvegardes cloud associés à votre compte seront définitivement supprimés et ne pourront pas être récupérés. Pour obtenir de l'aide, veuillez nous contacter."
+},
+"ageRestriction": {
+  "title": "9. Restriction d'âge",
+  "subtitle": "Conditions d'âge de l'utilisateur",
+  "text": "Cette application n'est pas destinée aux enfants de moins de 13 ans. En utilisant DigitalAzizi, vous confirmez que vous avez au moins 13 ans ou plus. Nous ne collectons pas sciemment de données auprès d'enfants."
+},
+"contactUs": {
+  "title": "10. Contactez-nous",
+  "subtitle": "Entrer en contact avec le support",
+  "intro": "Si vous avez des questions concernant ces conditions juridiques, la confidentialité ou les droits d'auteur, veuillez nous contacter à :",
+  "email": "E-mail : support@digitalazizi.com",
+  "owner": "Propriétaire : Azizullah Munsif",
+  "website": "Site Web : https://digitalazizi.com"
+},
+"changesToTerms": {
+  "title": "11. Modifications de ces conditions",
+  "subtitle": "Mises à jour et modifications",
+  "text": "Nous pouvons mettre à jour nos conditions juridiques de temps à autre. Nous vous informerons de tout changement en publiant les nouvelles conditions sur cette page et en mettant à jour la date de « dernière mise à jour ». Il vous est conseillé de consulter cette page périodiquement pour tout changement. Votre utilisation continue de l'application après les modifications constitue votre acceptation des nouvelles conditions."
+}
     }
   }
 }

@@ -184,7 +184,7 @@ export default function GoogleLogin({
         )}
         {retryAt && (
           <p className="text-xs text-center text-amber-500 font-medium">
-            Subscription access is checked again after the five-minute wait. Contact the administrator to increase subscription_days in the database.
+            Subscription access is checked again after the five-minute wait. Contact the administrator to increase subscription duration in the database.
           </p>
         )}
       </div>

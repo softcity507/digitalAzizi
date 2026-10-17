@@ -2,7 +2,23 @@
 
 import React, { useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { CircleCheck, CircleX, Copyright, FileText, Info, Scale, SearchX, ShieldCheck, TriangleAlert } from 'lucide-react';
+import { 
+  CircleCheck, 
+  CircleX, 
+  Copyright, 
+  FileText, 
+  Info, 
+  Scale, 
+  SearchX, 
+  ShieldCheck, 
+  TriangleAlert,
+  ShieldAlert,
+  Gavel,
+  Trash2,
+  UserCheck,
+  Mail,
+  RefreshCw
+} from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { LANGUAGES, SupportedLocale } from '@/i18n/languages';
 import AboutHeader from '@/components/mini_second/AboutHeader';
@@ -11,7 +27,19 @@ import SupportedLanguagesCard from '@/components/mini_second/SupportedLanguagesC
 import LegalSearchBar from '@/components/mini_second/LegalSearchBar';
 import LegalSectionCard, { LegalSectionTone } from '@/components/mini_second/LegalSectionCard';
 import WhatsAppSupportSection from "@/components/mini_second/WhatsAppContact";
-type SectionKey = 'aboutUs' | 'copyrightNotice' | 'privacyPolicy' | 'termsOfService' | 'eula';
+
+type SectionKey = 
+  | 'aboutUs' 
+  | 'copyrightNotice' 
+  | 'privacyPolicy' 
+  | 'termsOfService' 
+  | 'eula' 
+  | 'limitationOfLiability' 
+  | 'governingLaw' 
+  | 'dataDeletion' 
+  | 'ageRestriction' 
+  | 'contactUs' 
+  | 'changesToTerms';
 
 interface SectionConfig {
   key: SectionKey;
@@ -25,6 +53,12 @@ const SECTIONS: SectionConfig[] = [
   { key: 'privacyPolicy', icon: ShieldCheck, tone: 'credit' },
   { key: 'termsOfService', icon: Scale, tone: 'exchange' },
   { key: 'eula', icon: FileText, tone: 'brand' },
+  { key: 'limitationOfLiability', icon: ShieldAlert, tone: 'debit' },
+  { key: 'governingLaw', icon: Gavel, tone: 'exchange' },
+  { key: 'dataDeletion', icon: Trash2, tone: 'debit' },
+  { key: 'ageRestriction', icon: UserCheck, tone: 'credit' },
+  { key: 'contactUs', icon: Mail, tone: 'brand' },
+  { key: 'changesToTerms', icon: RefreshCw, tone: 'exchange' },
 ];
 
 const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -47,6 +81,12 @@ export default function AboutContainer() {
       privacyPolicy: ['title', 'subtitle', 'intro', 'dataCollectionTitle', 'point1', 'point2', 'point3'].map(k => s(`privacyPolicy.${k}`)),
       termsOfService: ['title', 'subtitle', 'agreement', 'prohibitedActionsTitle', 'action1', 'action2', 'action3', 'disclaimerTitle', 'disclaimerText'].map(k => s(`termsOfService.${k}`)),
       eula: ['title', 'subtitle', 'intro', 'grantOfLicense', 'ownership', 'termination'].map(k => s(`eula.${k}`)),
+      limitationOfLiability: ['title', 'subtitle', 'text'].map(k => s(`limitationOfLiability.${k}`)),
+      governingLaw: ['title', 'subtitle', 'text'].map(k => s(`governingLaw.${k}`)),
+      dataDeletion: ['title', 'subtitle', 'text'].map(k => s(`dataDeletion.${k}`)),
+      ageRestriction: ['title', 'subtitle', 'text'].map(k => s(`ageRestriction.${k}`)),
+      contactUs: ['title', 'subtitle', 'intro', 'email', 'owner', 'website'].map(k => s(`contactUs.${k}`)),
+      changesToTerms: ['title', 'subtitle', 'text'].map(k => s(`changesToTerms.${k}`)),
     };
   }, [t]);
 
@@ -149,6 +189,27 @@ export default function AboutContainer() {
             {renderList(['eula.grantOfLicense', 'eula.ownership', 'eula.termination'], CircleCheck, 'text-brand')}
           </>
         );
+      case 'limitationOfLiability':
+        return <p>{s('limitationOfLiability.text')}</p>;
+      case 'governingLaw':
+        return <p>{s('governingLaw.text')}</p>;
+      case 'dataDeletion':
+        return <p>{s('dataDeletion.text')}</p>;
+      case 'ageRestriction':
+        return <p>{s('ageRestriction.text')}</p>;
+      case 'contactUs':
+        return (
+          <>
+            <p>{s('contactUs.intro')}</p>
+            <ul className="space-y-1.5 font-medium">
+              <li>{s('contactUs.email')}</li>
+              <li>{s('contactUs.owner')}</li>
+              <li>{s('contactUs.website')}</li>
+            </ul>
+          </>
+        );
+      case 'changesToTerms':
+        return <p>{s('changesToTerms.text')}</p>;
     }
   };
 
@@ -166,7 +227,7 @@ export default function AboutContainer() {
         <aside className="lg:col-span-5 space-y-4 lg:sticky lg:top-24">
           {/* 2. Developer Profile */}
           <DeveloperProfileCard />
-                    <WhatsAppSupportSection />
+          <WhatsAppSupportSection />
 
           {/* 3. Supported Languages (from i18n/languages.ts) */}
           <SupportedLanguagesCard />
@@ -174,37 +235,33 @@ export default function AboutContainer() {
         
         {/* Right Column: Searchable Legal Sections */}
         <div className="lg:col-span-7 space-y-3.5">
-          {/* 4. Search */}
+             
           <LegalSearchBar value={query} onChange={setQuery} />
-           
-          {/* 5. Legal Sections */}
-          {visibleSections.map(section => (
-            <LegalSectionCard
-              key={section.key}
-              id={section.key}
-              icon={section.icon}
-              tone={section.tone}
-              title={s(`${section.key}.title`)}
-              subtitle={s(`${section.key}.subtitle`)}
-              open={Boolean(trimmedQuery) || openKeys.has(section.key)}
-              onToggle={() => toggleSection(section.key)}
-            >
-              {renderBody(section.key)}
-            </LegalSectionCard>
-          ))}
 
-          {visibleSections.length === 0 && (
-            <div className="flex flex-col items-center text-center gap-3 px-6 py-12 rounded-2xl border border-dashed border-surface-border bg-surface-subtle">
-              <div className="p-3 rounded-xl bg-surface text-content-muted dark:text-content-secondary border border-surface-border">
-                <SearchX className="w-5 h-5" aria-hidden="true" />
-              </div>
-              <p className="text-sm font-semibold text-content-primary">
-                {t('noResults', { query: trimmedQuery })}
-              </p>
+          {/* 5. Legal Sections */}
+          {visibleSections.length > 0 ? (
+            visibleSections.map(section => (
+              <LegalSectionCard
+                key={section.key}
+                id={section.key}
+                icon={section.icon}
+                tone={section.tone}
+                title={s(`${section.key}.title`)}
+                subtitle={s(`${section.key}.subtitle`)}
+                open={Boolean(trimmedQuery) || openKeys.has(section.key)}
+                onToggle={() => toggleSection(section.key)}
+              >
+                {renderBody(section.key)}
+              </LegalSectionCard>
+            ))
+          ) : (
+            <div className="flex flex-col items-center gap-3 py-12 text-center text-content-muted">
+              <SearchX className="h-6 w-6" aria-hidden="true" />
+              <p>{t('noResults', { query: trimmedQuery })}</p>
               <button
                 type="button"
                 onClick={() => setQuery('')}
-                className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-brand hover:bg-brand-subtle transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="text-sm font-semibold text-content-primary underline underline-offset-4"
               >
                 {t('clearSearch')}
               </button>
