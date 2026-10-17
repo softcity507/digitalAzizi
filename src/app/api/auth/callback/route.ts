@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { supabase as adminDb } from '@/lib/supabase';
 import { ensureDefaultBusiness } from '@/lib/ensureDefaultBusiness';
+import { sendTrialWelcomeEmail } from '@/lib/sendTrialWelcomeEmail';
 import { UserRole } from '@/types/auth';
 import { getSubscriptionExpiry } from '@/lib/subscription';
 
@@ -80,6 +81,7 @@ export async function GET(request: NextRequest) {
         const subscriptionExpiry = existingUser
           ? getSubscriptionExpiry(existingUser.created_at, existingUser.subscription_days, existingUser.subscription_expires_at)
           : null;
+        let newTrialExpiresAt: string | null = null;
         if (existingUser && role !== 'admin' && (!subscriptionExpiry || new Date(subscriptionExpiry).getTime() <= Date.now())) {
           const response = NextResponse.redirect(`${origin}/?auth_error=${encodeURIComponent('Your 7-day free trial has ended. Please contact the administrator to renew your subscription.')}&expired_email=${encodeURIComponent(email)}`);
           response.cookies.delete('auth_user_email');
@@ -92,9 +94,10 @@ export async function GET(request: NextRequest) {
         } else {
           const expiryDate = new Date();
           expiryDate.setDate(expiryDate.getDate() + 7);
+          newTrialExpiresAt = expiryDate.toISOString();
           const { error: createError } = await adminDb.from('users').insert({
             email, name, avatar_url: avatarUrl, role, subscription_days: '7',
-            subscription_expires_at: expiryDate.toISOString(), updated_at: now,
+            subscription_expires_at: newTrialExpiresAt, updated_at: now,
           });
           if (createError) {
             return NextResponse.redirect(`${origin}/?auth_error=${encodeURIComponent('Could not create your account. Please try again.')}`);
@@ -108,6 +111,14 @@ export async function GET(request: NextRequest) {
           await ensureDefaultBusiness(email, name, user.id);
         } catch (businessError) {
           console.error('Default business creation error:', businessError);
+        }
+
+        if (newTrialExpiresAt && role !== 'admin') {
+          try {
+            await sendTrialWelcomeEmail({ email, name, expiresAt: newTrialExpiresAt });
+          } catch (emailError) {
+            console.error('Trial welcome email could not be sent:', emailError);
+          }
         }
 
         const response = NextResponse.redirect(`${origin}${next}`);

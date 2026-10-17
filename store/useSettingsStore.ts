@@ -39,11 +39,6 @@ interface BusinessNameRow {
   recycle: boolean | null;
 }
 
-interface CustomerLimitRow {
-  id: number | string;
-  description: string | null;
-}
-
 interface CustomerNameRow {
   name: string | null;
 }
@@ -607,20 +602,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       throw new Error('No active business found. Please create or select a business first.');
     }
     const currentBizId = Number(activeBiz.id);
-    const businessIds = get().businesses.map((business) => Number(business.id)).filter(Number.isSafeInteger);
-    const { data: customerRows, error: countError } = await supabaseClient
-      .from('customers')
-      .select('id, description')
-      .in('business_id', businessIds)
-      .eq('recycle', false);
-    if (countError) throw new Error(`Could not verify customer limit: ${countError.message}`);
-    const typedCustomerRows = (customerRows ?? []) as CustomerLimitRow[];
-    const totalCustomers = typedCustomerRows.filter(
-      (row: CustomerLimitRow) => row.description !== DEFAULT_EXCHANGE_ACCOUNT_DESCRIPTION
-    ).length;
-    if (totalCustomers >= FREE_TRIAL_LIMITS.customers) {
-      throw new Error(`Free trial limit reached: you can create up to ${FREE_TRIAL_LIMITS.customers} customers across your businesses.`);
-    }
     const { data: businessCustomers, error: duplicateError } = await supabaseClient
       .from('customers')
       .select('name')

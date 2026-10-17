@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { ensureDefaultBusiness } from '@/lib/ensureDefaultBusiness';
+import { sendTrialWelcomeEmail } from '@/lib/sendTrialWelcomeEmail';
 import { AppUser, GoogleLoginPayload, UserRole } from '@/types/auth';
 import { getSubscriptionExpiry } from '@/lib/subscription';
 
@@ -36,6 +37,7 @@ export async function POST(req: NextRequest) {
     }
 
     let userData: AppUser;
+    const isNewUser = !existingUser;
     if (existingUser) {
       userData = {
         id: String(existingUser.id),
@@ -81,6 +83,18 @@ export async function POST(req: NextRequest) {
       await ensureDefaultBusiness(email, name);
     } catch (businessError) {
       console.error('Default business creation error:', businessError);
+    }
+
+    if (isNewUser && role !== 'admin') {
+      try {
+        await sendTrialWelcomeEmail({
+          email,
+          name,
+          expiresAt: userData.subscription_expires_at,
+        });
+      } catch (emailError) {
+        console.error('Trial welcome email could not be sent:', emailError);
+      }
     }
 
     const response = NextResponse.json({
