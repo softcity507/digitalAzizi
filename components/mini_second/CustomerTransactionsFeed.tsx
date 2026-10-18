@@ -179,8 +179,7 @@ export default function CustomerTransactionsFeed() {
         />
       </div>
 
-      {/* Transaction List Cards */}
-      <div className="space-y-2.5">
+       <div className="space-y-2.5">
         {transactions.length > 0 ? (
           transactions.map((transaction) => (
             <CustomerTransactionItemCard key={transaction.id} transaction={transaction} />

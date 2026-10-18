@@ -206,21 +206,22 @@ export default function CustomerLedgerContainer() {
           </div>
 
           {/* Customers Feed Counter Header */}
-          <div className="flex items-center justify-between px-1">
+          <div className="flex items-center justify-between gap-2 px-1">
             <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               {t('allAccounts')}
             </h2>
-            <div className='flex gap-2'>
-            <div className="w-full sm:w-auto shrink-0 flex justify-end">
+            <div className="flex shrink-0 items-center gap-2">
+              <span className="whitespace-nowrap text-xs font-mono font-bold px-2.5 py-1 rounded bg-surface-subtle border border-surface-border text-slate-600 dark:text-slate-400">
+              {filteredCustomers.length} / {activeBusinessCustomers.length}
+            </span>
+            <div className="shrink-0 flex justify-end">
               <CustomerPdfExport
                 businessName={activeBusiness?.name ?? ''}
                 customers={activeBusinessCustomers}
                 transactions={businessTransactions}
               />
             </div>
-            <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-surface-subtle border border-surface-border text-slate-600 dark:text-slate-400">
-              {filteredCustomers.length} / {activeBusinessCustomers.length}
-            </span>
+            
             </div>
           </div>
 
