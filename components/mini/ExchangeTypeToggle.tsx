@@ -29,12 +29,12 @@ export default function ExchangeTypeToggle() {
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-2 p-1.5 rounded-2xl bg-surface-subtle border border-surface-border">
+      <div className="grid grid-cols-2 gap-2 p-1.5 rounded bg-surface-subtle border border-surface-border">
         {/* BUY Button */}
         <button
           type="button"
           onClick={() => setType('BUY')}
-          className={`h-14 rounded-xl font-black transition-all duration-150 flex flex-col items-center justify-center cursor-pointer select-none active:scale-[0.98] ${
+          className={`h-14 rounded font-black transition-all duration-150 flex flex-col items-center justify-center cursor-pointer select-none active:scale-[0.98] ${
             type === 'BUY'
               ? 'bg-brand text-brand-foreground border border-brand/50 shadow-md ring-2 ring-brand/20'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-surface-hover/50'
@@ -50,7 +50,7 @@ export default function ExchangeTypeToggle() {
         <button
           type="button"
           onClick={() => setType('SELL')}
-          className={`h-14 rounded-xl font-black transition-all duration-150 flex flex-col items-center justify-center cursor-pointer select-none active:scale-[0.98] ${
+          className={`h-14 rounded font-black transition-all duration-150 flex flex-col items-center justify-center cursor-pointer select-none active:scale-[0.98] ${
             type === 'SELL'
               ? 'bg-surface-active text-content-primary border border-surface-border shadow-md'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-surface-hover/50'

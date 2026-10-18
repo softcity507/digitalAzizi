@@ -34,7 +34,7 @@ export default function RegisteredUsersSection() {
       </div>
 
       {/* Main Dropdown Container */}
-      <div className="bg-surface border border-surface-border rounded-2xl shadow-sm overflow-hidden transition-all">
+      <div className="bg-surface border border-surface-border rounded shadow-sm overflow-hidden transition-all">
         {/* Selected Default User Dropdown Trigger */}
         <button
           type="button"
@@ -43,7 +43,7 @@ export default function RegisteredUsersSection() {
           className="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left hover:bg-surface-hover/40 transition-colors cursor-pointer group"
         >
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-credit-subtle border border-credit/30 flex items-center justify-center text-credit font-bold text-sm shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded bg-credit-subtle border border-credit/30 flex items-center justify-center text-credit font-bold text-sm shrink-0">
               {defaultUser?.name ? defaultUser.name.charAt(0).toUpperCase() : 'U'}
             </div>
             <div className="min-w-0 space-y-0.5">
@@ -51,7 +51,7 @@ export default function RegisteredUsersSection() {
                 <h4 className="text-xs sm:text-sm font-bold text-content-primary truncate">
                   {defaultUser?.name}
                 </h4>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md border bg-credit-subtle text-credit border-credit/20">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded border bg-credit-subtle text-credit border-credit/20">
                   {defaultUser?.roleTag || t('active')}
                 </span>
               </div>
@@ -63,7 +63,7 @@ export default function RegisteredUsersSection() {
             <span className="hidden sm:inline-block text-[11px] font-semibold text-content-muted group-hover:text-content-primary transition-colors">
               {isOpen ? t('close') : t('switch')}
             </span>
-            <div className="w-8 h-8 rounded-lg bg-surface-subtle border border-surface-border flex items-center justify-center text-content-muted group-hover:text-content-primary transition-all">
+            <div className="w-8 h-8 rounded bg-surface-subtle border border-surface-border flex items-center justify-center text-content-muted group-hover:text-content-primary transition-all">
               <svg
                 className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
                 fill="none"
@@ -91,7 +91,7 @@ export default function RegisteredUsersSection() {
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div
-                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 border ${
+                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded flex items-center justify-center font-bold text-xs shrink-0 border ${
                         user.isDefault
                           ? 'bg-credit-subtle text-credit border-credit/30'
                           : 'bg-surface border-surface-border text-content-muted'
@@ -105,7 +105,7 @@ export default function RegisteredUsersSection() {
                           {user.name}
                         </h5>
                         <span
-                          className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md border ${
+                          className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
                             user.isDefault
                               ? 'bg-credit-subtle text-credit border-credit/20'
                               : 'bg-surface text-content-muted border-surface-border'
@@ -129,7 +129,7 @@ export default function RegisteredUsersSection() {
                         onClick={() => {
                           setDefaultUser(user.id);
                         }}
-                        className="px-3 py-1.5 rounded-xl bg-surface hover:bg-surface-hover border border-surface-border text-xs font-semibold text-content-primary transition-colors cursor-pointer"
+                        className="px-3 py-1.5 rounded bg-surface hover:bg-surface-hover border border-surface-border text-xs font-semibold text-content-primary transition-colors cursor-pointer"
                       >
                         {t('setDefault')}
                       </button>
@@ -144,9 +144,9 @@ export default function RegisteredUsersSection() {
               <button
                 type="button"
                 onClick={() => openModal('add_customer')}
-                className="w-full py-2.5 px-4 rounded-xl bg-surface hover:bg-surface-hover border border-surface-border text-xs sm:text-sm font-bold text-content-primary transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer group"
+                className="w-full py-2.5 px-4 rounded bg-surface hover:bg-surface-hover border border-surface-border text-xs sm:text-sm font-bold text-content-primary transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer group"
               >
-                <span className="w-4 h-4 rounded-md bg-brand/15 text-brand flex items-center justify-center font-bold text-xs shrink-0 group-hover:bg-brand/25 transition-colors">
+                <span className="w-4 h-4 rounded bg-brand/15 text-brand flex items-center justify-center font-bold text-xs shrink-0 group-hover:bg-brand/25 transition-colors">
                   +
                 </span>
                 <span>{t('addNewCustomer')}</span>

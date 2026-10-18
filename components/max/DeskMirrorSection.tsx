@@ -17,7 +17,7 @@ export default function DeskMirrorSection({
 
   return (
     <section
-      className={`p-4 sm:p-5 rounded-2xl bg-surface border border-surface-border shadow-sm space-y-3.5 w-full ${className}`}
+      className={`p-4 sm:p-5 rounded bg-surface border border-surface-border shadow-sm space-y-3.5 w-full ${className}`}
     >
       {/* Header Row: Title, Formula & Status Badge */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -31,7 +31,7 @@ export default function DeskMirrorSection({
         </div>
 
         <div className="self-start sm:self-center">
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-credit text-black shadow-sm">
+          <span className="inline-flex items-center px-3 py-1 rounded text-xs font-bold bg-credit text-black shadow-sm">
             {t('ledgerBalanced')}
           </span>
         </div>

@@ -71,11 +71,11 @@ export default function CashInModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-modal-overlay backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-surface border border-surface-border rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5">
+      <div className="bg-surface border border-surface-border rounded p-6 max-w-md w-full shadow-2xl space-y-5">
         {/* Modal Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-credit-subtle border border-credit/40 flex items-center justify-center text-credit font-bold">
+            <div className="w-8 h-8 rounded bg-credit-subtle border border-credit/40 flex items-center justify-center text-credit font-bold">
               +
             </div>
             <h2 className="text-lg font-bold text-content-primary">{t('recordCashIn')}</h2>
@@ -84,7 +84,7 @@ export default function CashInModal() {
             type="button"
             onClick={closeModal}
             aria-label={t('cancel')}
-            className="p-1 rounded-lg text-content-muted hover:text-content-primary hover:bg-surface-hover transition-colors"
+            className="p-1 rounded text-content-muted hover:text-content-primary hover:bg-surface-hover transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -106,7 +106,7 @@ export default function CashInModal() {
               value={customerName}
               onChange={(e) => handleCustomerChange(e.target.value)}
               placeholder={t('customerPlaceholder')}
-              className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-content-primary placeholder:text-content-muted text-sm focus:outline-none focus:border-brand"
+              className="w-full h-11 px-3.5 rounded bg-surface-input border border-surface-border text-content-primary placeholder:text-content-muted text-sm focus:outline-none focus:border-brand"
             />
             <datalist id="customers-list">
               {customers.map((c) => (
@@ -128,7 +128,7 @@ export default function CashInModal() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-content-primary placeholder:text-content-muted text-sm font-mono focus:outline-none focus:border-brand"
+                className="w-full h-11 px-3.5 rounded bg-surface-input border border-surface-border text-content-primary placeholder:text-content-muted text-sm font-mono focus:outline-none focus:border-brand"
               />
             </div>
             <div>
@@ -139,7 +139,7 @@ export default function CashInModal() {
                 value={selectedCurrency ?? ''}
                 disabled={availableCurrencies.length === 0}
                 onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
-                className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-content-primary text-sm font-semibold focus:outline-none focus:border-brand"
+                className="w-full h-11 px-2.5 rounded bg-surface-input border border-surface-border text-content-primary text-sm font-semibold focus:outline-none focus:border-brand"
               >
                 {availableCurrencies.map((availableCurrency) => (
                   <option key={availableCurrency} value={availableCurrency}>{availableCurrency}</option>
@@ -159,7 +159,7 @@ export default function CashInModal() {
                 required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-content-primary text-xs focus:outline-none focus:border-brand"
+                className="w-full h-11 px-3 rounded bg-surface-input border border-surface-border text-content-primary text-xs focus:outline-none focus:border-brand"
               />
             </div>
             <div>
@@ -170,7 +170,7 @@ export default function CashInModal() {
                 type="text"
                 value={serialNo}
                 onChange={(e) => setSerialNo(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-content-primary placeholder:text-content-muted text-xs font-mono focus:outline-none focus:border-brand"
+                className="w-full h-11 px-3 rounded bg-surface-input border border-surface-border text-content-primary placeholder:text-content-muted text-xs font-mono focus:outline-none focus:border-brand"
               />
             </div>
           </div>
@@ -185,7 +185,7 @@ export default function CashInModal() {
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
               placeholder={t('memoCashInPlaceholder')}
-              className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-content-primary placeholder:text-content-muted text-sm focus:outline-none focus:border-brand"
+              className="w-full h-11 px-3.5 rounded bg-surface-input border border-surface-border text-content-primary placeholder:text-content-muted text-sm focus:outline-none focus:border-brand"
             />
           </div>
 
@@ -194,13 +194,13 @@ export default function CashInModal() {
             <button
               type="button"
               onClick={closeModal}
-              className="w-1/2 h-11 rounded-xl bg-surface hover:bg-surface-hover border border-surface-border text-content-secondary font-semibold text-sm transition-colors cursor-pointer"
+              className="w-1/2 h-11 rounded bg-surface hover:bg-surface-hover border border-surface-border text-content-secondary font-semibold text-sm transition-colors cursor-pointer"
             >
               {t('cancel')}
             </button>
             <button
               type="submit"
-              className="w-1/2 h-11 rounded-xl bg-credit-btn hover:bg-credit-hover text-credit-foreground font-bold text-sm transition-all shadow-glow-credit cursor-pointer"
+              className="w-1/2 h-11 rounded bg-credit-btn hover:bg-credit-hover text-credit-foreground font-bold text-sm transition-all shadow-glow-credit cursor-pointer"
             >
               {t('confirmCashIn')}
             </button>

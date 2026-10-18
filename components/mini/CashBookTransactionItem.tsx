@@ -39,13 +39,13 @@ export default function CashBookTransactionItem({
   };
 
   return (
-    <div className="w-full bg-surface/90 hover:bg-surface border border-surface-border hover:border-surface-border-subtle rounded-2xl p-3.5 sm:p-4 transition-all duration-150 shadow-sm group">
+    <div className="w-full bg-surface/90 hover:bg-surface border border-surface-border hover:border-surface-border-subtle rounded p-3.5 sm:p-4 transition-all duration-150 shadow-sm group">
       {/* Top Header Row: Customer Name Badge & Amount (Left & Right) */}
       <div className="flex items-center justify-between gap-3">
         {/* Left Side: Auto-adjusting Customer Name Box */}
         <div className="flex items-center min-w-0">
           <div
-            className={`px-3 py-1.5 rounded-xl flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 border ${isCashIn
+            className={`px-3 py-1.5 rounded flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 border ${isCashIn
                 ? 'bg-credit-subtle text-credit border-credit/30'
                 : isExchange
                   ? 'bg-surface-active text-content-primary border-surface-border'
@@ -94,17 +94,17 @@ export default function CashBookTransactionItem({
         <div className="flex items-center gap-2 flex-wrap min-w-0">
           {/* Type Badge */}
           {isCashIn && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold bg-credit-subtle text-credit border border-credit/30 shrink-0">
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-semibold bg-credit-subtle text-credit border border-credit/30 shrink-0">
               {t('cashIn')}
             </span>
           )}
           {!isCashIn && !isExchange && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold bg-debit-subtle text-debit border border-debit/30 shrink-0">
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-semibold bg-debit-subtle text-debit border border-debit/30 shrink-0">
               {t('cashOut')}
             </span>
           )}
           {isExchange && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold bg-surface-active text-content-primary border border-surface-border shrink-0">
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-semibold bg-surface-active text-content-primary border border-surface-border shrink-0">
               {t('exchange')}
             </span>
           )}
@@ -129,7 +129,7 @@ export default function CashBookTransactionItem({
             onClick={() => openModal('edit', transaction)}
             aria-label={t('editTransaction')}
             title={t('editTransaction')}
-            className="p-1.5 rounded-lg text-content-tertiary hover:text-content-primary hover:bg-surface-hover transition-colors"
+            className="p-1.5 rounded text-content-tertiary hover:text-content-primary hover:bg-surface-hover transition-colors"
           >
             <svg
               className="w-4 h-4"
@@ -152,7 +152,7 @@ export default function CashBookTransactionItem({
             onClick={() => openModal('delete', null, transaction.id)}
             aria-label={t('deleteTransaction')}
             title={t('deleteTransaction')}
-            className="p-1.5 rounded-lg text-content-tertiary hover:text-debit hover:bg-surface-hover transition-colors"
+            className="p-1.5 rounded text-content-tertiary hover:text-debit hover:bg-surface-hover transition-colors"
           >
             <svg
               className="w-4 h-4"

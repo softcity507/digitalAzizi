@@ -62,7 +62,7 @@ export default function ClientNameCard() {
   };
 
   return (
-    <div className="w-full bg-surface border border-surface-border rounded-2xl p-4 sm:p-5 flex items-center justify-between shadow-sm transition-all">
+    <div className="w-full bg-surface border border-surface-border rounded p-4 sm:p-5 flex items-center justify-between shadow-sm transition-all">
       <div className="flex items-center gap-3.5">
          
         <div>
@@ -80,7 +80,7 @@ export default function ClientNameCard() {
           value={currentCustomer?.id || effectiveCustomerId}
           onChange={(e) => handleSelectCustomer(e.target.value)}
           aria-label={t('selectCustomer')}
-          className="bg-surface-subtle border border-surface-border text-xs font-semibold rounded-xl px-3 py-2 text-content-primary focus:outline-none focus:ring-1 focus:ring-brand cursor-pointer"
+          className="bg-surface-subtle border border-surface-border text-xs font-semibold rounded px-3 py-2 text-content-primary focus:outline-none focus:ring-1 focus:ring-brand cursor-pointer"
         >
           {activeCustomers.map((customer) => (
             <option key={customer.id} value={customer.id}>

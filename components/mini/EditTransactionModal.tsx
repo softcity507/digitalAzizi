@@ -99,11 +99,11 @@ export default function EditTransactionModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-surface border border-surface-border rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5">
+      <div className="bg-surface border border-surface-border rounded p-6 max-w-md w-full shadow-2xl space-y-5">
         {/* Modal Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-surface-hover border border-surface-border flex items-center justify-center text-brand font-bold">
+            <div className="w-8 h-8 rounded bg-surface-hover border border-surface-border flex items-center justify-center text-brand font-bold">
               ✎
             </div>
               <h2 className="text-lg font-bold text-content-primary">{t('editTransaction')}</h2>
@@ -112,7 +112,7 @@ export default function EditTransactionModal() {
             type="button"
             onClick={closeModal}
             aria-label={t('cancel')}
-            className="p-1 rounded-lg text-content-muted hover:text-content-primary hover:bg-surface-hover transition-colors"
+            className="p-1 rounded text-content-muted hover:text-content-primary hover:bg-surface-hover transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -131,7 +131,7 @@ export default function EditTransactionModal() {
               <button
                 type="button"
                 onClick={() => setType('cash_in')}
-                className={`py-2 rounded-xl text-xs font-bold transition-all border ${type === 'cash_in'
+                className={`py-2 rounded text-xs font-bold transition-all border ${type === 'cash_in'
                   ? 'bg-credit-subtle border-credit text-credit'
                   : 'bg-surface-input border-surface-border text-content-secondary'
                   }`}
@@ -141,7 +141,7 @@ export default function EditTransactionModal() {
               <button
                 type="button"
                 onClick={() => setType('cash_out')}
-                className={`py-2 rounded-xl text-xs font-bold transition-all border ${type === 'cash_out'
+                className={`py-2 rounded text-xs font-bold transition-all border ${type === 'cash_out'
                   ? 'bg-debit-subtle border-debit text-debit'
                   : 'bg-surface-input border-surface-border text-content-secondary'
                   }`}
@@ -153,7 +153,7 @@ export default function EditTransactionModal() {
 
           {/* Customer Name */}
           {isCustomerTransfer ? (
-            <div className="bg-canvas/80 rounded-2xl p-3.5 border border-surface-border/60 space-y-3">
+            <div className="bg-canvas/80 rounded p-3.5 border border-surface-border/60 space-y-3">
               <div className="flex items-center justify-between text-xs font-bold text-content-secondary">
                 <span>{t('interUserBridge')}</span>
                 <button
@@ -162,7 +162,7 @@ export default function EditTransactionModal() {
                     setFromCustomer(toCustomer);
                     setToCustomer(fromCustomer);
                   }}
-                  className="text-[11px] text-brand hover:bg-brand-subtle flex items-center gap-1 px-2.5 py-1 rounded-xl bg-brand-subtle border border-brand/30 transition-all font-semibold"
+                  className="text-[11px] text-brand hover:bg-brand-subtle flex items-center gap-1 px-2.5 py-1 rounded bg-brand-subtle border border-brand/30 transition-all font-semibold"
                 >
                   {t('transferBtn')} ⇄
                 </button>
@@ -177,7 +177,7 @@ export default function EditTransactionModal() {
                     value={fromCustomer}
                     onChange={(e) => setFromCustomer(e.target.value)}
                     placeholder={t('senderPlaceholder')}
-                    className="w-full h-11 px-3 rounded-xl bg-surface-input border border-debit/30 text-content-primary text-xs sm:text-sm font-semibold focus:outline-none focus:border-debit"
+                    className="w-full h-11 px-3 rounded bg-surface-input border border-debit/30 text-content-primary text-xs sm:text-sm font-semibold focus:outline-none focus:border-debit"
                   />
                   <datalist id="customers-list-edit-from">
                     {customers.map((customer) => <option key={customer.id} value={customer.name} />)}
@@ -192,7 +192,7 @@ export default function EditTransactionModal() {
                     value={toCustomer}
                     onChange={(e) => setToCustomer(e.target.value)}
                     placeholder={t('receiverPlaceholder')}
-                    className="w-full h-11 px-3 rounded-xl bg-surface-input border border-credit/30 text-content-primary text-xs sm:text-sm font-semibold focus:outline-none focus:border-credit"
+                    className="w-full h-11 px-3 rounded bg-surface-input border border-credit/30 text-content-primary text-xs sm:text-sm font-semibold focus:outline-none focus:border-credit"
                   />
                   <datalist id="customers-list-edit-to">
                     {customers.map((customer) => <option key={customer.id} value={customer.name} />)}
@@ -211,7 +211,7 @@ export default function EditTransactionModal() {
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
               placeholder={t('customerPlaceholder')}
-              className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-content-primary text-sm focus:outline-none focus:border-brand"
+              className="w-full h-11 px-3.5 rounded bg-surface-input border border-surface-border text-content-primary text-sm focus:outline-none focus:border-brand"
             />
             <datalist id="customers-list-edit">
               {customers.map((c) => (
@@ -232,7 +232,7 @@ export default function EditTransactionModal() {
                 required
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-content-primary text-sm font-mono focus:outline-none focus:border-brand"
+                className="w-full h-11 px-3.5 rounded bg-surface-input border border-surface-border text-content-primary text-sm font-mono focus:outline-none focus:border-brand"
               />
             </div>
             <div>
@@ -243,7 +243,7 @@ export default function EditTransactionModal() {
                 value={isCustomerTransfer ? selectedCurrency ?? '' : currency}
                 onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
                 disabled={isCustomerTransfer && availableCurrencies.length === 0}
-                className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-content-primary text-sm font-semibold focus:outline-none focus:border-brand"
+                className="w-full h-11 px-2.5 rounded bg-surface-input border border-surface-border text-content-primary text-sm font-semibold focus:outline-none focus:border-brand"
               >
                 {isCustomerTransfer
                   ? availableCurrencies.map((availableCurrency) => (
@@ -269,7 +269,7 @@ export default function EditTransactionModal() {
                 required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-content-primary text-xs focus:outline-none focus:border-brand"
+                className="w-full h-11 px-3 rounded bg-surface-input border border-surface-border text-content-primary text-xs focus:outline-none focus:border-brand"
               />
             </div>
             <div>
@@ -280,7 +280,7 @@ export default function EditTransactionModal() {
                 type="text"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-content-primary text-xs font-mono focus:outline-none focus:border-brand"
+                className="w-full h-11 px-3 rounded bg-surface-input border border-surface-border text-content-primary text-xs font-mono focus:outline-none focus:border-brand"
               />
             </div>
           </div>
@@ -295,7 +295,7 @@ export default function EditTransactionModal() {
                 type="text"
                 value={serialNo}
                 onChange={(e) => setSerialNo(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-content-primary text-xs font-mono focus:outline-none focus:border-brand"
+                className="w-full h-11 px-3 rounded bg-surface-input border border-surface-border text-content-primary text-xs font-mono focus:outline-none focus:border-brand"
               />
             </div>
             <div className="col-span-2">
@@ -306,7 +306,7 @@ export default function EditTransactionModal() {
                 type="text"
                 value={memo}
                 onChange={(e) => setMemo(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-content-primary text-xs focus:outline-none focus:border-brand"
+                className="w-full h-11 px-3 rounded bg-surface-input border border-surface-border text-content-primary text-xs focus:outline-none focus:border-brand"
               />
             </div>
           </div>
@@ -316,13 +316,13 @@ export default function EditTransactionModal() {
             <button
               type="button"
               onClick={closeModal}
-              className="w-1/2 h-11 rounded-xl bg-surface hover:bg-surface-hover border border-surface-border text-content-secondary font-semibold text-sm transition-colors cursor-pointer"
+              className="w-1/2 h-11 rounded bg-surface hover:bg-surface-hover border border-surface-border text-content-secondary font-semibold text-sm transition-colors cursor-pointer"
             >
               {t('cancel')}
             </button>
             <button
               type="submit"
-              className="w-1/2 h-11 rounded-xl bg-brand hover:bg-brand-hover text-brand-foreground font-bold text-sm transition-all shadow-glow-brand cursor-pointer"
+              className="w-1/2 h-11 rounded bg-brand hover:bg-brand-hover text-brand-foreground font-bold text-sm transition-all shadow-glow-brand cursor-pointer"
             >
               {t('saveChanges')}
             </button>

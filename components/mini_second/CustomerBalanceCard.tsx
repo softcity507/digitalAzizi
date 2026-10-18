@@ -58,12 +58,12 @@ export default function CustomerBalanceCard() {
   // If ALL currencies are selected, show balance for all currencies
   if (selectedCurrency === 'ALL' || !supportedCurrencies.includes(selectedCurrency)) {
     return (
-      <div className="w-full bg-surface border border-surface-border rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-sm">
+      <div className="w-full bg-surface border border-surface-border rounded p-4 sm:p-5 space-y-3.5 shadow-sm">
         <div className="flex items-center justify-between">
           <span className="text-[11px] font-bold tracking-wider uppercase text-content-muted">
             {t('balance')}
           </span>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-brand/10 text-brand border border-brand/20">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-brand/10 text-brand border border-brand/20">
             ALL CURRENCIES
           </span>
         </div>
@@ -74,13 +74,13 @@ export default function CustomerBalanceCard() {
             <div
               key={item.currency}
               onClick={() => setSelectedCurrency(item.currency)}
-              className="p-3 sm:p-3.5 rounded-xl bg-surface-subtle border border-surface-border hover:border-brand/40 transition-all duration-150 space-y-2 cursor-pointer group"
+              className="p-3 sm:p-3.5 rounded bg-surface-subtle border border-surface-border hover:border-brand/40 transition-all duration-150 space-y-2 cursor-pointer group"
               title={`View ${item.currency} transactions`}
             >
               {/* Top: Currency Tag & Net Balance */}
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded-md bg-surface border border-surface-border text-xs font-bold font-mono text-content-primary group-hover:border-brand/40 transition-colors">
+                  <span className="px-2 py-0.5 rounded bg-surface border border-surface-border text-xs font-bold font-mono text-content-primary group-hover:border-brand/40 transition-colors">
                     {item.currency}
                   </span>
                 </div>
@@ -154,7 +154,7 @@ export default function CustomerBalanceCard() {
   const debitStr = totalDebit.toLocaleString();
 
   return (
-    <div className="w-full bg-surface border border-surface-border rounded-2xl p-5 space-y-4 shadow-sm">
+    <div className="w-full bg-surface border border-surface-border rounded p-5 space-y-4 shadow-sm">
       <div className="space-y-1">
         <span className="text-[11px] font-bold tracking-wider uppercase text-content-muted">
           {t('balance')}
@@ -172,8 +172,8 @@ export default function CustomerBalanceCard() {
 
       <div className="grid grid-cols-2 gap-3 pt-1">
         {/* Total Credit / Inflow Card */}
-        <div className="p-3.5 rounded-xl bg-surface-subtle border border-surface-border flex items-center gap-3 overflow-hidden">
-          <div className="w-9 h-9 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 flex items-center justify-center shrink-0">
+        <div className="p-3.5 rounded bg-surface-subtle border border-surface-border flex items-center gap-3 overflow-hidden">
+          <div className="w-9 h-9 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 flex items-center justify-center shrink-0">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
@@ -186,8 +186,8 @@ export default function CustomerBalanceCard() {
         </div>
 
         {/* Total Debit / Outflow Card */}
-        <div className="p-3.5 rounded-xl bg-surface-subtle border border-surface-border flex items-center gap-3 overflow-hidden">
-          <div className="w-9 h-9 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/20 flex items-center justify-center shrink-0">
+        <div className="p-3.5 rounded bg-surface-subtle border border-surface-border flex items-center gap-3 overflow-hidden">
+          <div className="w-9 h-9 rounded bg-rose-500/15 text-rose-400 border border-rose-500/20 flex items-center justify-center shrink-0">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>

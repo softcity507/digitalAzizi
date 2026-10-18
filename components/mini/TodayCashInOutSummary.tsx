@@ -34,13 +34,13 @@ export default function TodayCashInOutSummary() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
       {/* Today Cash In Card */}
-      <div className="bg-surface/90 rounded-3xl p-4 sm:p-5 border border-surface-border shadow-md space-y-3 hover:border-credit/30 transition-colors">
+      <div className="bg-surface/90 rounded p-4 sm:p-5 border border-surface-border shadow-md space-y-3 hover:border-credit/30 transition-colors">
         <div className="flex items-center justify-between">
           <h3 className="text-xs sm:text-sm font-bold text-credit-text tracking-tight flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-credit" />
             <span>{t('todayCashIn')}</span>
           </h3>
-          <span className="text-[10px] uppercase font-bold text-credit-text bg-credit-subtle px-2 py-0.5 rounded-md">
+          <span className="text-[10px] uppercase font-bold text-credit-text bg-credit-subtle px-2 py-0.5 rounded">
             + Cr
           </span>
         </div>
@@ -61,13 +61,13 @@ export default function TodayCashInOutSummary() {
       </div>
 
       {/* Today Cash Out Card */}
-      <div className="bg-surface/90 rounded-3xl p-4 sm:p-5 border border-surface-border shadow-md space-y-3 hover:border-debit/30 transition-colors">
+      <div className="bg-surface/90 rounded p-4 sm:p-5 border border-surface-border shadow-md space-y-3 hover:border-debit/30 transition-colors">
         <div className="flex items-center justify-between">
           <h3 className="text-xs sm:text-sm font-bold text-debit-text tracking-tight flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-debit" />
             <span>{t('todayCashOut')}</span>
           </h3>
-          <span className="text-[10px] uppercase font-bold text-debit-text bg-debit-subtle px-2 py-0.5 rounded-md">
+          <span className="text-[10px] uppercase font-bold text-debit-text bg-debit-subtle px-2 py-0.5 rounded">
             - Dr
           </span>
         </div>

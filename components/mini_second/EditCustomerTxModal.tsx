@@ -11,7 +11,7 @@ interface EditFormProps {
   onSave: (id: string, data: Partial<CustomerTransaction>) => Promise<void>;
 }
 
-const inputClass = 'w-full px-3 py-2 rounded-xl bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand';
+const inputClass = 'w-full px-3 py-2 rounded bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand';
 
 function EditForm({ transaction, onClose, onSave }: EditFormProps) {
   const t = useTranslations('CustomerDetails');
@@ -122,14 +122,14 @@ function EditForm({ transaction, onClose, onSave }: EditFormProps) {
         <button
           type="button"
           onClick={onClose}
-          className="w-1/2 h-10 rounded-xl bg-surface-subtle hover:bg-surface-hover border border-surface-border text-content-muted text-xs font-semibold cursor-pointer"
+          className="w-1/2 h-10 rounded bg-surface-subtle hover:bg-surface-hover border border-surface-border text-content-muted text-xs font-semibold cursor-pointer"
         >
           {t('cancel')}
         </button>
         <button
           type="submit"
           disabled={saving}
-          className="w-1/2 h-10 rounded-xl bg-brand text-brand-contrast font-bold text-xs hover:opacity-95 cursor-pointer shadow-sm disabled:opacity-50"
+          className="w-1/2 h-10 rounded bg-brand text-brand-contrast font-bold text-xs hover:opacity-95 cursor-pointer shadow-sm disabled:opacity-50"
         >
           {saving ? '…' : t('saveChanges')}
         </button>
@@ -146,13 +146,13 @@ export default function EditCustomerTxModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-surface border border-surface-border rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+      <div className="bg-surface border border-surface-border rounded p-6 max-w-md w-full shadow-2xl space-y-4">
         <div className="flex items-center justify-between pb-2 border-b border-surface-border">
           <h3 className="text-base font-bold text-content-primary">{t('editTransaction')}</h3>
           <button
             type="button"
             onClick={closeModal}
-            className="p-1 rounded-lg text-content-muted hover:text-content-primary"
+            className="p-1 rounded text-content-muted hover:text-content-primary"
           >
             ✕
           </button>

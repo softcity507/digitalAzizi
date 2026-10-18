@@ -56,7 +56,7 @@ export default function CashBookSearch() {
                 ? `Filter within selected customer...`
                 : t('searchPlaceholder')
             }
-            className="w-full h-12 pl-12 pr-10 rtl:pl-10 rtl:pr-12 rounded-2xl bg-surface-input/90 border border-surface-border text-content-primary placeholder:text-content-muted text-sm focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all shadow-inner"
+            className="w-full h-12 pl-12 pr-10 rtl:pl-10 rtl:pr-12 rounded bg-surface-input/90 border border-surface-border text-content-primary placeholder:text-content-muted text-sm focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all shadow-inner"
           />
 
           {/* Clear Button */}
@@ -66,7 +66,7 @@ export default function CashBookSearch() {
               onClick={() => setSearchQuery('')}
               aria-label={t('clearSearch')}
               title={t('clearSearch')}
-              className="absolute right-3.5 rtl:right-auto rtl:left-3.5 p-1.5 rounded-full text-content-muted hover:text-content-primary hover:bg-surface-hover transition-colors cursor-pointer"
+              className="absolute right-3.5 rtl:right-auto rtl:left-3.5 p-1.5 rounded text-content-muted hover:text-content-primary hover:bg-surface-hover transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -81,7 +81,7 @@ export default function CashBookSearch() {
           <button
             type="button"
             onClick={() => setSelectedCustomerId(null)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
               selectedCustomerId === null
                 ? 'bg-surface-active text-content-primary border-surface-border shadow-sm font-extrabold'
                 : 'bg-surface-subtle hover:bg-surface-hover text-content-muted hover:text-content-primary border-surface-border'
@@ -90,7 +90,7 @@ export default function CashBookSearch() {
             <Users className="w-3.5 h-3.5" />
             <span>{t('allCustomers')}</span>
             <span
-              className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-extrabold ${
+              className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-extrabold ${
                 selectedCustomerId === null
                   ? 'bg-surface-subtle text-content-primary'
                   : 'bg-surface border border-surface-border text-content-muted'
@@ -108,7 +108,7 @@ export default function CashBookSearch() {
                 key={cust.id}
                 type="button"
                 onClick={() => handleSelectCustomer(cust.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
                   isSelected
                     ? 'bg-surface-active text-content-primary border-surface-border shadow-sm font-extrabold ring-1 ring-surface-border'
                     : 'bg-surface-subtle hover:bg-surface-hover text-content-secondary hover:text-content-primary border-surface-border'

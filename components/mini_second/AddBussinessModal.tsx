@@ -102,14 +102,14 @@ export default function AddBussinessModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-surface border border-surface-border rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div className="bg-surface border border-surface-border rounded p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-2 border-b border-surface-border">
           <h3 className="text-base font-bold text-content-primary">{t('addNewBusiness')}</h3>
           <button
             type="button"
             onClick={handleClose}
-            className="p-1 rounded-lg text-content-muted hover:text-content-primary cursor-pointer transition-colors"
+            className="p-1 rounded text-content-muted hover:text-content-primary cursor-pointer transition-colors"
           >
             ✕
           </button>
@@ -127,7 +127,7 @@ export default function AddBussinessModal() {
                 onChange={(e) => setFormData((current) => ({ ...current, firstName: e.target.value }))}
                 placeholder="e.g. Wahid"
                 required
-                className="w-full px-3 py-2 rounded-xl bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
+                className="w-full px-3 py-2 rounded bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
             <div>
@@ -137,7 +137,7 @@ export default function AddBussinessModal() {
                 value={formData.lastName}
                 onChange={(e) => setFormData((current) => ({ ...current, lastName: e.target.value }))}
                 placeholder="e.g. Sarraf"
-                className="w-full px-3 py-2 rounded-xl bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
+                className="w-full px-3 py-2 rounded bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
           </div>
@@ -155,7 +155,7 @@ export default function AddBussinessModal() {
                 placeholder="e.g. 93700000000"
                 required
                 autoComplete="tel"
-                className="w-full px-3 py-2 rounded-xl bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
+                className="w-full px-3 py-2 rounded bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
             <div>
@@ -165,13 +165,13 @@ export default function AddBussinessModal() {
                 value={formData.address}
                 onChange={(e) => setFormData((current) => ({ ...current, address: e.target.value }))}
                 placeholder="e.g. Herat Bazaar #12"
-                className="w-full px-3 py-2 rounded-xl bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
+                className="w-full px-3 py-2 rounded bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
           </div>
 
           {/* 3. Initial Amount & Currency Selection */}
-          <div className="p-3.5 rounded-2xl bg-surface-subtle/50 border border-surface-border space-y-2.5">
+          <div className="p-3.5 rounded bg-surface-subtle/50 border border-surface-border space-y-2.5">
             <span className="block text-xs font-bold uppercase tracking-wider text-content-primary">
               {t('openingBalance')}
             </span>
@@ -187,7 +187,7 @@ export default function AddBussinessModal() {
                   onChange={(e) => setFormData((current) => ({ ...current, amount: e.target.value }))}
                   placeholder="0.00"
                   required
-                  className="w-full px-3 py-2 rounded-xl bg-surface border border-surface-border text-sm font-mono text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
+                  className="w-full px-3 py-2 rounded bg-surface border border-surface-border text-sm font-mono text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
               <div>
@@ -195,7 +195,7 @@ export default function AddBussinessModal() {
                 <select
                   value={selectedAmountCurrency ?? ''}
                   onChange={(e) => setFormData((current) => ({ ...current, amountCurrency: e.target.value as CurrencyCode }))}
-                  className="w-full h-[38px] px-2.5 rounded-xl bg-surface border border-surface-border text-sm font-bold text-content-primary focus:outline-none focus:ring-1 focus:ring-brand uppercase cursor-pointer"
+                  className="w-full h-[38px] px-2.5 rounded bg-surface border border-surface-border text-sm font-bold text-content-primary focus:outline-none focus:ring-1 focus:ring-brand uppercase cursor-pointer"
                 >
                   {businessCurrencies.length === 0 && <option value="">{t('noCurrencies')}</option>}
                   {businessCurrencies.map((c) => (
@@ -214,7 +214,7 @@ export default function AddBussinessModal() {
                 value={formData.amountDescription}
                 onChange={(e) => setFormData((current) => ({ ...current, amountDescription: e.target.value }))}
                 placeholder="e.g. Initial capital deposit / vault opening"
-                className="w-full px-3 py-2 rounded-xl bg-surface border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
+                className="w-full px-3 py-2 rounded bg-surface border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
           </div>
@@ -224,13 +224,13 @@ export default function AddBussinessModal() {
             <button
               type="button"
               onClick={handleClose}
-              className="w-1/2 h-10 rounded-xl bg-surface-subtle hover:bg-surface-hover border border-surface-border text-content-muted text-xs font-semibold cursor-pointer transition-colors"
+              className="w-1/2 h-10 rounded bg-surface-subtle hover:bg-surface-hover border border-surface-border text-content-muted text-xs font-semibold cursor-pointer transition-colors"
             >
               {t('cancel')}
             </button>
             <button
               type="submit"
-              className="w-1/2 h-10 rounded-xl bg-sky-400 hover:bg-sky-500 text-slate-950 font-bold text-xs cursor-pointer shadow-sm transition-all"
+              className="w-1/2 h-10 rounded bg-sky-400 hover:bg-sky-500 text-slate-950 font-bold text-xs cursor-pointer shadow-sm transition-all"
             >
               {t('save')}
             </button>

@@ -56,10 +56,10 @@ export default function CustomerTransactionItemCard({ transaction }: ItemProps) 
   const styles = getCategoryStyles();
 
   return (
-    <div className="w-full bg-surface border border-surface-border rounded-2xl p-3.5 sm:p-4 transition-all duration-200 hover:border-surface-border/80 flex items-center justify-between gap-3 shadow-sm">
+    <div className="w-full bg-surface border border-surface-border rounded p-3.5 sm:p-4 transition-all duration-200 hover:border-surface-border/80 flex items-center justify-between gap-3 shadow-sm">
       {/* Left Icon and Title Info */}
       <div className="flex items-center gap-3 min-w-0">
-        <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${styles.iconBox}`}>
+        <div className={`w-10 h-10 rounded border flex items-center justify-center shrink-0 ${styles.iconBox}`}>
           {transaction.category === 'cash_in' && (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
@@ -87,7 +87,7 @@ export default function CustomerTransactionItemCard({ transaction }: ItemProps) 
             <h2 className="text-xs sm:text-sm font-bold text-content-primary truncate">
               {transaction.title}
             </h2>
-            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${styles.tagBadge}`}>
+            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded border ${styles.tagBadge}`}>
               {transaction.tag}
             </span>
           </div>
@@ -108,7 +108,7 @@ export default function CustomerTransactionItemCard({ transaction }: ItemProps) 
             type="button"
             onClick={() => openModal('edit', transaction)}
             aria-label={t('editTransaction')}
-            className="p-1.5 rounded-lg bg-surface-subtle hover:bg-surface-hover border border-surface-border text-content-muted hover:text-content-primary transition-colors cursor-pointer"
+            className="p-1.5 rounded bg-surface-subtle hover:bg-surface-hover border border-surface-border text-content-muted hover:text-content-primary transition-colors cursor-pointer"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -118,7 +118,7 @@ export default function CustomerTransactionItemCard({ transaction }: ItemProps) 
             type="button"
             onClick={() => openModal('delete', null, transaction.id)}
             aria-label={t('deleteTransaction')}
-            className="p-1.5 rounded-lg bg-surface-subtle hover:bg-rose-500/20 border border-surface-border text-content-muted hover:text-rose-400 transition-colors cursor-pointer"
+            className="p-1.5 rounded bg-surface-subtle hover:bg-rose-500/20 border border-surface-border text-content-muted hover:text-rose-400 transition-colors cursor-pointer"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

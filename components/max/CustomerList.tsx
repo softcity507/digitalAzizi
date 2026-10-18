@@ -17,7 +17,7 @@ export default function CustomerList({
 
   if (customers.length === 0) {
     return (
-      <div className="p-8 text-center rounded-2xl bg-surface border border-surface-border text-content-muted text-sm">
+      <div className="p-8 text-center rounded bg-surface border border-surface-border text-content-muted text-sm">
         {t('noAccountsFound')}
       </div>
     );

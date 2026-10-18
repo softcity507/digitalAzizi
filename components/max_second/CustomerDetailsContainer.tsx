@@ -96,7 +96,7 @@ export default function CustomerDetailsContainer() {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 px-4 text-center bg-canvas text-content-primary">
         <p className="text-sm text-content-secondary">Unable to verify this customer. Please return to the customer list and try again.</p>
-        <Link href={`/${locale}/customers`} className="rounded-xl bg-brand hover:bg-brand-hover px-4 py-2 text-sm font-semibold text-brand-foreground">
+        <Link href={`/${locale}/customers`} className="rounded bg-brand hover:bg-brand-hover px-4 py-2 text-sm font-semibold text-brand-foreground">
           {navigationT('customers')}
         </Link>
       </div>
@@ -107,7 +107,7 @@ export default function CustomerDetailsContainer() {
     <div className="w-full max-w-7xl 2xl:max-w-375 mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 space-y-5 sm:space-y-6 pb-28 sm:pb-20 bg-canvas text-content-primary transition-colors duration-200">
       <Link
         href={`/${locale}/customers`}
-        className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-content-secondary hover:text-content-primary hover:bg-surface-hover transition-colors"
+        className="inline-flex items-center gap-2 rounded px-3 py-2 text-sm font-semibold text-content-secondary hover:text-content-primary hover:bg-surface-hover transition-colors"
         aria-label={navigationT('customers')}
       >
         <svg className="h-4 w-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

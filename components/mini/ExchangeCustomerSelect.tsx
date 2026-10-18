@@ -158,7 +158,7 @@ export default function ExchangeCustomerSelect() {
           onFocus={() => setIsOpen(true)}
           onChange={(e) => handleSearchChange(e.target.value)}
           placeholder={t('searchCustomerPlaceholder')}
-          className="w-full pl-10 pr-9 py-2 rounded-xl bg-surface-subtle border border-surface-border text-xs sm:text-sm text-content-primary placeholder:text-content-tertiary focus:outline-none focus:ring-1 focus:ring-credit focus:border-credit transition-all shadow-inner"
+          className="w-full pl-10 pr-9 py-2 rounded bg-surface-subtle border border-surface-border text-xs sm:text-sm text-content-primary placeholder:text-content-tertiary focus:outline-none focus:ring-1 focus:ring-credit focus:border-credit transition-all shadow-inner"
         />
         {searchQuery && (
           <button
@@ -175,7 +175,7 @@ export default function ExchangeCustomerSelect() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full min-h-[3.75rem] py-2 px-3.5 sm:px-4 rounded-2xl bg-surface-subtle hover:bg-surface-hover border border-surface-border transition-all flex flex-col  justify-between text-left cursor-pointer shadow-sm group gap-2"
+        className="w-full min-h-[3.75rem] py-2 px-3.5 sm:px-4 rounded bg-surface-subtle hover:bg-surface-hover border border-surface-border transition-all flex flex-col  justify-between text-left cursor-pointer shadow-sm group gap-2"
       >
         <div className="  flex justify-between items-center gap-2.5 truncate min-w-0">
            
@@ -204,7 +204,7 @@ export default function ExchangeCustomerSelect() {
               return (
                 <span
                   key={idx}
-                  className={`text-[10px] sm:text-xs font-mono font-extrabold px-2 py-0.5 rounded-lg border whitespace-nowrap ${bal.isCredit
+                  className={`text-[10px] sm:text-xs font-mono font-extrabold px-2 py-0.5 rounded border whitespace-nowrap ${bal.isCredit
                     ? 'text-credit-text bg-credit-subtle border-credit/20'
                     : 'text-debit-text bg-debit-subtle border-debit/20'
                     }`}
@@ -223,7 +223,7 @@ export default function ExchangeCustomerSelect() {
 
       {/* Dropdown Options */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded-2xl bg-surface border border-surface-border shadow-2xl p-2 space-y-1 max-h-72 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded bg-surface border border-surface-border shadow-2xl p-2 space-y-1 max-h-72 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150">
           {isSearching ? (
             <div className="p-6 text-center space-y-2">
               <div className="w-7 h-7 border-2 border-credit border-t-transparent rounded-full animate-spin mx-auto" />
@@ -244,7 +244,7 @@ export default function ExchangeCustomerSelect() {
                   key={customer.id}
                   type="button"
                   onClick={() => handleSelect(customer.id)}
-                  className={`w-full p-2.5 rounded-xl text-left flex flex-col justify-between gap-2 transition-colors cursor-pointer ${isSelected
+                  className={`w-full p-2.5 rounded text-left flex flex-col justify-between gap-2 transition-colors cursor-pointer ${isSelected
                     ? 'bg-credit-subtle border border-credit/40 text-credit-text'
                     : 'hover:bg-surface-hover text-content-primary'
                     }`}
@@ -264,7 +264,7 @@ export default function ExchangeCustomerSelect() {
                       return (
                         <span
                           key={idx}
-                          className={`text-[10px] sm:text-xs font-mono font-extrabold px-1.5 sm:px-2 py-0.5 rounded-md border whitespace-nowrap ${bal.isCredit
+                          className={`text-[10px] sm:text-xs font-mono font-extrabold px-1.5 sm:px-2 py-0.5 rounded border whitespace-nowrap ${bal.isCredit
                             ? 'text-credit-text bg-credit-subtle border-credit/20'
                             : 'text-debit-text bg-debit-subtle border-debit/20'
                             }`}

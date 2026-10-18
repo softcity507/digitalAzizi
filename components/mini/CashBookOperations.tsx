@@ -38,30 +38,30 @@ export default function CashBookOperations() {
         <button
           type="button"
           onClick={() => openCustomerOperation('cash_out')}
-          className="h-12 sm:h-14 rounded-2xl bg-debit-btn hover:bg-debit-hover active:scale-[0.98] text-debit-foreground font-extrabold text-xs sm:text-sm tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1.5 text-center px-2 cursor-pointer select-none group"
+          className="h-12 sm:h-14 rounded bg-debit-btn hover:bg-debit-hover active:scale-[0.98] text-debit-foreground font-extrabold text-[10px] sm:text-xs tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1 px-1 sm:px-2 py-1 cursor-pointer select-none group"
         >
           <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center font-black text-xs shrink-0">-</span>
-          <span className="truncate">{t('cashOutBtn')}</span>
+          <span className="min-w-0 text-center leading-tight whitespace-normal">{t('cashOutBtn')}</span>
         </button>
 
         {/* 2. transferBtn */}
         <button
           type="button"
           onClick={() => openCustomerOperation('exchange')}
-          className="h-12 sm:h-14 rounded-2xl bg-surface-active hover:bg-surface-hover active:scale-[0.98] text-content-primary font-extrabold text-xs sm:text-sm tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1.5 text-center px-2 cursor-pointer select-none group"
+          className="h-12 sm:h-14 rounded bg-surface-active hover:bg-surface-hover active:scale-[0.98] text-content-primary font-extrabold text-[10px] sm:text-xs tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1 px-1 sm:px-2 py-1 cursor-pointer select-none group"
         >
           <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center font-black text-xs shrink-0">⇄</span>
-          <span className="truncate">{t('transferBtn')}</span>
+          <span className="min-w-0 text-center leading-tight whitespace-normal">{t('transferBtn')}</span>
         </button>
 
         {/* 3. Cash In (+) Button */}
         <button
           type="button"
           onClick={() => openCustomerOperation('cash_in')}
-          className="h-12 sm:h-14 rounded-2xl bg-credit-btn hover:bg-credit-hover active:scale-[0.98] text-credit-foreground font-extrabold text-xs sm:text-sm tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1.5 text-center px-2 cursor-pointer select-none group"
+          className="h-12 sm:h-14 rounded bg-credit-btn hover:bg-credit-hover active:scale-[0.98] text-credit-foreground font-extrabold text-[10px] sm:text-xs tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1 px-1 sm:px-2 py-1 cursor-pointer select-none group"
         >
           <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center font-black text-xs shrink-0">+</span>
-          <span className="truncate">{t('cashInBtn')}</span>
+          <span className="min-w-0 text-center leading-tight whitespace-normal">{t('cashInBtn')}</span>
         </button>
       </div>
 
@@ -69,11 +69,9 @@ export default function CashBookOperations() {
       <button
         type="button"
         onClick={() => openSettingsModal('add_customer')}
-        className="w-full h-11 sm:h-12 rounded-2xl bg-surface-subtle hover:bg-surface-hover border border-surface-border active:scale-[0.99] text-content-primary font-bold text-xs sm:text-sm transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer shadow-sm group"
+        className="w-full h-11 sm:h-12 rounded bg-surface-subtle hover:bg-surface-hover border border-surface-border active:scale-[0.99] text-content-primary font-bold text-xs sm:text-sm transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer shadow-sm group"
       >
-        <span className="w-5 h-5 rounded-lg bg-brand/15 text-brand flex items-center justify-center font-bold text-xs shrink-0 group-hover:bg-brand/25 transition-colors">
-          +
-        </span>
+
         <span className="truncate">{tSettings('addNewCustomer')}</span>
       </button>
     </div>

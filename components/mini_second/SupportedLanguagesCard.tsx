@@ -29,10 +29,10 @@ export default function SupportedLanguagesCard() {
   return (
     <section
       aria-labelledby="languages-title"
-      className="bg-surface border border-surface-border rounded-2xl shadow-sm overflow-hidden"
+      className="bg-surface border border-surface-border rounded shadow-sm overflow-hidden"
     >
       <div className="p-4 sm:p-5 flex items-start gap-3 border-b border-surface-border">
-        <div className="p-2 rounded-xl bg-brand-subtle text-brand shrink-0">
+        <div className="p-2 rounded bg-brand-subtle text-brand shrink-0">
           <Languages className="w-4 h-4" aria-hidden="true" />
         </div>
         <div className="space-y-0.5">
@@ -58,7 +58,7 @@ export default function SupportedLanguagesCard() {
                 }`}
               >
                 <span
-                  className={`w-9 h-9 shrink-0 rounded-lg flex items-center justify-center text-[11px] font-black uppercase tracking-wider border ${
+                  className={`w-9 h-9 shrink-0 rounded flex items-center justify-center text-[11px] font-black uppercase tracking-wider border ${
                     active
                       ? 'bg-brand text-brand-foreground border-brand'
                       : 'bg-surface-subtle text-content-secondary border-surface-border'
@@ -84,7 +84,7 @@ export default function SupportedLanguagesCard() {
                     {t('currentLanguage')}
                   </span>
                 ) : (
-                  <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold tracking-wider text-content-muted dark:text-content-secondary border border-surface-border shrink-0">
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wider text-content-muted dark:text-content-secondary border border-surface-border shrink-0">
                     {lang.dir.toUpperCase()}
                   </span>
                 )}

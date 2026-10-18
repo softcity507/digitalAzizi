@@ -188,7 +188,7 @@ export default function CashBookContainer() {
         {/* Left Column: Summary, Date, Filters & Operations (Sticky on Laptop/Desktop) */}
         <div className="lg:col-span-5 xl:col-span-4 space-y-4 lg:sticky lg:top-20">
           {/* Operations Action Buttons */}
-          <div className="bg-surface/60 rounded-3xl p-3 border border-surface-border shadow-sm">
+          <div className="bg-surface/60 rounded p-3 border border-surface-border shadow-sm">
             <CashBookOperations />
           </div>
 
@@ -213,7 +213,7 @@ export default function CashBookContainer() {
           <div className="flex items-center justify-between gap-2 px-1 py-1">
             <TransactionCounterBadge count={transactions.length} />
 
-            <PdfExportButton onExport={handleExport} />
+            <PdfExportButton onExport={handleExport} cornerRadius="rounded" />
           </div>
 
           {/* Cash Book Transaction Details List */}
@@ -222,7 +222,7 @@ export default function CashBookContainer() {
               <MiniLoader size="md" variant="brand" text="Loading cashbook..." />
             </div>
           ) : loadError ? (
-            <div role="alert" className="rounded-2xl border border-debit/30 bg-debit-subtle p-4 text-sm text-debit-text">
+            <div role="alert" className="rounded border border-debit/30 bg-debit-subtle p-4 text-sm text-debit-text">
               <p>Couldn&apos;t load cashbook data: {loadError}</p>
               <button
                 type="button"

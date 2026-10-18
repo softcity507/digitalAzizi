@@ -168,13 +168,14 @@ export default function CustomerTransactionsFeed() {
           <h2 className="text-base sm:text-lg font-bold text-content-primary">
             {t('transactions')}
           </h2>
-          <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-surface-subtle border border-surface-border text-content-muted">
+          <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-surface-subtle border border-surface-border text-content-muted">
             {t('records', { count: transactions.length })}
           </span>
         </div>
 
         <PdfExportButton
           onExport={() => handleExport({ transactions, selectedCurrency, customerName })}
+          cornerRadius="rounded"
         />
       </div>
 
@@ -185,7 +186,7 @@ export default function CustomerTransactionsFeed() {
             <CustomerTransactionItemCard key={transaction.id} transaction={transaction} />
           ))
         ) : (
-          <div className="p-8 text-center bg-surface border border-surface-border rounded-2xl space-y-2">
+          <div className="p-8 text-center bg-surface border border-surface-border rounded space-y-2">
             <span className="text-2xl">📑</span>
             <p className="text-xs sm:text-sm font-semibold text-content-primary">{t('noTransactions')}</p>
             <p className="text-xs text-content-muted">{t('noTransactionsDesc')}</p>

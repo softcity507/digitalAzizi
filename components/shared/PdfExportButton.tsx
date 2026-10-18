@@ -6,9 +6,10 @@ import { useTranslations } from 'next-intl';
 interface PdfExportButtonProps {
   onExport: () => void | Promise<void>;
   title?: string;
+  cornerRadius?: 'rounded' | 'rounded-xl';
 }
 
-export default function PdfExportButton({ onExport, title }: PdfExportButtonProps) {
+export default function PdfExportButton({ onExport, title, cornerRadius = 'rounded-xl' }: PdfExportButtonProps) {
   const t = useTranslations('CustomerDetails');
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -30,7 +31,7 @@ export default function PdfExportButton({ onExport, title }: PdfExportButtonProp
       onClick={handleClick}
       disabled={isGenerating}
       title={title || t('exportPdf')}
-      className="inline-flex items-center gap-1.5 rounded-xl border border-surface-border bg-surface px-3 py-1.5 text-xs font-semibold text-content-primary shadow-sm transition-colors hover:bg-surface-hover disabled:cursor-wait disabled:opacity-60"
+      className={`inline-flex items-center gap-1.5 ${cornerRadius} border border-surface-border bg-surface px-3 py-1.5 text-xs font-semibold text-content-primary shadow-sm transition-colors hover:bg-surface-hover disabled:cursor-wait disabled:opacity-60`}
     >
       <svg className="h-3.5 w-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

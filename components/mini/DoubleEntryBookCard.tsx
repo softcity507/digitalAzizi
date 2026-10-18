@@ -13,7 +13,7 @@ export default function DoubleEntryBookCard({
 }: DoubleEntryBookCardProps) {
   return (
     <div
-      className={`p-3 sm:p-3.5 rounded-xl bg-surface-subtle border border-surface-border/60 space-y-1.5 ${className}`}
+      className={`p-3 sm:p-3.5 rounded bg-surface-subtle border border-surface-border/60 space-y-1.5 ${className}`}
     >
       {/* Book Title */}
       <div className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-content-muted">

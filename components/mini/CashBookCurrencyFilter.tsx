@@ -17,7 +17,7 @@ export default function CashBookCurrencyFilter() {
   return (
     <div className="flex items-center justify-between gap-2 w-full py-1">
       {/* Horizontal Pills */}
-      <div className="inline-flex items-center gap-1.5 p-1 bg-surface/80 rounded-2xl border border-surface-border/60 w-full sm:w-auto overflow-x-auto">
+      <div className="inline-flex items-center gap-1.5 p-1 bg-surface/80 rounded border border-surface-border/60 w-full sm:w-auto overflow-x-auto">
         {currencies.map((item) => {
           const isActive = filterCurrency === item.value;
           return (
@@ -25,7 +25,7 @@ export default function CashBookCurrencyFilter() {
               key={item.value}
               type="button"
               onClick={() => setFilterCurrency(item.value)}
-              className={`flex-1 sm:flex-initial px-3 sm:px-4 py-1.5 rounded-xl text-xs md:text-sm font-bold transition-all duration-200 text-center ${
+              className={`flex-1 sm:flex-initial px-3 sm:px-4 py-1.5 rounded text-xs md:text-sm font-bold transition-all duration-200 text-center ${
                 isActive
                   ? 'bg-surface-active text-content-primary shadow-sm font-extrabold'
                   : 'text-content-muted hover:text-content-primary hover:bg-surface-hover'
@@ -37,8 +37,6 @@ export default function CashBookCurrencyFilter() {
         })}
       </div>
 
-      {/* Right accent line / indicator */}
-      <div className="w-8 h-1 rounded-full bg-surface-active hidden sm:block shrink-0" />
-    </div>
+      </div>
   );
 }

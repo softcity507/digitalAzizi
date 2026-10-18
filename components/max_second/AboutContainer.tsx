@@ -150,7 +150,7 @@ export default function AboutContainer() {
           <>
             <p>{s('copyrightNotice.text')}</p>
             <p>{s('copyrightNotice.restriction')}</p>
-            <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-debit-subtle border border-debit/20">
+            <div className="flex items-start gap-2.5 p-3.5 rounded bg-debit-subtle border border-debit/20">
               <TriangleAlert className="w-4 h-4 mt-0.5 shrink-0 text-debit-text" aria-hidden="true" />
               <p className="text-content-primary font-medium">{s('copyrightNotice.violation')}</p>
             </div>
@@ -173,7 +173,7 @@ export default function AboutContainer() {
             <p>{s('termsOfService.agreement')}</p>
             <h3 className="text-xs sm:text-sm font-bold text-content-primary">{s('termsOfService.prohibitedActionsTitle')}</h3>
             {renderList(['termsOfService.action1', 'termsOfService.action2', 'termsOfService.action3'], CircleX, 'text-debit-text')}
-            <div className="p-3.5 rounded-xl bg-exchange-subtle border border-exchange/25 space-y-1">
+            <div className="p-3.5 rounded bg-exchange-subtle border border-exchange/25 space-y-1">
               <h3 className="flex items-center gap-2 text-xs sm:text-sm font-bold text-content-primary">
                 <TriangleAlert className="w-4 h-4 text-exchange shrink-0" aria-hidden="true" />
                 {s('termsOfService.disclaimerTitle')}

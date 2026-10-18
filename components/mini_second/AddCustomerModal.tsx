@@ -41,13 +41,13 @@ export default function AddCustomerModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-surface border border-surface-border rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div className="bg-surface border border-surface-border rounded p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between pb-2 border-b border-surface-border">
           <h3 className="text-base font-bold text-content-primary">{t('addNewBusiness')}</h3>
           <button
             type="button"
             onClick={handleClose}
-            className="p-1 rounded-lg text-content-muted hover:text-content-primary cursor-pointer"
+            className="p-1 rounded text-content-muted hover:text-content-primary cursor-pointer"
           >
             ✕
           </button>
@@ -64,7 +64,7 @@ export default function AddCustomerModal() {
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Kabul Express Hawala"
               required
-              className="w-full px-3 py-2 rounded-xl bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
+              className="w-full px-3 py-2 rounded bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
             />
           </div>
 
@@ -76,7 +76,7 @@ export default function AddCustomerModal() {
               value={details}
               onChange={(e) => setDetails(e.target.value)}
               placeholder="e.g. Primary Trading Hub, Kabul Market"
-              className="w-full px-3 py-2 rounded-xl bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
+              className="w-full px-3 py-2 rounded bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
             />
           </div>
 
@@ -98,7 +98,7 @@ export default function AddCustomerModal() {
                     type="button"
                     key={currency}
                     onClick={() => toggleCurrency(currency)}
-                    className={`flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer select-none ${
+                    className={`flex items-center justify-center gap-1.5 px-2.5 py-2 rounded border text-xs font-bold transition-all cursor-pointer select-none ${
                       isSelected
                         ? 'border-brand bg-brand/15 text-brand shadow-sm scale-[1.02]'
                         : 'border-surface-border bg-surface-subtle text-content-muted hover:bg-surface-hover hover:text-content-primary'
@@ -122,14 +122,14 @@ export default function AddCustomerModal() {
             <button
               type="button"
               onClick={handleClose}
-              className="w-1/2 h-10 rounded-xl bg-surface-subtle hover:bg-surface-hover border border-surface-border text-content-muted text-xs font-semibold cursor-pointer transition-colors"
+              className="w-1/2 h-10 rounded bg-surface-subtle hover:bg-surface-hover border border-surface-border text-content-muted text-xs font-semibold cursor-pointer transition-colors"
             >
               {t('cancel')}
             </button>
             <button
               type="submit"
               disabled={selectedCurrencies.length !== 3 || !name.trim()}
-              className="w-1/2 h-10 rounded-xl bg-brand hover:bg-brand-hover disabled:opacity-50 disabled:cursor-not-allowed text-brand-foreground font-bold text-xs cursor-pointer shadow-sm transition-all"
+              className="w-1/2 h-10 rounded bg-brand hover:bg-brand-hover disabled:opacity-50 disabled:cursor-not-allowed text-brand-foreground font-bold text-xs cursor-pointer shadow-sm transition-all"
             >
               {t('save')}
             </button>

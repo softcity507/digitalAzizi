@@ -30,7 +30,7 @@ export default function CustomerSearch({
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={t('searchPlaceholder')}
-        className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-surface border border-surface-border text-sm text-content-primary placeholder-content-muted focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand transition-all shadow-inner"
+        className="w-full pl-10 pr-10 py-2.5 rounded bg-surface border border-surface-border text-sm text-content-primary placeholder-content-muted focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand transition-all shadow-inner"
       />
 
       {/* Clear Button */}

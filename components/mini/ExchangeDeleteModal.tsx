@@ -11,9 +11,9 @@ export default function ExchangeDeleteModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-surface border border-surface-border rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4 text-center">
+      <div className="bg-surface border border-surface-border rounded p-6 max-w-sm w-full shadow-2xl space-y-4 text-center">
         {/* Warning Icon */}
-        <div className="w-14 h-14 mx-auto rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center text-2xl font-bold">
+        <div className="w-14 h-14 mx-auto rounded bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center text-2xl font-bold">
           🗑
         </div>
 
@@ -32,7 +32,7 @@ export default function ExchangeDeleteModal() {
           <button
             type="button"
             onClick={closeDeleteModal}
-            className="w-1/2 h-11 rounded-xl bg-surface-subtle hover:bg-surface-hover border border-surface-border text-slate-700 dark:text-slate-300 font-bold text-sm transition-colors cursor-pointer"
+            className="w-1/2 h-11 rounded bg-surface-subtle hover:bg-surface-hover border border-surface-border text-slate-700 dark:text-slate-300 font-bold text-sm transition-colors cursor-pointer"
           >
             {t('cancel')}
           </button>
@@ -47,7 +47,7 @@ export default function ExchangeDeleteModal() {
                 alert(`Unable to delete exchange: ${message}`);
               }
             }}
-            className="w-1/2 h-11 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-sm transition-all shadow-md shadow-rose-500/20 cursor-pointer"
+            className="w-1/2 h-11 rounded bg-rose-500 hover:bg-rose-600 text-white font-bold text-sm transition-all shadow-md shadow-rose-500/20 cursor-pointer"
           >
             {t('delete')}
           </button>

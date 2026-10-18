@@ -39,7 +39,7 @@ export default function LegalSectionCard({
   return (
     <section
       id={id}
-      className={`bg-surface border rounded-2xl shadow-sm overflow-hidden transition-colors duration-200 ${
+      className={`bg-surface border rounded shadow-sm overflow-hidden transition-colors duration-200 ${
         open ? 'border-brand/30' : 'border-surface-border hover:border-brand/30'
       }`}
     >
@@ -51,7 +51,7 @@ export default function LegalSectionCard({
           aria-controls={panelId}
           className="w-full flex items-center gap-3.5 p-4 sm:p-5 text-start cursor-pointer focus:outline-none focus-visible:bg-surface-hover/60"
         >
-          <span className={`p-2.5 rounded-xl shrink-0 ${TONE_CLASSES[tone]}`}>
+          <span className={`p-2.5 rounded shrink-0 ${TONE_CLASSES[tone]}`}>
             <Icon className="w-5 h-5" aria-hidden="true" />
           </span>
           <span className="flex-1 min-w-0 space-y-0.5">

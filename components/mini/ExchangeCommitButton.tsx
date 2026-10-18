@@ -35,7 +35,7 @@ export default function ExchangeCommitButton() {
         type="button"
         onClick={handleClick}
         disabled={isSaving}
-        className={`w-full h-14 sm:h-16 rounded-2xl font-black text-base sm:text-lg tracking-tight transition-all duration-200 shadow-xl cursor-pointer select-none active:scale-[0.98] flex items-center justify-center gap-2.5 ${
+        className={`w-full h-14 sm:h-16 rounded font-black text-base sm:text-lg tracking-tight transition-all duration-200 shadow-xl cursor-pointer select-none active:scale-[0.98] flex items-center justify-center gap-2.5 ${
           isSuccess
             ? 'bg-credit text-credit-foreground shadow-credit/30'
             : 'bg-brand hover:bg-brand-hover text-brand-foreground shadow-brand/30 hover:shadow-brand/50'

@@ -24,7 +24,7 @@ export default function AboutHeader() {
       </div>
 
       {/* Trust Panel: Verification, Protection Score & Encryption */}
-      <div className="lg:col-span-5 bg-surface border border-surface-border rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
+      {/* <div className="lg:col-span-5 bg-surface border border-surface-border rounded p-4 sm:p-5 shadow-sm space-y-4">
         <div className="flex items-center justify-between gap-3">
           <span className="text-xs sm:text-sm font-bold text-content-primary">{scoreLabel}</span>
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-credit-subtle text-credit-text border border-credit/20">
@@ -48,7 +48,7 @@ export default function AboutHeader() {
           <Lock className="w-3.5 h-3.5 text-brand shrink-0" aria-hidden="true" />
           <span>{t('encryptedDb')}</span>
         </p>
-      </div>
+      </div> */}
     </header>
   );
 }

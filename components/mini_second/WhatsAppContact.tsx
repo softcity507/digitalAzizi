@@ -30,7 +30,7 @@ export const WHATSAPP_CONTACTS: WhatsAppContact[] = [
 export default function WhatsAppSupportSection() {
   const t = useTranslations('Settings');
   return (
-    <div className="flex justify-between font-sans">
+    <div className="flex justify-between font-sans gap-3">
       {WHATSAPP_CONTACTS.map((contact) => {
         const whatsappUrl = `https://wa.me/${contact.number}?text=${encodeURIComponent(
           t('whatsappMessage')
@@ -43,7 +43,7 @@ export default function WhatsAppSupportSection() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t('whatsappAriaLabel', { number: contact.displayNumber })}
-            className="whatsapp-contact-link inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold shadow-md transition-colors"
+            className="whatsapp-contact-link inline-flex items-center gap-2 rounded px-3 py-2 text-sm font-bold shadow-md transition-colors"
           >
             <FaWhatsapp className="whatsapp-contact-icon h-5 w-5 shrink-0" />
             <span>{contact.displayNumber} · {t(contact.role)}</span>

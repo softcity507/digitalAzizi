@@ -19,14 +19,14 @@ export default function DeveloperProfileCard() {
   return (
     <section
       aria-labelledby="developer-name"
-      className="bg-surface border border-surface-border rounded-2xl shadow-sm overflow-hidden"
+      className="bg-surface border border-surface-border rounded shadow-sm overflow-hidden"
     >
       <div className="p-5 sm:p-6 space-y-5">
         {/* Identity */}
         <div className="flex items-center gap-4">
           <div
             aria-hidden="true"
-            className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-2xl bg-brand-subtle border border-brand/20 text-brand flex items-center justify-center text-lg sm:text-xl font-black tracking-tight"
+            className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded bg-brand-subtle border border-brand/20 text-brand flex items-center justify-center text-lg sm:text-xl font-black tracking-tight"
           >
             {initials}
           </div>
@@ -49,7 +49,7 @@ export default function DeveloperProfileCard() {
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <a
             href={`mailto:${email}`}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand hover:bg-brand-hover active:bg-brand-active text-brand-foreground text-xs sm:text-sm font-bold shadow-sm transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded bg-brand hover:bg-brand-hover active:bg-brand-active text-brand-foreground text-xs sm:text-sm font-bold shadow-sm transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
           >
             <Mail className="w-4 h-4" aria-hidden="true" />
             {t('contactDeveloper')}

@@ -69,11 +69,11 @@ export default function ExchangeEditModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-surface border border-surface-border rounded-3xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div className="bg-surface border border-surface-border rounded p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-brand/15 border border-brand/30 flex items-center justify-center text-brand font-bold text-sm">
+            <div className="w-8 h-8 rounded bg-brand/15 border border-brand/30 flex items-center justify-center text-brand font-bold text-sm">
               ✎
             </div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">{t('editExchange')}</h2>
@@ -82,7 +82,7 @@ export default function ExchangeEditModal() {
             type="button"
             onClick={closeEditModal}
             aria-label={t('cancel')}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-surface-hover transition-colors"
+            className="p-1 rounded text-slate-400 hover:text-white hover:bg-surface-hover transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -100,7 +100,7 @@ export default function ExchangeEditModal() {
             <select
               value={customerId}
               onChange={(e) => setCustomerId(e.target.value)}
-              className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-brand"
+              className="w-full h-11 px-3 rounded bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-brand"
             >
               {customers.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -119,7 +119,7 @@ export default function ExchangeEditModal() {
               <button
                 type="button"
                 onClick={() => setType('BUY')}
-                className={`py-2 rounded-xl text-xs font-black transition-all border ${
+                className={`py-2 rounded text-xs font-black transition-all border ${
                   type === 'BUY'
                     ? 'bg-brand-subtle border-brand text-brand'
                     : 'bg-surface-input border-surface-border text-slate-400'
@@ -130,7 +130,7 @@ export default function ExchangeEditModal() {
               <button
                 type="button"
                 onClick={() => setType('SELL')}
-                className={`py-2 rounded-xl text-xs font-black transition-all border ${
+                className={`py-2 rounded text-xs font-black transition-all border ${
                   type === 'SELL'
                     ? 'bg-surface-active text-content-primary font-black border-surface-border'
                     : 'bg-surface-input border-surface-border text-slate-400'
@@ -153,7 +153,7 @@ export default function ExchangeEditModal() {
                 required
                 value={giveAmount}
                 onChange={(e) => setGiveAmount(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-mono focus:outline-none focus:border-brand"
+                className="w-full h-11 px-3 rounded bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-mono focus:outline-none focus:border-brand"
               />
             </div>
             <div>
@@ -163,7 +163,7 @@ export default function ExchangeEditModal() {
               <select
                 value={giveCurrency}
                 onChange={(e) => setGiveCurrency(e.target.value as ExchangeCurrencyCode)}
-                className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-brand uppercase"
+                className="w-full h-11 px-2.5 rounded bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-brand uppercase"
               >
                 {userCurrencies.map((c) => (
                   <option key={c} value={c}>
@@ -180,7 +180,7 @@ export default function ExchangeEditModal() {
               <label className="text-xs font-bold text-slate-500 dark:text-slate-400">
                 {t('exchangeRate')}
               </label>
-              <div className="flex items-center gap-1 bg-surface-subtle border border-surface-border rounded-lg p-0.5">
+              <div className="flex items-center gap-1 bg-surface-subtle border border-surface-border rounded p-0.5">
                 <button
                   type="button"
                   onClick={() => setCalcMode('multiply')}
@@ -215,14 +215,14 @@ export default function ExchangeEditModal() {
                   value={exchangeRate}
                   onChange={(e) => setExchangeRate(e.target.value)}
                   placeholder={calcMode === 'multiply' ? '278.4' : '1500'}
-                  className="w-full h-11 px-3 rounded-xl bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-mono focus:outline-none focus:border-brand"
+                  className="w-full h-11 px-3 rounded bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-mono focus:outline-none focus:border-brand"
                 />
               </div>
               <div>
                 <select
                   value={getCurrency}
                   onChange={(e) => setGetCurrency(e.target.value as ExchangeCurrencyCode)}
-                  className="w-full h-11 px-2.5 rounded-xl bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-brand uppercase"
+                  className="w-full h-11 px-2.5 rounded bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-brand uppercase"
                 >
                   {userCurrencies.map((c) => (
                     <option key={c} value={c}>
@@ -244,7 +244,7 @@ export default function ExchangeEditModal() {
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
               placeholder={t('memoPlaceholder')}
-              className="w-full h-11 px-3.5 rounded-xl bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm focus:outline-none focus:border-brand"
+              className="w-full h-11 px-3.5 rounded bg-surface-input border border-surface-border text-slate-900 dark:text-white text-sm focus:outline-none focus:border-brand"
             />
           </div>
 
@@ -253,13 +253,13 @@ export default function ExchangeEditModal() {
             <button
               type="button"
               onClick={closeEditModal}
-              className="w-1/2 h-11 rounded-xl bg-surface-subtle hover:bg-surface-hover border border-surface-border text-slate-600 dark:text-slate-300 font-bold text-sm transition-colors cursor-pointer"
+              className="w-1/2 h-11 rounded bg-surface-subtle hover:bg-surface-hover border border-surface-border text-slate-600 dark:text-slate-300 font-bold text-sm transition-colors cursor-pointer"
             >
               {t('cancel')}
             </button>
             <button
               type="submit"
-              className="w-1/2 h-11 rounded-xl bg-brand hover:bg-brand/90 text-white font-bold text-sm transition-all shadow-glow-brand cursor-pointer"
+              className="w-1/2 h-11 rounded bg-brand hover:bg-brand/90 text-white font-bold text-sm transition-all shadow-glow-brand cursor-pointer"
             >
               {t('saveChanges')}
             </button>

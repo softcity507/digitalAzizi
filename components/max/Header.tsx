@@ -7,10 +7,9 @@ import Notification from '@/components/mini/Notification';
  
 interface HeaderProps {
   className?: string;
-  activeHref?: string;
 }
 
-export default function Header({ className = '', activeHref }: HeaderProps) {
+export default function Header({ className = '' }: HeaderProps) {
   const pathname = usePathname();
   const isLandingPage = /^\/[a-z]{2,3}\/?$/.test(pathname);
 
@@ -32,7 +31,7 @@ export default function Header({ className = '', activeHref }: HeaderProps) {
 
           {/* 2. Center: Desktop Pill Navigation (Hidden on Mobile) */}
           <div className="hidden lg:flex items-center justify-center flex-1 max-w-xl">
-            <Links variant="desktop-header" activeHref={activeHref} />
+            <Links variant="desktop-header" />
           </div>
 
           {/* 3. Right: Utility Controls (Language, Theme, Notification) */}
@@ -44,7 +43,7 @@ export default function Header({ className = '', activeHref }: HeaderProps) {
       </header>
 
       {/* 4. Mobile Bottom Navigation Bar (Visible only on mobile/tablet screens < lg) */}
-      <Links variant="mobile-bottom" activeHref={activeHref} />
+      <Links variant="mobile-bottom" />
     </>
   );
 }

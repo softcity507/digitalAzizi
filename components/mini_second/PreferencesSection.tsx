@@ -157,7 +157,7 @@ export default function PreferencesSection() {
         {t('preferences')}
       </h3>
 
-      <div className="bg-surface border border-surface-border rounded-2xl divide-y divide-surface-border overflow-hidden shadow-sm">
+      <div className="bg-surface border border-surface-border rounded divide-y divide-surface-border overflow-hidden shadow-sm">
         {/* Dark Mode Toggle */}
         <div className="p-4 sm:p-5 flex items-center justify-between gap-3">
           <div className="space-y-0.5">
@@ -193,7 +193,7 @@ export default function PreferencesSection() {
             value={currentLocale}
             disabled={isPending}
             onChange={(e) => handleLanguageChange(e.target.value)}
-            className="px-3.5 py-2 rounded-xl bg-surface-subtle border border-surface-border text-xs sm:text-sm font-semibold text-content-primary focus:outline-none focus:ring-1 focus:ring-brand cursor-pointer"
+            className="px-3.5 py-2 rounded bg-surface-subtle border border-surface-border text-xs sm:text-sm font-semibold text-content-primary focus:outline-none focus:ring-1 focus:ring-brand cursor-pointer"
           >
             {LANGUAGES.map((lang) => (
               <option key={lang.code} value={lang.code}>
@@ -254,7 +254,7 @@ export default function PreferencesSection() {
             <button
               type="button"
               onClick={() => setShowPinModal(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface hover:bg-surface-border text-content-primary text-xs font-semibold transition-colors border border-surface-border cursor-pointer shadow-sm"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface hover:bg-surface-border text-content-primary text-xs font-semibold transition-colors border border-surface-border cursor-pointer shadow-sm"
             >
               <KeyRound className="w-3.5 h-3.5" />
               {hasPin ? t('changePin') : t('setPin')}
@@ -262,7 +262,7 @@ export default function PreferencesSection() {
 
             <a
               href={`/${currentLocale}/settings/biometrics`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand/10 hover:bg-brand-hover/20 text-brand text-xs font-semibold transition-colors border border-brand/20"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-brand/10 hover:bg-brand-hover/20 text-brand text-xs font-semibold transition-colors border border-brand/20"
             >
               <Fingerprint className="w-3.5 h-3.5" />
               {t('configureSensors')} →
@@ -274,10 +274,10 @@ export default function PreferencesSection() {
       {/* Set PIN Modal */}
       {showPinModal && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-sm bg-surface border border-surface-border rounded-3xl p-6 shadow-2xl space-y-5 animate-scale-up">
+          <div className="w-full max-w-sm bg-surface border border-surface-border rounded p-6 shadow-2xl space-y-5 animate-scale-up">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5 text-content-primary font-bold text-base">
-                <div className="p-2 rounded-xl bg-brand/10 text-brand">
+                <div className="p-2 rounded bg-brand/10 text-brand">
                   <KeyRound className="w-5 h-5" />
                 </div>
                 <h3>{hasPin ? t('changePinTitle') : t('setPinTitle')}</h3>
@@ -285,7 +285,7 @@ export default function PreferencesSection() {
               <button
                 type="button"
                 onClick={() => setShowPinModal(false)}
-                className="p-1 rounded-lg hover:bg-surface-subtle text-content-muted cursor-pointer"
+                className="p-1 rounded hover:bg-surface-subtle text-content-muted cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -306,7 +306,7 @@ export default function PreferencesSection() {
                   value={newPin}
                   onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
                   placeholder="••••"
-                  className="w-full tracking-widest text-center text-xl font-bold py-2.5 px-3 rounded-xl bg-surface-subtle border border-surface-border text-content-primary focus:outline-none focus:ring-2 focus:ring-brand"
+                  className="w-full tracking-widest text-center text-xl font-bold py-2.5 px-3 rounded bg-surface-subtle border border-surface-border text-content-primary focus:outline-none focus:ring-2 focus:ring-brand"
                   required
                 />
               </div>
@@ -321,7 +321,7 @@ export default function PreferencesSection() {
                   value={confirmPin}
                   onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ''))}
                   placeholder="••••"
-                  className="w-full tracking-widest text-center text-xl font-bold py-2.5 px-3 rounded-xl bg-surface-subtle border border-surface-border text-content-primary focus:outline-none focus:ring-2 focus:ring-brand"
+                  className="w-full tracking-widest text-center text-xl font-bold py-2.5 px-3 rounded bg-surface-subtle border border-surface-border text-content-primary focus:outline-none focus:ring-2 focus:ring-brand"
                   required
                 />
               </div>
@@ -334,14 +334,14 @@ export default function PreferencesSection() {
                 <button
                   type="button"
                   onClick={() => setShowPinModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-content-muted hover:bg-surface-subtle"
+                  className="px-4 py-2 rounded text-xs font-bold text-content-muted hover:bg-surface-subtle"
                 >
                   {t('cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={savingPin || newPin.length < 4}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand hover:bg-brand-hover disabled:opacity-50 text-brand-foreground text-xs font-bold shadow-md cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded bg-brand hover:bg-brand-hover disabled:opacity-50 text-brand-foreground text-xs font-bold shadow-md cursor-pointer"
                 >
                   {savingPin ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                   {t('saveEnableLock')}

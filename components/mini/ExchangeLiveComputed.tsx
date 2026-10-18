@@ -24,23 +24,23 @@ export default function ExchangeLiveComputed() {
   const opSymbol = calcMode === 'multiply' ? '✖' : '➗';
 
   return (
-    <div className="w-full rounded-3xl bg-surface-subtle/90 dark:bg-canvas/90 border border-surface-border p-4 sm:p-5 space-y-4 shadow-xl">
+    <div className="w-full rounded bg-surface-subtle/90 dark:bg-canvas/90 border border-surface-border p-4 sm:p-5 space-y-4 shadow-xl">
       {/* Header: Title & Live Computed Badge */}
       <div className="flex items-center justify-between">
         <span className="text-[10px] sm:text-[11px] font-black tracking-wider uppercase text-slate-500 dark:text-slate-400">
           {t('doubleEntryLedgerImpact')}
         </span>
-        <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[10px] sm:text-[11px] font-black tracking-wide">
+        <span className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[10px] sm:text-[11px] font-black tracking-wide">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           <span>{t('liveComputed')}</span>
         </span>
       </div>
 
       {/* Main Equation Display (Multiply or Divide) */}
-      <div className="text-center py-2.5 px-3 rounded-2xl bg-surface/70 border border-surface-border">
+      <div className="text-center py-2.5 px-3 rounded bg-surface/70 border border-surface-border">
         <div className="text-lg sm:text-2xl font-mono font-black tracking-tight text-slate-900 dark:text-white flex items-center justify-center flex-wrap gap-1.5">
           <span>{gAmt.toLocaleString()} {giveCurrency}</span>
-          <span className="text-brand font-extrabold mx-1 bg-brand/10 px-2 py-0.5 rounded-lg border border-brand/20 text-sm">
+          <span className="text-brand font-extrabold mx-1 bg-brand/10 px-2 py-0.5 rounded border border-brand/20 text-sm">
             {opSymbol}
           </span>
           <span>{rate}</span>
@@ -52,7 +52,7 @@ export default function ExchangeLiveComputed() {
       {/* 2-Column Ledger Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {/* Customer Ledger */}
-        <div className="p-3.5 rounded-2xl bg-surface border border-surface-border space-y-2">
+        <div className="p-3.5 rounded bg-surface border border-surface-border space-y-2">
           <span className="block text-[10px] font-black tracking-wider uppercase text-slate-500 dark:text-slate-400">
             {t('customerLedger')}
           </span>
@@ -73,7 +73,7 @@ export default function ExchangeLiveComputed() {
         </div>
 
         {/* Exchange Ledger */}
-        <div className="p-3.5 rounded-2xl bg-surface border border-surface-border space-y-2">
+        <div className="p-3.5 rounded bg-surface border border-surface-border space-y-2">
           <span className="block text-[10px] font-black tracking-wider uppercase text-slate-500 dark:text-slate-400">
             {t('exchangeLedger')}
           </span>

@@ -50,7 +50,7 @@ export default function AdminProfileCard() {
 
   if (loading) {
     return (
-      <div className="w-full h-32 bg-surface border border-surface-border rounded-2xl p-5 shadow-sm flex items-center justify-center">
+      <div className="w-full h-32 bg-surface border border-surface-border rounded p-5 shadow-sm flex items-center justify-center">
         <MiniLoader size="sm" variant="brand" />
       </div>
     );
@@ -58,14 +58,14 @@ export default function AdminProfileCard() {
 
   if (databaseError) {
     return (
-      <div className="w-full bg-surface border border-debit/30 rounded-2xl p-4 sm:p-5">
+      <div className="w-full bg-surface border border-debit/30 rounded p-4 sm:p-5">
         <p className="text-xs text-debit-text">{databaseError}</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-surface border border-surface-border rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors">
+    <div className="w-full bg-surface border border-surface-border rounded p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors">
       <div className="space-y-1">
         <h2 className="text-base sm:text-lg font-bold text-content-primary">
           {admin.name} <span className="text-content-secondary font-medium">{admin.title}</span>
@@ -74,7 +74,7 @@ export default function AdminProfileCard() {
       </div>
 
       <div className="self-start sm:self-center">
-        <span className="inline-flex items-center px-3 py-1.5 rounded-xl bg-surface-subtle border border-surface-border text-[11px] font-mono font-semibold text-content-primary">
+        <span className="inline-flex items-center px-3 py-1.5 rounded bg-surface-subtle border border-surface-border text-[11px] font-mono font-semibold text-content-primary">
           {admin.badge}
         </span>
       </div>

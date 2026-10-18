@@ -20,11 +20,11 @@ export default function ExchangeRecentItem({ entry }: ExchangeRecentItemProps) {
   const { ledgerImpact } = entry;
 
   return (
-    <div className="w-full p-4 rounded-3xl bg-surface border border-surface-border hover:border-brand/40 transition-all duration-200 shadow-sm space-y-3">
+    <div className="w-full p-4 rounded bg-surface border border-surface-border hover:border-brand/40 transition-all duration-200 shadow-sm space-y-3">
       {/* Top Header: Customer Avatar & Name, Exchange Rate & Amount, Timestamp, Actions */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5 truncate min-w-0">
-          <div className="w-8 h-8 rounded-xl bg-brand/15 border border-brand/30 flex items-center justify-center text-brand font-bold text-xs shrink-0">
+          <div className="w-8 h-8 rounded bg-brand/15 border border-brand/30 flex items-center justify-center text-brand font-bold text-xs shrink-0">
             {customerName.charAt(0)}
           </div>
           <div className="truncate min-w-0">
@@ -49,7 +49,7 @@ export default function ExchangeRecentItem({ entry }: ExchangeRecentItemProps) {
             onClick={() => openEditModal(entry)}
             aria-label={t('editExchange')}
             title={t('editExchange')}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-surface-hover transition-colors cursor-pointer"
+            className="p-1.5 rounded text-slate-400 hover:text-white hover:bg-surface-hover transition-colors cursor-pointer"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -67,7 +67,7 @@ export default function ExchangeRecentItem({ entry }: ExchangeRecentItemProps) {
             onClick={() => openDeleteModal(entry.id)}
             aria-label={t('deleteExchange')}
             title={t('deleteExchange')}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path

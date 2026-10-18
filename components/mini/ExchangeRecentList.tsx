@@ -16,7 +16,7 @@ export default function ExchangeRecentList() {
         <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
           {t('recentExchanges')}
         </h2>
-        <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-surface-subtle border border-surface-border text-slate-600 dark:text-slate-400">
+        <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-surface-subtle border border-surface-border text-slate-600 dark:text-slate-400">
           {t('todayCount', { count: exchanges.length })}
         </span>
       </div>
@@ -27,14 +27,14 @@ export default function ExchangeRecentList() {
           <MiniLoader size="md" variant="brand" text="Loading exchanges..." />
         </div>
       ) : loadError ? (
-        <div role="alert" className="rounded-2xl border border-debit/30 bg-debit-subtle p-4 text-sm text-debit-text">
+        <div role="alert" className="rounded border border-debit/30 bg-debit-subtle p-4 text-sm text-debit-text">
           <p>Couldn&apos;t load exchanges: {loadError}</p>
           <button type="button" onClick={() => void fetchExchanges().catch((error) => console.error('Exchange load failed:', error))} className="mt-2 font-semibold underline">
             Retry
           </button>
         </div>
       ) : exchanges.length === 0 ? (
-        <div className="p-8 text-center rounded-3xl bg-surface border border-surface-border space-y-2">
+        <div className="p-8 text-center rounded bg-surface border border-surface-border space-y-2">
           <span className="text-3xl">💱</span>
           <p className="text-sm font-semibold text-slate-400">{t('emptyState')}</p>
         </div>

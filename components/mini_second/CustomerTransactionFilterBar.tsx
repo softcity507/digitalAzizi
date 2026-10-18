@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
- 
+
 export default function CustomerTransactionFilterBar() {
   const t = useTranslations('CustomerDetails');
   const {
@@ -18,8 +18,8 @@ export default function CustomerTransactionFilterBar() {
     <div className="w-full space-y-3">
       {/* Search Input */}
       <div className="  w-full">
-         
-        <div className="flex bg-surface border border-surface-border focus:outline-none focus:ring-1 focus:ring-brand rounded-xl focus:border-brand justify-center items-center px-2 ">
+
+        <div className="flex bg-surface border border-surface-border focus:outline-none focus:ring-1 focus:ring-brand rounded focus:border-brand justify-center items-center px-2 ">
            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -42,36 +42,7 @@ export default function CustomerTransactionFilterBar() {
         )}
       </div>
 
-      {/* Date & Sort Actions */}
-      <div className="flex items-center   gap-2">
-        <button
-          type="button"
-          onClick={() => setDateFilter(dateFilter === 'all' ? 'today' : 'all')}
-          className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface border border-surface-border text-xs font-semibold text-content-primary hover:bg-surface-hover transition-colors cursor-pointer"
-        >
-          <svg className="w-4 h-4 text-content-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          <span>{t('allDates')}</span>
-          <svg className="w-3.5 h-3.5 text-content-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
 
-        <button
-          type="button"
-          onClick={toggleSortOrder}
-          title={sortAscending ? 'Oldest first' : 'Newest first'}
-          className={`p-2 rounded-xl border transition-colors cursor-pointer ${sortAscending
-              ? 'bg-brand/15 border-brand/40 text-brand'
-              : 'bg-surface border-surface-border text-content-muted hover:text-content-primary hover:bg-surface-hover'
-            }`}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-          </svg>
-        </button>
-      </div>
     </div>
   );
 }

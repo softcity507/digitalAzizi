@@ -61,43 +61,43 @@ export default function CustomerCashTransactionActions() {
   return (
     <>
       <div className="flex flex-wrap justify-between gap-2">
-        <button type="button" onClick={() => open('cash_in')} className="rounded-xl bg-credit-btn px-4 py-2.5 text-sm font-bold text-credit-foreground shadow-sm hover:bg-credit-hover">
+        <button type="button" onClick={() => open('cash_in')} className="rounded bg-credit-btn px-4 py-2.5 text-sm font-bold text-credit-foreground shadow-sm hover:bg-credit-hover">
           {t('cashInBtn')}
         </button>
-        <button type="button" onClick={() => open('cash_out')} className="rounded-xl bg-debit-btn px-4 py-2.5 text-sm font-bold text-debit-foreground shadow-sm hover:bg-debit-hover">
+        <button type="button" onClick={() => open('cash_out')} className="rounded bg-debit-btn px-4 py-2.5 text-sm font-bold text-debit-foreground shadow-sm hover:bg-debit-hover">
           {t('cashOutBtn')}
         </button>
       </div>
 
       {type && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-modal-overlay p-4 backdrop-blur-sm" role="presentation">
-          <div role="dialog" aria-modal="true" aria-labelledby="customer-cash-title" className="w-full max-w-md space-y-5 rounded-3xl border border-surface-border bg-surface p-6 shadow-2xl">
+          <div role="dialog" aria-modal="true" aria-labelledby="customer-cash-title" className="w-full max-w-md space-y-5 rounded border border-surface-border bg-surface p-6 shadow-2xl">
             <div className="flex items-center justify-between">
               <h2 id="customer-cash-title" className="text-lg font-bold text-content-primary">{type === 'cash_in' ? t('recordCashIn') : t('recordCashOut')} · {customer?.name}</h2>
-              <button type="button" onClick={() => setType(null)} aria-label={t('cancel')} className="rounded-lg p-2 text-content-muted hover:bg-surface-hover">×</button>
+              <button type="button" onClick={() => setType(null)} aria-label={t('cancel')} className="rounded p-2 text-content-muted hover:bg-surface-hover">×</button>
             </div>
             <form onSubmit={submit} className="space-y-4">
               <div className="grid grid-cols-3 gap-2">
                 <label className="col-span-2 block text-xs font-semibold text-content-muted">{t('amount')}
-                  <input autoFocus required min="0.000001" step="any" type="number" value={amount} onChange={(event) => setAmount(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-surface-border bg-surface-input px-3 text-sm text-content-primary" />
+                  <input autoFocus required min="0.000001" step="any" type="number" value={amount} onChange={(event) => setAmount(event.target.value)} className="mt-1 h-11 w-full rounded border border-surface-border bg-surface-input px-3 text-sm text-content-primary" />
                 </label>
                 <label className="block text-xs font-semibold text-content-muted">{t('currency')}
-                  <select required value={currency} onChange={(event) => setCurrency(event.target.value as CurrencyCode)} className="mt-1 h-11 w-full rounded-xl border border-surface-border bg-surface-input px-2 text-sm text-content-primary">
+                  <select required value={currency} onChange={(event) => setCurrency(event.target.value as CurrencyCode)} className="mt-1 h-11 w-full rounded border border-surface-border bg-surface-input px-2 text-sm text-content-primary">
                     {currencies.map((code) => <option key={code} value={code}>{code}</option>)}
                   </select>
                 </label>
               </div>
               <label className="block text-xs font-semibold text-content-muted">{t('date')}
-                <input required type="date" value={date} onChange={(event) => setDate(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-surface-border bg-surface-input px-3 text-sm text-content-primary" />
+                <input required type="date" value={date} onChange={(event) => setDate(event.target.value)} className="mt-1 h-11 w-full rounded border border-surface-border bg-surface-input px-3 text-sm text-content-primary" />
               </label>
               <label className="block text-xs font-semibold text-content-muted">{t('memo')}
-                <input value={memo} onChange={(event) => setMemo(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-surface-border bg-surface-input px-3 text-sm text-content-primary" />
+                <input value={memo} onChange={(event) => setMemo(event.target.value)} className="mt-1 h-11 w-full rounded border border-surface-border bg-surface-input px-3 text-sm text-content-primary" />
               </label>
               {error && <p role="alert" className="text-sm text-debit">Unable to save: {error}</p>}
               {currencies.length === 0 && <p role="alert" className="text-sm text-debit">{t('noCurrenciesConfigured')}</p>}
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setType(null)} className="h-11 w-1/2 rounded-xl border border-surface-border bg-surface-hover text-sm font-semibold text-content-secondary">{t('cancel')}</button>
-                <button type="submit" disabled={saving || currencies.length === 0} className={`h-11 w-1/2 rounded-xl text-sm font-bold text-white disabled:opacity-50 ${type === 'cash_in' ? 'bg-credit-btn' : 'bg-debit-btn'}`}>
+                <button type="button" onClick={() => setType(null)} className="h-11 w-1/2 rounded border border-surface-border bg-surface-hover text-sm font-semibold text-content-secondary">{t('cancel')}</button>
+                <button type="submit" disabled={saving || currencies.length === 0} className={`h-11 w-1/2 rounded text-sm font-bold text-white disabled:opacity-50 ${type === 'cash_in' ? 'bg-credit-btn' : 'bg-debit-btn'}`}>
                   {saving ? t('saving') : type === 'cash_in' ? t('confirmCashIn') : t('confirmCashOut')}
                 </button>
               </div>

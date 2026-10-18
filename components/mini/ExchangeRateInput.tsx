@@ -39,11 +39,11 @@ export default function ExchangeRateInput() {
         <span className="text-slate-500 dark:text-slate-400">{t('exchangeRate')}</span>
 
         {/* Multiply (✖) and Divide (➗) Toggle */}
-        <div className="flex items-center gap-1 bg-surface-subtle border border-surface-border rounded-xl p-0.5">
+        <div className="flex items-center gap-1 bg-surface-subtle border border-surface-border rounded p-0.5">
           <button
             type="button"
             onClick={() => setCalcMode('multiply')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all duration-150 flex items-center gap-1 ${
+            className={`px-2.5 py-1 rounded text-xs font-bold transition-all duration-150 flex items-center gap-1 ${
               calcMode === 'multiply'
                 ? 'bg-brand text-brand-foreground font-extrabold shadow-sm'
                 : 'text-slate-400 hover:text-white'
@@ -55,7 +55,7 @@ export default function ExchangeRateInput() {
           <button
             type="button"
             onClick={() => setCalcMode('divide')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all duration-150 flex items-center gap-1 ${
+            className={`px-2.5 py-1 rounded text-xs font-bold transition-all duration-150 flex items-center gap-1 ${
               calcMode === 'divide'
                 ? 'bg-brand text-brand-foreground font-extrabold shadow-sm'
                 : 'text-slate-400 hover:text-white'
@@ -79,10 +79,10 @@ export default function ExchangeRateInput() {
       </div>
 
       {/* Input & Target Currency Pill Group */}
-      <div className="flex items-center gap-2 p-2 rounded-2xl bg-surface-subtle border border-surface-border focus-within:border-brand/60 focus-within:ring-2 focus-within:ring-brand/20 transition-all shadow-sm">
+      <div className="flex items-center gap-2 p-2 rounded bg-surface-subtle border border-surface-border focus-within:border-brand/60 focus-within:ring-2 focus-within:ring-brand/20 transition-all shadow-sm">
         {/* Operation Indicator (✖ or ➗) & Rate Numeric Input */}
         <div className="flex items-center gap-2 flex-1 px-3">
-          <span className="text-sm font-black text-brand bg-brand/10 px-2 py-0.5 rounded-lg border border-brand/20 select-none">
+          <span className="text-sm font-black text-brand bg-brand/10 px-2 py-0.5 rounded border border-brand/20 select-none">
             {calcMode === 'multiply' ? '✖' : '➗'}
           </span>
           <input
@@ -97,7 +97,7 @@ export default function ExchangeRateInput() {
         </div>
 
         {/* Target Currency Selector Pills (Customer's 3 Currencies) */}
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-surface-input border border-surface-border shrink-0">
+        <div className="flex items-center gap-1 p-1 rounded bg-surface-input border border-surface-border shrink-0">
           {userCurrencies.map((curr) => {
             const isSelected = getCurrency === curr;
             return (
@@ -105,7 +105,7 @@ export default function ExchangeRateInput() {
                 key={curr}
                 type="button"
                 onClick={() => setGetCurrency(curr)}
-                className={`px-2.5 py-1.5 rounded-lg text-xs font-black tracking-wider transition-all duration-150 cursor-pointer ${
+                className={`px-2.5 py-1.5 rounded text-xs font-black tracking-wider transition-all duration-150 cursor-pointer ${
                   isSelected
                     ? 'bg-brand text-brand-foreground shadow-md shadow-brand/30 scale-105'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-surface-hover'

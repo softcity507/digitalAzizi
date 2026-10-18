@@ -170,6 +170,7 @@ export default function CustomerPdfExport({ businessName, customers, transaction
     return (
         <PdfExportButton
             onExport={generatePdf}
+            cornerRadius="rounded"
         />
     );
 }

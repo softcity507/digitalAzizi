@@ -58,7 +58,7 @@ export default function ExchangeAmountInput() {
       </div>
 
       {/* Input & Currency Pill Group */}
-      <div className="flex items-center gap-2 p-2 rounded-2xl bg-surface-subtle border border-surface-border focus-within:border-brand/60 focus-within:ring-2 focus-within:ring-brand/20 transition-all shadow-sm">
+      <div className="flex items-center gap-2 p-2 rounded bg-surface-subtle border border-surface-border focus-within:border-brand/60 focus-within:ring-2 focus-within:ring-brand/20 transition-all shadow-sm">
         {/* Currency Symbol & Large Input */}
         <div className="flex items-center gap-2 flex-1 px-2">
           <span className="text-lg sm:text-xl font-black text-slate-400 dark:text-slate-500 select-none">
@@ -76,7 +76,7 @@ export default function ExchangeAmountInput() {
         </div>
 
         {/* User's 3 Specific Currency Selector Pills */}
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-surface-input border border-surface-border shrink-0">
+        <div className="flex items-center gap-1 p-1 rounded bg-surface-input border border-surface-border shrink-0">
           {userCurrencies.map((curr) => {
             const isSelected = giveCurrency === curr;
             return (
@@ -84,7 +84,7 @@ export default function ExchangeAmountInput() {
                 key={curr}
                 type="button"
                 onClick={() => setGiveCurrency(curr)}
-                className={`px-2.5 py-1.5 rounded-lg text-xs font-black tracking-wider transition-all duration-150 cursor-pointer ${
+                className={`px-2.5 py-1.5 rounded text-xs font-black tracking-wider transition-all duration-150 cursor-pointer ${
                   isSelected
                     ? 'bg-brand text-brand-foreground shadow-md shadow-brand/30 scale-105'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-surface-hover'

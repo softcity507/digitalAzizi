@@ -182,7 +182,7 @@ export default function CustomerLedgerContainer() {
           <DeskMirrorSection books={doubleEntryBooks} />
 
           {/* Account Filter Pills (All Accounts, Receivable, Payable) */}
-          <div className="p-3.5 rounded-3xl bg-surface border border-surface-border shadow-sm space-y-2">
+          <div className="p-3.5 rounded bg-surface border border-surface-border shadow-sm space-y-2">
             <span className="block text-[10px] font-black tracking-wider uppercase text-slate-500 dark:text-slate-400 px-1">
               {t('allAccounts')}
             </span>
@@ -202,13 +202,7 @@ export default function CustomerLedgerContainer() {
               <CustomerSearch value={searchQuery} onChange={setSearchQuery} />
             </div>
             {/* PDF Export Component Button */}
-            <div className="w-full sm:w-auto shrink-0 flex justify-end">
-              <CustomerPdfExport
-                businessName={activeBusiness?.name ?? ''}
-                customers={activeBusinessCustomers}
-                transactions={businessTransactions}
-              />
-            </div>
+
           </div>
 
           {/* Customers Feed Counter Header */}
@@ -216,9 +210,18 @@ export default function CustomerLedgerContainer() {
             <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               {t('allAccounts')}
             </h2>
-            <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-surface-subtle border border-surface-border text-slate-600 dark:text-slate-400">
+            <div className='flex gap-2'>
+            <div className="w-full sm:w-auto shrink-0 flex justify-end">
+              <CustomerPdfExport
+                businessName={activeBusiness?.name ?? ''}
+                customers={activeBusinessCustomers}
+                transactions={businessTransactions}
+              />
+            </div>
+            <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-surface-subtle border border-surface-border text-slate-600 dark:text-slate-400">
               {filteredCustomers.length} / {activeBusinessCustomers.length}
             </span>
+            </div>
           </div>
 
           {/* Customer Ledger Accounts List */}

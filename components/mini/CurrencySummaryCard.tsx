@@ -16,14 +16,14 @@ export default function CurrencySummaryCard({
 
   return (
     <div
-      className={`flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-surface border border-surface-border shadow-sm hover:border-surface-border/80 transition-all ${className}`}
+      className={`flex flex-col justify-between p-3.5 sm:p-4 rounded bg-surface border border-surface-border shadow-sm hover:border-surface-border/80 transition-all ${className}`}
     >
       {/* Currency and net position */}
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs sm:text-sm font-semibold text-content-secondary tracking-wider">
           {summary.currency}
         </span>
-        <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-credit-500/15 text-credit border border-credit-500/25 uppercase">
+        <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-credit-500/15 text-credit border border-credit-500/25 uppercase">
           {summary.badge}
         </span>
       </div>
