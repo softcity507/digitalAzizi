@@ -9,7 +9,7 @@ import { AppUser } from '@/types/auth';
 
 const DEFAULT_ADMIN = process.env.NEXT_PUBLIC_APP_ADMIN_EMAIL || 'developai507@gmail.com';
 const SUBSCRIPTION_RETRY_KEY = 'digitalazizi_subscription_retry';
-const RETRY_WAIT_MS = 5 * 60 * 1000;
+const RETRY_WAIT_MS = 1 * 60 * 1000;
 interface GoogleLoginProps {
   className?: string;
   label?: string;
