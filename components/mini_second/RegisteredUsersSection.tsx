@@ -43,7 +43,7 @@ export default function RegisteredUsersSection() {
           className="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left hover:bg-surface-hover/40 transition-colors cursor-pointer group"
         >
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-sm shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-credit-subtle border border-credit/30 flex items-center justify-center text-credit font-bold text-sm shrink-0">
               {defaultUser?.name ? defaultUser.name.charAt(0).toUpperCase() : 'U'}
             </div>
             <div className="min-w-0 space-y-0.5">
@@ -51,7 +51,7 @@ export default function RegisteredUsersSection() {
                 <h4 className="text-xs sm:text-sm font-bold text-content-primary truncate">
                   {defaultUser?.name}
                 </h4>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md border bg-emerald-500/15 text-emerald-400 border-emerald-500/20">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md border bg-credit-subtle text-credit border-credit/20">
                   {defaultUser?.roleTag || t('active')}
                 </span>
               </div>
@@ -93,7 +93,7 @@ export default function RegisteredUsersSection() {
                     <div
                       className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 border ${
                         user.isDefault
-                          ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                          ? 'bg-credit-subtle text-credit border-credit/30'
                           : 'bg-surface border-surface-border text-content-muted'
                       }`}
                     >
@@ -107,7 +107,7 @@ export default function RegisteredUsersSection() {
                         <span
                           className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md border ${
                             user.isDefault
-                              ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20'
+                              ? 'bg-credit-subtle text-credit border-credit/20'
                               : 'bg-surface text-content-muted border-surface-border'
                           }`}
                         >
@@ -120,7 +120,7 @@ export default function RegisteredUsersSection() {
 
                   <div className="shrink-0">
                     {user.isDefault ? (
-                      <span className="text-xs font-bold text-emerald-400 font-mono px-2 py-1">
+                      <span className="text-xs font-bold text-credit font-mono px-2 py-1">
                         {t('active')}
                       </span>
                     ) : (

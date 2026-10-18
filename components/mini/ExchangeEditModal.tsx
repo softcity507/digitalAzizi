@@ -121,7 +121,7 @@ export default function ExchangeEditModal() {
                 onClick={() => setType('BUY')}
                 className={`py-2 rounded-xl text-xs font-black transition-all border ${
                   type === 'BUY'
-                    ? 'bg-[#38bdf8]/20 border-[#38bdf8] text-[#38bdf8]'
+                    ? 'bg-brand-subtle border-brand text-brand'
                     : 'bg-surface-input border-surface-border text-slate-400'
                 }`}
               >
@@ -132,7 +132,7 @@ export default function ExchangeEditModal() {
                 onClick={() => setType('SELL')}
                 className={`py-2 rounded-xl text-xs font-black transition-all border ${
                   type === 'SELL'
-                    ? 'bg-[#fda4af] text-black font-black border-[#fda4af]'
+                    ? 'bg-surface-active text-content-primary font-black border-surface-border'
                     : 'bg-surface-input border-surface-border text-slate-400'
                 }`}
               >
@@ -186,7 +186,7 @@ export default function ExchangeEditModal() {
                   onClick={() => setCalcMode('multiply')}
                   className={`px-2 py-0.5 text-[11px] font-bold rounded transition-all ${
                     calcMode === 'multiply'
-                      ? 'bg-[#38bdf8] text-black font-extrabold shadow-sm'
+                      ? 'bg-brand text-brand-foreground font-extrabold shadow-sm'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -197,7 +197,7 @@ export default function ExchangeEditModal() {
                   onClick={() => setCalcMode('divide')}
                   className={`px-2 py-0.5 text-[11px] font-bold rounded transition-all ${
                     calcMode === 'divide'
-                      ? 'bg-[#38bdf8] text-black font-extrabold shadow-sm'
+                      ? 'bg-brand text-brand-foreground font-extrabold shadow-sm'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >

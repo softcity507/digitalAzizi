@@ -30,7 +30,7 @@ export default function CashBookSearch() {
       <div className="relative w-full">
         <div className="relative flex items-center">
           {/* Search Icon */}
-          <div className="absolute left-4 rtl:left-auto rtl:right-4 flex items-center pointer-events-none text-slate-400">
+          <div className="absolute left-4 rtl:left-auto rtl:right-4 flex items-center pointer-events-none text-content-tertiary">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -83,7 +83,7 @@ export default function CashBookSearch() {
             onClick={() => setSelectedCustomerId(null)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
               selectedCustomerId === null
-                ? 'bg-brand text-slate-950 border-brand shadow-sm font-extrabold'
+                ? 'bg-surface-active text-content-primary border-surface-border shadow-sm font-extrabold'
                 : 'bg-surface-subtle hover:bg-surface-hover text-content-muted hover:text-content-primary border-surface-border'
             }`}
           >
@@ -92,7 +92,7 @@ export default function CashBookSearch() {
             <span
               className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-extrabold ${
                 selectedCustomerId === null
-                  ? 'bg-slate-950/20 text-slate-950'
+                  ? 'bg-surface-subtle text-content-primary'
                   : 'bg-surface border border-surface-border text-content-muted'
               }`}
             >
@@ -110,7 +110,7 @@ export default function CashBookSearch() {
                 onClick={() => handleSelectCustomer(cust.id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
                   isSelected
-                    ? 'bg-sky-400 text-slate-950 border-sky-400 shadow-sm font-extrabold ring-1 ring-sky-400'
+                    ? 'bg-surface-active text-content-primary border-surface-border shadow-sm font-extrabold ring-1 ring-surface-border'
                     : 'bg-surface-subtle hover:bg-surface-hover text-content-secondary hover:text-content-primary border-surface-border'
                 }`}
               >

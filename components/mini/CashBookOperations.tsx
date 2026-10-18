@@ -23,8 +23,8 @@ export default function CashBookOperations() {
         message: modal === 'exchange'
           ? 'Add at least two customers before transferring between customers.'
           : 'Add a customer before recording cash in or cash out.',
-        backgroundColor: '#2563eb',
-        textColor: '#ffffff',
+        backgroundColor: 'var(--brand)',
+        textColor: 'var(--brand-foreground)',
       });
       return;
     }
@@ -38,7 +38,7 @@ export default function CashBookOperations() {
         <button
           type="button"
           onClick={() => openCustomerOperation('cash_out')}
-          className="h-12 sm:h-14 rounded-2xl bg-[#fda4af] hover:bg-[#f87171] active:scale-[0.98] text-black font-extrabold text-xs sm:text-sm tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1.5 text-center px-2 cursor-pointer select-none group"
+          className="h-12 sm:h-14 rounded-2xl bg-debit-btn hover:bg-debit-hover active:scale-[0.98] text-debit-foreground font-extrabold text-xs sm:text-sm tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1.5 text-center px-2 cursor-pointer select-none group"
         >
           <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center font-black text-xs shrink-0">-</span>
           <span className="truncate">{t('cashOutBtn')}</span>
@@ -48,7 +48,7 @@ export default function CashBookOperations() {
         <button
           type="button"
           onClick={() => openCustomerOperation('exchange')}
-          className="h-12 sm:h-14 rounded-2xl bg-[#38bdf8] hover:bg-[#0ea5e9] active:scale-[0.98] text-black font-extrabold text-xs sm:text-sm tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1.5 text-center px-2 cursor-pointer select-none group"
+          className="h-12 sm:h-14 rounded-2xl bg-surface-active hover:bg-surface-hover active:scale-[0.98] text-content-primary font-extrabold text-xs sm:text-sm tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1.5 text-center px-2 cursor-pointer select-none group"
         >
           <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center font-black text-xs shrink-0">⇄</span>
           <span className="truncate">{t('transferBtn')}</span>
@@ -58,7 +58,7 @@ export default function CashBookOperations() {
         <button
           type="button"
           onClick={() => openCustomerOperation('cash_in')}
-          className="h-12 sm:h-14 rounded-2xl bg-[#34d399] hover:bg-[#10b981] active:scale-[0.98] text-black font-extrabold text-xs sm:text-sm tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1.5 text-center px-2 cursor-pointer select-none group"
+          className="h-12 sm:h-14 rounded-2xl bg-credit-btn hover:bg-credit-hover active:scale-[0.98] text-credit-foreground font-extrabold text-xs sm:text-sm tracking-tight transition-all duration-150 shadow-md flex items-center justify-center gap-1.5 text-center px-2 cursor-pointer select-none group"
         >
           <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center font-black text-xs shrink-0">+</span>
           <span className="truncate">{t('cashInBtn')}</span>

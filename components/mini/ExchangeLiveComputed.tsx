@@ -45,7 +45,7 @@ export default function ExchangeLiveComputed() {
           </span>
           <span>{rate}</span>
           <span className="text-slate-400 dark:text-slate-500 mx-1">=</span>
-          <span className="text-[#38bdf8] font-black">{computedGetAmount.toLocaleString()} {getCurrency}</span>
+          <span className="text-brand font-black">{computedGetAmount.toLocaleString()} {getCurrency}</span>
         </div>
       </div>
 

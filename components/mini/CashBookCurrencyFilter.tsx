@@ -27,7 +27,7 @@ export default function CashBookCurrencyFilter() {
               onClick={() => setFilterCurrency(item.value)}
               className={`flex-1 sm:flex-initial px-3 sm:px-4 py-1.5 rounded-xl text-xs md:text-sm font-bold transition-all duration-200 text-center ${
                 isActive
-                  ? 'bg-[#38bdf8] text-black shadow-glow-brand font-extrabold'
+                  ? 'bg-surface-active text-content-primary shadow-sm font-extrabold'
                   : 'text-content-muted hover:text-content-primary hover:bg-surface-hover'
               }`}
             >
@@ -38,7 +38,7 @@ export default function CashBookCurrencyFilter() {
       </div>
 
       {/* Right accent line / indicator */}
-      <div className="w-8 h-1 rounded-full bg-slate-700/60 hidden sm:block shrink-0" />
+      <div className="w-8 h-1 rounded-full bg-surface-active hidden sm:block shrink-0" />
     </div>
   );
 }

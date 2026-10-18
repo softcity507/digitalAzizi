@@ -86,7 +86,7 @@ export default function ExchangeAmountInput() {
                 onClick={() => setGiveCurrency(curr)}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-black tracking-wider transition-all duration-150 cursor-pointer ${
                   isSelected
-                    ? 'bg-[#38bdf8] text-black shadow-md shadow-[#38bdf8]/30 scale-105'
+                    ? 'bg-brand text-brand-foreground shadow-md shadow-brand/30 scale-105'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-surface-hover'
                 }`}
               >

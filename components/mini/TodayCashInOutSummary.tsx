@@ -34,13 +34,13 @@ export default function TodayCashInOutSummary() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
       {/* Today Cash In Card */}
-      <div className="bg-surface/90 rounded-3xl p-4 sm:p-5 border border-surface-border shadow-md space-y-3 hover:border-emerald-500/30 transition-colors">
+      <div className="bg-surface/90 rounded-3xl p-4 sm:p-5 border border-surface-border shadow-md space-y-3 hover:border-credit/30 transition-colors">
         <div className="flex items-center justify-between">
-          <h3 className="text-xs sm:text-sm font-bold text-[#34d399] tracking-tight flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#34d399]" />
+          <h3 className="text-xs sm:text-sm font-bold text-credit-text tracking-tight flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-credit" />
             <span>{t('todayCashIn')}</span>
           </h3>
-          <span className="text-[10px] uppercase font-bold text-[#34d399] bg-[#34d399]/10 px-2 py-0.5 rounded-md">
+          <span className="text-[10px] uppercase font-bold text-credit-text bg-credit-subtle px-2 py-0.5 rounded-md">
             + Cr
           </span>
         </div>
@@ -50,8 +50,8 @@ export default function TodayCashInOutSummary() {
             const amount = cashIn[currency] ?? 0;
             return (
               <div key={currency} className="flex items-center justify-between text-xs sm:text-sm">
-                <span className="text-slate-400 font-semibold">{currency}</span>
-                <span className={`font-mono font-bold tracking-tight ${amount > 0 ? 'text-[#34d399]' : 'text-slate-500'}`}>
+                <span className="text-content-tertiary font-semibold">{currency}</span>
+                <span className={`font-mono font-bold tracking-tight ${amount > 0 ? 'text-credit-text' : 'text-content-muted'}`}>
                   {formatPlusAmount(amount, currency)}
                 </span>
               </div>
@@ -61,13 +61,13 @@ export default function TodayCashInOutSummary() {
       </div>
 
       {/* Today Cash Out Card */}
-      <div className="bg-surface/90 rounded-3xl p-4 sm:p-5 border border-surface-border shadow-md space-y-3 hover:border-rose-500/30 transition-colors">
+      <div className="bg-surface/90 rounded-3xl p-4 sm:p-5 border border-surface-border shadow-md space-y-3 hover:border-debit/30 transition-colors">
         <div className="flex items-center justify-between">
-          <h3 className="text-xs sm:text-sm font-bold text-[#fda4af] tracking-tight flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#fda4af]" />
+          <h3 className="text-xs sm:text-sm font-bold text-debit-text tracking-tight flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-debit" />
             <span>{t('todayCashOut')}</span>
           </h3>
-          <span className="text-[10px] uppercase font-bold text-[#fda4af] bg-[#fda4af]/10 px-2 py-0.5 rounded-md">
+          <span className="text-[10px] uppercase font-bold text-debit-text bg-debit-subtle px-2 py-0.5 rounded-md">
             - Dr
           </span>
         </div>
@@ -77,8 +77,8 @@ export default function TodayCashInOutSummary() {
             const amount = cashOut[currency] ?? 0;
             return (
               <div key={currency} className="flex items-center justify-between text-xs sm:text-sm">
-                <span className="text-slate-400 font-semibold">{currency}</span>
-                <span className={`font-mono font-bold tracking-tight ${amount > 0 ? 'text-[#f87171]' : 'text-slate-500'}`}>
+                <span className="text-content-tertiary font-semibold">{currency}</span>
+                <span className={`font-mono font-bold tracking-tight ${amount > 0 ? 'text-debit-text' : 'text-content-muted'}`}>
                   {formatMinusAmount(amount, currency)}
                 </span>
               </div>

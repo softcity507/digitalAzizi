@@ -39,7 +39,7 @@ export default function RecycleBinSection() {
         </span>
       </div>
 
-      {error && <p role="alert" className="text-[11px] text-red-500">{error}</p>}
+      {error && <p role="alert" className="text-[11px] text-debit-text">{error}</p>}
       {recycledBusinesses.length === 0 && visibleRecycledCustomers.length === 0 ? (
         <p className="text-xs text-content-muted">{t('recycleBinEmpty')}</p>
       ) : (
@@ -49,14 +49,14 @@ export default function RecycleBinSection() {
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
                   <h4 className="truncate text-sm font-bold text-content-primary">{business.name}</h4>
-                  <span className="shrink-0 rounded-md border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[9px] font-semibold text-amber-500">{t('deleted')}</span>
+                  <span className="shrink-0 rounded-md border border-exchange/20 bg-exchange-subtle px-2 py-0.5 text-[9px] font-semibold text-exchange">{t('deleted')}</span>
                 </div>
-                <button type="button" onClick={() => void restore('business', business.id)} disabled={restoringId !== null} className="flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold text-sky-500 hover:bg-sky-500/10 disabled:opacity-50">
+                <button type="button" onClick={() => void restore('business', business.id)} disabled={restoringId !== null} className="flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold text-brand hover:bg-brand-hover/10 disabled:opacity-50">
                   <RotateCcw className="h-3 w-3" /> {t('restore')}
                 </button>
               </div>
               <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-surface-border/60 pt-2">
-                <span className="rounded-md border border-sky-400/20 bg-sky-400/10 px-2 py-0.5 text-[10px] font-bold text-sky-400">
+                <span className="rounded-md border border-brand/20 bg-brand/10 px-2 py-0.5 text-[10px] font-bold text-brand">
                   {t('customerCount', { count: business.customerCount ?? 0 })}
                 </span>
                 <div className="flex items-center gap-1.5">
@@ -73,7 +73,7 @@ export default function RecycleBinSection() {
                 <p className="truncate text-xs font-semibold text-content-primary">{customer.name} <span className="font-normal text-content-muted">· {t('customer')} · {businesses.find((business) => business.id === customer.businessId)?.name ?? t('unknownBusiness')}</span></p>
                 <div className="mt-1 flex flex-wrap gap-1">{customer.balances.slice(0, 3).map((balance) => <span key={balance.currency} className="rounded border border-surface-border px-1.5 py-0.5 text-[9px] font-mono text-content-muted">{balance.currency}: {balance.amount}</span>)}</div>
               </div>
-              <button type="button" onClick={() => void restore('customer', customer.id)} disabled={restoringId !== null} className="flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold text-sky-500 hover:bg-sky-500/10 disabled:opacity-50">
+              <button type="button" onClick={() => void restore('customer', customer.id)} disabled={restoringId !== null} className="flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold text-brand hover:bg-brand-hover/10 disabled:opacity-50">
                 <RotateCcw className="h-3 w-3" /> {t('restore')}
               </button>
             </div>

@@ -62,7 +62,7 @@ export default function CashBookDateBar() {
           onClick={() => dateInputRef.current?.showPicker?.() || dateInputRef.current?.click()}
           className="w-full h-11 px-3 sm:px-5 rounded-2xl bg-surface hover:bg-surface-hover active:bg-surface-active border border-surface-border/80 text-center flex items-center justify-center gap-2 text-xs sm:text-sm md:text-base font-semibold text-content-primary transition-all shadow-sm group"
         >
-          <svg className="w-4 h-4 text-[#38bdf8] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-content-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
           <span className="whitespace-nowrap text-[11px] sm:text-sm">{formatDateDisplay(selectedDate)}</span>
@@ -85,7 +85,7 @@ export default function CashBookDateBar() {
         <button
           type="button"
           onClick={setToday}
-          className="hidden sm:inline-flex items-center px-2.5 h-11 rounded-2xl bg-[#38bdf8]/10 hover:bg-[#38bdf8]/20 border border-[#38bdf8]/30 text-xs font-bold text-[#38bdf8] transition-all shrink-0"
+          className="hidden sm:inline-flex items-center px-2.5 h-11 rounded-2xl bg-surface-active hover:bg-surface-hover border border-surface-border text-xs font-bold text-content-primary transition-all shrink-0"
         >
           {t('today')}
         </button>

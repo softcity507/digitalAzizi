@@ -45,7 +45,7 @@ export default function ExchangeRateInput() {
             onClick={() => setCalcMode('multiply')}
             className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all duration-150 flex items-center gap-1 ${
               calcMode === 'multiply'
-                ? 'bg-[#38bdf8] text-black font-extrabold shadow-sm'
+                ? 'bg-brand text-brand-foreground font-extrabold shadow-sm'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -57,7 +57,7 @@ export default function ExchangeRateInput() {
             onClick={() => setCalcMode('divide')}
             className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all duration-150 flex items-center gap-1 ${
               calcMode === 'divide'
-                ? 'bg-[#38bdf8] text-black font-extrabold shadow-sm'
+                ? 'bg-brand text-brand-foreground font-extrabold shadow-sm'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -71,7 +71,7 @@ export default function ExchangeRateInput() {
           type="button"
           onClick={swapCurrencies}
           title={t('swapCurrencies')}
-          className="text-[#38bdf8] hover:text-[#7dd3fc] flex items-center gap-1 font-bold text-xs lowercase first-letter:uppercase transition-colors"
+          className="text-brand hover:text-brand-hover flex items-center gap-1 font-bold text-xs lowercase first-letter:uppercase transition-colors"
         >
           <span>{t('swapCurrencies')}</span>
           <span className="text-sm">⇄</span>
@@ -107,7 +107,7 @@ export default function ExchangeRateInput() {
                 onClick={() => setGetCurrency(curr)}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-black tracking-wider transition-all duration-150 cursor-pointer ${
                   isSelected
-                    ? 'bg-[#38bdf8] text-black shadow-md shadow-[#38bdf8]/30 scale-105'
+                    ? 'bg-brand text-brand-foreground shadow-md shadow-brand/30 scale-105'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-surface-hover'
                 }`}
               >

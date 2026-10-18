@@ -32,7 +32,7 @@ export default function SignOutSection() {
         type="button"
         onClick={handleSignOut}
         disabled={isLoggingOut}
-        className="w-full py-3.5 px-4 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs sm:text-sm tracking-wide transition-all shadow-md active:scale-[0.99] cursor-pointer text-center disabled:opacity-50"
+        className="w-full py-3.5 px-4 rounded-2xl bg-debit-btn hover:bg-debit-hover text-debit-foreground font-bold text-xs sm:text-sm tracking-wide transition-all shadow-md active:scale-[0.99] cursor-pointer text-center disabled:opacity-50"
       >
         {isLoggingOut ? <MiniLoader size="xs" variant="white" text="Signing out..." /> : t('signOutButton')}
       </button>

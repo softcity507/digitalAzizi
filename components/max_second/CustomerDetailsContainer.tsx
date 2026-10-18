@@ -26,7 +26,7 @@ export default function CustomerDetailsContainer() {
   const searchParams = useSearchParams();
   const urlParamId = searchParams.get('id');
 
-  // const { selectedCustomerId, setSelectedCustomerId } = useCustomerDetailsStore();
+  const setSelectedCustomerId = useCustomerDetailsStore((state) => state.setSelectedCustomerId);
   const { setDefaultUser } = useSettingsStore();
   const { setCustomerId } = useExchangeDeskStore();
   const fetchBusinesses = useSettingsStore((state) => state.fetchBusinesses);
@@ -59,7 +59,7 @@ export default function CustomerDetailsContainer() {
           return;
         }
 
-        // setSelectedCustomerId(customer.id);
+        setSelectedCustomerId(customer.id);
         setDefaultUser(customer.id);
         setCustomerId(customer.id);
         await fetchTransactions();
@@ -82,11 +82,11 @@ export default function CustomerDetailsContainer() {
     return () => {
       isCurrent = false;
     };
-  }, [urlParamId, locale, router, fetchBusinesses, fetchTransactions, fetchCustomerCashTransactions, setDefaultUser, setCustomerId]);
+  }, [urlParamId, locale, router, fetchBusinesses, fetchTransactions, fetchCustomerCashTransactions, setDefaultUser, setCustomerId, setSelectedCustomerId]);
 
   if (accessState === 'checking') {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center">
+      <div className="flex min-h-[50vh] items-center justify-center bg-canvas text-content-primary">
         <MiniLoader size="md" variant="brand" text="Verifying customer access..." />
       </div>
     );
@@ -94,9 +94,9 @@ export default function CustomerDetailsContainer() {
 
   if (accessState === 'error') {
     return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 px-4 text-center">
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 px-4 text-center bg-canvas text-content-primary">
         <p className="text-sm text-content-secondary">Unable to verify this customer. Please return to the customer list and try again.</p>
-        <Link href={`/${locale}/customers`} className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white">
+        <Link href={`/${locale}/customers`} className="rounded-xl bg-brand hover:bg-brand-hover px-4 py-2 text-sm font-semibold text-brand-foreground">
           {navigationT('customers')}
         </Link>
       </div>
@@ -104,7 +104,7 @@ export default function CustomerDetailsContainer() {
   }
 
   return (
-    <div className="w-full max-w-7xl 2xl:max-w-375 mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 space-y-5 sm:space-y-6 pb-28 sm:pb-20 transition-colors duration-200">
+    <div className="w-full max-w-7xl 2xl:max-w-375 mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 space-y-5 sm:space-y-6 pb-28 sm:pb-20 bg-canvas text-content-primary transition-colors duration-200">
       <Link
         href={`/${locale}/customers`}
         className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-content-secondary hover:text-content-primary hover:bg-surface-hover transition-colors"

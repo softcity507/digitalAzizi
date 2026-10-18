@@ -20,10 +20,10 @@
   --text-muted: #64748b;
   --text-inverse: #ffffff;
 
-  --brand: #0284c7;
-  --brand-hover: #0369a1;
-  --brand-active: #075985;
-  --brand-subtle: #e0f2fe;
+  --brand: #059669;
+  --brand-hover: #047857;
+  --brand-active: #065f46;
+  --brand-subtle: #ecfdf5;
   --brand-foreground: #ffffff;
 
   --credit: #10b981;
@@ -40,8 +40,8 @@
   --debit-subtle: #fef2f2;
   --debit-foreground: #ffffff;
 
-  --exchange: #d97706;
-  --exchange-subtle: #fef3c7;
+  --exchange: #047857;
+  --exchange-subtle: #d1fae5;
   --whatsapp-surface: #dcfce7;
   --whatsapp-surface-hover: #bbf7d0;
   --whatsapp-text: #166534;
@@ -74,10 +74,10 @@
   --text-muted: #475569;
   --text-inverse: #000000;
 
-  --brand: #38bdf8;
-  --brand-hover: #0ea5e9;
-  --brand-active: #0284c7;
-  --brand-subtle: rgba(56, 189, 248, 0.15);
+  --brand: #34d399;
+  --brand-hover: #10b981;
+  --brand-active: #059669;
+  --brand-subtle: rgba(52, 211, 153, 0.15);
   --brand-foreground: #000000;
 
   --credit: #34d399;
@@ -94,8 +94,8 @@
   --debit-subtle: rgba(248, 113, 113, 0.15);
   --debit-foreground: #000000;
 
-  --exchange: #facc15;
-  --exchange-subtle: rgba(250, 204, 21, 0.15);
+  --exchange: #34d399;
+  --exchange-subtle: rgba(52, 211, 153, 0.15);
   --whatsapp-surface: #064e3b;
   --whatsapp-surface-hover: #065f46;
   --whatsapp-text: #d1fae5;

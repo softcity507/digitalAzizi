@@ -221,7 +221,7 @@ export default function BusinessProfilesSection() {
           onClick={() => setIsAdding(!isAdding)}
           disabled={!isAdding && !canCreateBusiness}
           title={!canCreateBusiness ? `Free trial limit: ${FREE_TRIAL_LIMITS.businesses} businesses` : undefined}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-400 hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 text-xs font-bold shadow-sm transition-all cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand hover:bg-brand-hover disabled:opacity-50 disabled:cursor-not-allowed text-brand-foreground text-xs font-bold shadow-sm transition-all cursor-pointer"
         >
           {isAdding ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
           <span>{isAdding ? t('cancel') : t('addNewBusiness')}</span>
@@ -229,7 +229,7 @@ export default function BusinessProfilesSection() {
       </div>
 
       {databaseError && (
-        <p role="alert" className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-400">
+        <p role="alert" className="rounded-lg border border-debit/30 bg-debit-subtle px-3 py-2 text-xs text-debit-text">
           {databaseError}
         </p>
       )}
@@ -238,10 +238,10 @@ export default function BusinessProfilesSection() {
       {isAdding && (
         <form
           onSubmit={handleCreateBusiness}
-          className="w-full bg-surface border-2 border-sky-400/40 rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-lg animate-in fade-in slide-in-from-top-2 duration-200"
+          className="w-full bg-surface border-2 border-brand/40 rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-lg animate-in fade-in slide-in-from-top-2 duration-200"
         >
           <div className="flex items-center justify-between pb-1 border-b border-surface-border">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-sky-400">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-brand">
               {t('createNewBusiness')}
             </h4>
             <span className="text-[10px] text-content-muted">
@@ -261,7 +261,7 @@ export default function BusinessProfilesSection() {
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder={t('businessPlaceholder')}
                 required
-                className="w-full px-3 py-2 text-xs sm:text-sm font-bold bg-surface-subtle border border-surface-border rounded-xl text-content-primary focus:outline-none focus:ring-1 focus:ring-sky-400"
+                className="w-full px-3 py-2 text-xs sm:text-sm font-bold bg-surface-subtle border border-surface-border rounded-xl text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
 
@@ -275,7 +275,7 @@ export default function BusinessProfilesSection() {
                 value={newSubtitle}
                 onChange={(e) => setNewSubtitle(e.target.value)}
                 placeholder={t('businessDescPlaceholder')}
-                className="w-full px-3 py-2 text-xs sm:text-sm bg-surface-subtle border border-surface-border rounded-xl text-content-primary focus:outline-none focus:ring-1 focus:ring-sky-400"
+                className="w-full px-3 py-2 text-xs sm:text-sm bg-surface-subtle border border-surface-border rounded-xl text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
 
@@ -283,7 +283,7 @@ export default function BusinessProfilesSection() {
             <div className="space-y-1.5 pt-1">
               <div className="flex items-center justify-between text-xs font-semibold text-content-muted">
                 <span>{t('dealCurrencies')} ({newCurrencies.length}/3)</span>
-                <span className="text-[10px] text-slate-400">{t('clickToToggle')}</span>
+                <span className="text-[10px] text-content-tertiary">{t('clickToToggle')}</span>
               </div>
               <div className="grid grid-cols-5 gap-1.5">
                 {AVAILABLE_CURRENCIES.map((curr) => {
@@ -294,7 +294,7 @@ export default function BusinessProfilesSection() {
                       key={curr}
                       onClick={() => toggleNewCurrency(curr)}
                       className={`py-1.5 px-2 rounded-lg text-xs font-bold border transition-all cursor-pointer ${isSelected
-                          ? 'bg-sky-400 text-slate-950 border-sky-400 font-extrabold shadow-sm scale-[1.02]'
+                          ? 'bg-brand text-brand-foreground border-brand font-extrabold shadow-sm scale-[1.02]'
                           : 'bg-surface-subtle text-content-muted border-surface-border hover:text-content-primary'
                         }`}
                     >
@@ -318,7 +318,7 @@ export default function BusinessProfilesSection() {
             <button
               type="submit"
               disabled={isCreating || !newName.trim() || newCurrencies.length !== 3}
-              className="px-4 py-1.5 rounded-xl bg-sky-400 hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold text-slate-950 shadow-sm transition-all cursor-pointer flex items-center gap-1.5"
+              className="px-4 py-1.5 rounded-xl bg-brand hover:bg-brand-hover disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold text-brand-foreground shadow-sm transition-all cursor-pointer flex items-center gap-1.5"
             >
               {isCreating ? (
                 <>
@@ -342,7 +342,7 @@ export default function BusinessProfilesSection() {
           return (
             <div
               key={b.id}
-              className={`w-full bg-surface border rounded-2xl p-4 sm:p-5 space-y-3 shadow-sm transition-all ${b.isActive ? 'border-emerald-500/40 ring-1 ring-emerald-500/20' : 'border-surface-border'
+              className={`w-full bg-surface border rounded-2xl p-4 sm:p-5 space-y-3 shadow-sm transition-all ${b.isActive ? 'border-credit/40 ring-1 ring-credit/20' : 'border-surface-border'
                 }`}
             >
               <div className="flex items-start justify-between gap-2">
@@ -355,7 +355,7 @@ export default function BusinessProfilesSection() {
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
                         placeholder={t('businessName')}
-                        className="w-full px-2.5 py-1.5 text-sm font-bold bg-surface-subtle border border-surface-border rounded-lg text-content-primary focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        className="w-full px-2.5 py-1.5 text-sm font-bold bg-surface-subtle border border-surface-border rounded-lg text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
                         autoFocus
                       />
                       <input
@@ -363,7 +363,7 @@ export default function BusinessProfilesSection() {
                         value={editSubtitle}
                         onChange={(e) => setEditSubtitle(e.target.value)}
                         placeholder={t('subtitle')}
-                        className="w-full px-2.5 py-1 text-xs bg-surface-subtle border border-surface-border rounded-lg text-content-muted focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        className="w-full px-2.5 py-1 text-xs bg-surface-subtle border border-surface-border rounded-lg text-content-muted focus:outline-none focus:ring-1 focus:ring-brand"
                       />
                     </div>
                   ) : (
@@ -372,7 +372,7 @@ export default function BusinessProfilesSection() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <h4 className="text-sm sm:text-base font-bold text-content-primary">{b.name}</h4>
                         {b.isActive ? (
-                          <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+                          <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-credit-subtle text-credit border border-credit/20 flex items-center gap-1">
                             <Check className="w-3 h-3" />
                             <span>{t('defaultActive')}</span>
                           </span>
@@ -396,7 +396,7 @@ export default function BusinessProfilesSection() {
                         type="button"
                         onClick={() => handleSaveEdit(b.id)}
                         title={t('save')}
-                        className="p-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 transition-colors cursor-pointer"
+                        className="p-2 rounded-xl bg-credit-subtle hover:bg-credit/25 border border-credit/30 text-credit transition-colors cursor-pointer"
                       >
                         <Check className="w-4 h-4" />
                       </button>
@@ -418,7 +418,7 @@ export default function BusinessProfilesSection() {
                           type="button"
                           onClick={() => void handleSetActive(b.id)}
                           title={t('setDefault')}
-                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface-subtle hover:bg-emerald-500/15 hover:text-emerald-400 hover:border-emerald-500/30 border border-surface-border text-content-secondary text-xs font-semibold transition-colors cursor-pointer"
+                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface-subtle hover:bg-credit-subtle hover:text-credit hover:border-credit/30 border border-surface-border text-content-secondary text-xs font-semibold transition-colors cursor-pointer"
                         >
                           <ArrowRightLeft className="w-3.5 h-3.5" />
                           <span className="hidden sm:inline">{t('setDefault')}</span>
@@ -440,7 +440,7 @@ export default function BusinessProfilesSection() {
                           type="button"
                           onClick={() => setDeleteId(b.id)}
                           title={t('deleteBusiness')}
-                          className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 transition-colors cursor-pointer"
+                          className="p-2 rounded-xl bg-debit-subtle hover:bg-debit/20 border border-debit/20 text-debit-text transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -455,7 +455,7 @@ export default function BusinessProfilesSection() {
                   <span className="text-[10px] font-bold tracking-wider uppercase text-content-muted">
                     {t('currenciesSupported')}
                   </span>
-                  <span className="text-[10px] font-bold text-sky-400 bg-sky-400/10 px-2 py-0.5 rounded-md border border-sky-400/20">
+                  <span className="text-[10px] font-bold text-brand bg-brand/10 px-2 py-0.5 rounded-md border border-brand/20">
                     {t('customersCount', { count: customers.filter((c) => c.businessId === b.id && !c.isSystemDefault).length })}
                   </span>
                 </div>
@@ -480,7 +480,7 @@ export default function BusinessProfilesSection() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
           <div className="w-full max-w-sm bg-surface border border-surface-border rounded-2xl p-5 space-y-4 shadow-xl animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400">
+              <div className="p-2.5 rounded-xl bg-debit-subtle border border-debit/30 text-debit-text">
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <div>
@@ -500,7 +500,7 @@ export default function BusinessProfilesSection() {
               <button
                 type="button"
                 onClick={confirmDelete}
-                className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-xs font-semibold text-white transition-colors cursor-pointer shadow-sm"
+                className="px-4 py-2 rounded-xl bg-debit-btn hover:bg-debit-hover text-xs font-semibold text-debit-foreground transition-colors cursor-pointer shadow-sm"
               >
                 {t('delete')}
               </button>
@@ -524,7 +524,7 @@ export default function BusinessProfilesSection() {
                 type="button"
                 onClick={() => void verifyWithBiometric()}
                 disabled={verifying}
-                className="w-full rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                className="w-full rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground disabled:opacity-50"
               >
                 {verifying ? 'Verifying…' : 'Verify with fingerprint / device key'}
               </button>
@@ -551,7 +551,7 @@ export default function BusinessProfilesSection() {
               </form>
             )}
 
-            {databaseError && <p role="alert" className="text-xs text-red-400">{databaseError}</p>}
+            {databaseError && <p role="alert" className="text-xs text-debit-text">{databaseError}</p>}
             <button
               type="button"
               onClick={() => { setVerification(null); setVerificationPin(''); }}

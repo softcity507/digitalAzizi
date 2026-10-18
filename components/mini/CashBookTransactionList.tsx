@@ -28,9 +28,9 @@ export default function CashBookTransactionList() {
     <div className="w-full space-y-2.5">
       {/* Active Customer Filter Banner (if a customer is selected) */}
       {activeCustomer && (
-        <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-sky-400/10 border border-sky-400/25 text-xs text-sky-400">
+        <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-surface-active border border-surface-border text-xs text-content-primary">
           <div className="flex items-center gap-2">
-            <User className="w-4 h-4 text-sky-400" />
+            <User className="w-4 h-4 text-content-primary" />
             <span>
               {t('showingFor')} <strong className="font-bold text-content-primary">{activeCustomer.name}</strong>
               {activeCustomer.subtitle && <span className="text-content-muted ml-1">({activeCustomer.subtitle})</span>}
@@ -52,14 +52,14 @@ export default function CashBookTransactionList() {
         <div className="w-full bg-surface/60 rounded-3xl border border-dashed border-surface-border p-8 sm:p-12 text-center space-y-3.5">
            
           <div className="space-y-1">
-            <div className="text-sm sm:text-base font-bold text-slate-200">
+            <div className="text-sm sm:text-base font-bold text-content-primary">
               {loadedTransactions.length === 0
                 ? t('noTransactionsAll')
                 : activeCustomer
                   ? `${activeCustomer.name} (${selectedDate})`
                   : t('noTransactions')}
             </div>
-            <p className="text-xs sm:text-sm text-slate-400 max-w-sm mx-auto">
+            <p className="text-xs sm:text-sm text-content-muted max-w-sm mx-auto">
               {loadedTransactions.length === 0
                 ? t('noTransactionsDesc')
                 : activeCustomer
@@ -95,7 +95,7 @@ export default function CashBookTransactionList() {
             <button
               type="button"
               onClick={() => openModal('cash_in')}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#34d399] hover:bg-[#10b981] text-slate-950 text-xs font-bold transition-colors cursor-pointer shadow-sm"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-surface-active hover:bg-surface-hover text-content-primary text-xs font-bold transition-colors cursor-pointer shadow-sm"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>{t('recordCashIn')}</span>

@@ -54,7 +54,7 @@ export default function AddCustomerModal() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3.5">
-          {databaseError && <p role="alert" className="text-xs text-red-400">{databaseError}</p>}
+          {databaseError && <p role="alert" className="text-xs text-debit-text">{databaseError}</p>}
           {/* Business Name */}
           <div>
             <label className="block text-xs font-semibold text-content-muted mb-1">{t('businessName')}</label>
@@ -111,7 +111,7 @@ export default function AddCustomerModal() {
               })}
             </div>
             {selectedCurrencies.length !== 3 && (
-              <p className="text-[11px] font-medium text-rose-500">
+              <p className="text-[11px] font-medium text-debit-text">
                 {t('select3Currencies')}
               </p>
             )}
@@ -129,7 +129,7 @@ export default function AddCustomerModal() {
             <button
               type="submit"
               disabled={selectedCurrencies.length !== 3 || !name.trim()}
-              className="w-1/2 h-10 rounded-xl bg-sky-400 hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-bold text-xs cursor-pointer shadow-sm transition-all"
+              className="w-1/2 h-10 rounded-xl bg-brand hover:bg-brand-hover disabled:opacity-50 disabled:cursor-not-allowed text-brand-foreground font-bold text-xs cursor-pointer shadow-sm transition-all"
             >
               {t('save')}
             </button>

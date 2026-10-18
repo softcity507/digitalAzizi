@@ -46,10 +46,10 @@ export default function CashBookTransactionItem({
         <div className="flex items-center min-w-0">
           <div
             className={`px-3 py-1.5 rounded-xl flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 border ${isCashIn
-                ? 'bg-[#34d399]/15 text-[#34d399] border-[#34d399]/30'
+                ? 'bg-credit-subtle text-credit border-credit/30'
                 : isExchange
-                  ? 'bg-[#38bdf8]/15 text-[#38bdf8] border-[#38bdf8]/30'
-                  : 'bg-[#fda4af]/15 text-[#fda4af] border-[#fda4af]/30'
+                  ? 'bg-surface-active text-content-primary border-surface-border'
+                  : 'bg-debit-subtle text-debit border-debit/30'
               }`}
           >
             <span className="truncate max-w-[140px] sm:max-w-[220px]">
@@ -74,15 +74,15 @@ export default function CashBookTransactionItem({
           <div className="text-right rtl:text-left shrink-0">
             <div
               className={`font-mono font-bold text-sm sm:text-base md:text-lg tracking-tight ${isCashIn
-                  ? 'text-[#34d399]'
+                  ? 'text-credit-text'
                   : isExchange
-                    ? 'text-[#38bdf8]'
-                    : 'text-[#fda4af]'
+                    ? 'text-content-primary'
+                    : 'text-debit-text'
                 }`}
             >
               {formatAmount()}
             </div>
-            <div className="text-[10px] sm:text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+            <div className="text-[10px] sm:text-[11px] font-semibold text-content-tertiary uppercase tracking-wider">
               {transaction.currency}
             </div>
           </div>
@@ -94,28 +94,28 @@ export default function CashBookTransactionItem({
         <div className="flex items-center gap-2 flex-wrap min-w-0">
           {/* Type Badge */}
           {isCashIn && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold bg-[#34d399]/15 text-[#34d399] border border-[#34d399]/30 shrink-0">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold bg-credit-subtle text-credit border border-credit/30 shrink-0">
               {t('cashIn')}
             </span>
           )}
           {!isCashIn && !isExchange && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold bg-[#fda4af]/15 text-[#fda4af] border border-[#fda4af]/30 shrink-0">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold bg-debit-subtle text-debit border border-debit/30 shrink-0">
               {t('cashOut')}
             </span>
           )}
           {isExchange && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold bg-[#38bdf8]/15 text-[#38bdf8] border border-[#38bdf8]/30 shrink-0">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold bg-surface-active text-content-primary border border-surface-border shrink-0">
               {t('exchange')}
             </span>
           )}
 
           {/* Time & Voucher Serial */}
-          <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-slate-400">
+          <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-content-muted">
             <span>{transaction.time}</span>
             {transaction.serialNo && (
               <>
                 <span>•</span>
-                <span className="font-mono text-slate-400">{transaction.serialNo}</span>
+                <span className="font-mono text-content-tertiary">{transaction.serialNo}</span>
               </>
             )}
           </div>
@@ -129,7 +129,7 @@ export default function CashBookTransactionItem({
             onClick={() => openModal('edit', transaction)}
             aria-label={t('editTransaction')}
             title={t('editTransaction')}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-[#38bdf8] hover:bg-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-content-tertiary hover:text-content-primary hover:bg-surface-hover transition-colors"
           >
             <svg
               className="w-4 h-4"
@@ -152,7 +152,7 @@ export default function CashBookTransactionItem({
             onClick={() => openModal('delete', null, transaction.id)}
             aria-label={t('deleteTransaction')}
             title={t('deleteTransaction')}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-[#f87171] hover:bg-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-content-tertiary hover:text-debit hover:bg-surface-hover transition-colors"
           >
             <svg
               className="w-4 h-4"
@@ -173,9 +173,9 @@ export default function CashBookTransactionItem({
 
       {/* Bottom Row: Memo snippet if present */}
       {transaction.memo && (
-        <div className="mt-2 pt-2 border-t border-surface-border/40 flex items-center gap-1.5 text-xs text-slate-400">
+        <div className="mt-2 pt-2 border-t border-surface-border/40 flex items-center gap-1.5 text-xs text-content-muted">
           <svg
-            className="w-3.5 h-3.5 text-slate-500 shrink-0"
+            className="w-3.5 h-3.5 text-content-tertiary shrink-0"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -187,7 +187,7 @@ export default function CashBookTransactionItem({
               d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
             />
           </svg>
-          <span className="truncate text-slate-300 font-normal ">
+          <span className="truncate text-content-secondary font-normal ">
             {transaction.memo}
           </span>
         </div>

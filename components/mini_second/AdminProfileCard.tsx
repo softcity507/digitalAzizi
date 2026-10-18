@@ -58,8 +58,8 @@ export default function AdminProfileCard() {
 
   if (databaseError) {
     return (
-      <div className="w-full bg-surface border border-red-500/30 rounded-2xl p-4 sm:p-5">
-        <p className="text-xs text-red-400">{databaseError}</p>
+      <div className="w-full bg-surface border border-debit/30 rounded-2xl p-4 sm:p-5">
+        <p className="text-xs text-debit-text">{databaseError}</p>
       </div>
     );
   }

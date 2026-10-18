@@ -124,11 +124,11 @@ export default function ExchangeCustomerSelect() {
   return (
     <div className="w-full space-y-2 relative" ref={dropdownRef}>
       <div className="flex items-center justify-between">
-        <label className="block text-[11px] font-black tracking-wider uppercase text-slate-500 dark:text-slate-400">
+        <label className="block text-[11px] font-black tracking-wider uppercase text-content-muted">
           {t('customer')}
         </label>
         {searchQuery.trim() && (
-          <span className="text-[10px] font-bold text-brand flex items-center gap-1">
+          <span className="text-[10px] font-bold text-credit-text flex items-center gap-1">
             {isSearching ? (
               <span className="animate-pulse">{t('searching')}</span>
             ) : (
@@ -140,9 +140,9 @@ export default function ExchangeCustomerSelect() {
 
       {/* Search Input Bar Before Selector */}
       <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-content-tertiary">
           {isSearching ? (
-            <svg className="animate-spin h-4 w-4 text-brand" fill="none" viewBox="0 0 24 24">
+            <svg className="animate-spin h-4 w-4 text-credit" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
@@ -158,13 +158,13 @@ export default function ExchangeCustomerSelect() {
           onFocus={() => setIsOpen(true)}
           onChange={(e) => handleSearchChange(e.target.value)}
           placeholder={t('searchCustomerPlaceholder')}
-          className="w-full pl-10 pr-9 py-2 rounded-xl bg-surface-subtle border border-surface-border text-xs sm:text-sm text-content-primary placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand transition-all shadow-inner"
+          className="w-full pl-10 pr-9 py-2 rounded-xl bg-surface-subtle border border-surface-border text-xs sm:text-sm text-content-primary placeholder:text-content-tertiary focus:outline-none focus:ring-1 focus:ring-credit focus:border-credit transition-all shadow-inner"
         />
         {searchQuery && (
           <button
             type="button"
             onClick={() => handleSearchChange('')}
-            className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs font-bold text-slate-400 hover:text-content-primary cursor-pointer"
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs font-bold text-content-tertiary hover:text-content-primary cursor-pointer"
           >
             ✕
           </button>
@@ -180,14 +180,14 @@ export default function ExchangeCustomerSelect() {
         <div className="  flex justify-between items-center gap-2.5 truncate min-w-0">
            
           <div className="truncate">
-            <span className="block text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+            <span className="block text-sm sm:text-base font-bold text-content-primary truncate">
               {selectedCustomer?.name || t('customer')}
             </span>
              
           </div>
 
           <svg
-            className={`w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''
+            className={`w-4 h-4 text-content-tertiary group-hover:text-credit transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''
               }`}
             fill="none"
             stroke="currentColor"
@@ -205,12 +205,12 @@ export default function ExchangeCustomerSelect() {
                 <span
                   key={idx}
                   className={`text-[10px] sm:text-xs font-mono font-extrabold px-2 py-0.5 rounded-lg border whitespace-nowrap ${bal.isCredit
-                    ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-                    : 'text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/20'
+                    ? 'text-credit-text bg-credit-subtle border-credit/20'
+                    : 'text-debit-text bg-debit-subtle border-debit/20'
                     }`}
                 >
                   {bal.amount}{' '}
-                  <span className="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-300">
+                  <span className="text-[9px] uppercase font-bold text-content-tertiary">
                     {bal.currency}
                   </span>
                 </span>
@@ -226,7 +226,7 @@ export default function ExchangeCustomerSelect() {
         <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded-2xl bg-surface border border-surface-border shadow-2xl p-2 space-y-1 max-h-72 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150">
           {isSearching ? (
             <div className="p-6 text-center space-y-2">
-              <div className="w-7 h-7 border-2 border-brand border-t-transparent rounded-full animate-spin mx-auto" />
+              <div className="w-7 h-7 border-2 border-credit border-t-transparent rounded-full animate-spin mx-auto" />
               <p className="text-xs font-bold text-content-muted animate-pulse">
                 {t('searching')}
               </p>
@@ -245,14 +245,14 @@ export default function ExchangeCustomerSelect() {
                   type="button"
                   onClick={() => handleSelect(customer.id)}
                   className={`w-full p-2.5 rounded-xl text-left flex flex-col justify-between gap-2 transition-colors cursor-pointer ${isSelected
-                    ? 'bg-brand/15 border border-brand/40 text-brand'
-                    : 'hover:bg-surface-hover text-slate-800 dark:text-slate-200'
+                    ? 'bg-credit-subtle border border-credit/40 text-credit-text'
+                    : 'hover:bg-surface-hover text-content-primary'
                     }`}
                 >
                   <div className="min-w-0 pr-2">
                     <span className="block text-xs sm:text-sm font-bold truncate">{customer.name}</span>
                     {customer.subtitle && (
-                      <span className="block text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                      <span className="block text-[10px] text-content-muted truncate">
                         {customer.phone}
                       </span>
                     )}
@@ -265,12 +265,12 @@ export default function ExchangeCustomerSelect() {
                         <span
                           key={idx}
                           className={`text-[10px] sm:text-xs font-mono font-extrabold px-1.5 sm:px-2 py-0.5 rounded-md border whitespace-nowrap ${bal.isCredit
-                            ? 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-                            : 'text-rose-500 dark:text-rose-400 bg-rose-500/10 border-rose-500/20'
+                            ? 'text-credit-text bg-credit-subtle border-credit/20'
+                            : 'text-debit-text bg-debit-subtle border-debit/20'
                             }`}
                         >
                           {bal.amount}{' '}
-                          <span className="text-[9px] uppercase font-bold text-slate-400">
+                          <span className="text-[9px] uppercase font-bold text-content-tertiary">
                             {bal.currency}
                           </span>
                         </span>

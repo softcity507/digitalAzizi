@@ -37,8 +37,8 @@ export default function ExchangeCommitButton() {
         disabled={isSaving}
         className={`w-full h-14 sm:h-16 rounded-2xl font-black text-base sm:text-lg tracking-tight transition-all duration-200 shadow-xl cursor-pointer select-none active:scale-[0.98] flex items-center justify-center gap-2.5 ${
           isSuccess
-            ? 'bg-emerald-500 text-black shadow-emerald-500/30'
-            : 'bg-[#38bdf8] hover:bg-[#0ea5e9] text-black shadow-[#38bdf8]/30 hover:shadow-[#38bdf8]/50'
+            ? 'bg-credit text-credit-foreground shadow-credit/30'
+            : 'bg-brand hover:bg-brand-hover text-brand-foreground shadow-brand/30 hover:shadow-brand/50'
         }`}
       >
         {isSuccess ? (

@@ -171,7 +171,7 @@ export default function PreferencesSection() {
             aria-checked={isDark}
             onClick={toggleDarkMode}
             className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-              isDark ? 'bg-sky-400' : 'bg-slate-600'
+              isDark ? 'bg-brand' : 'bg-surface-active'
             }`}
           >
             <span
@@ -211,7 +211,7 @@ export default function PreferencesSection() {
                 {t('appLock')}
               </h4>
               {isAppLock && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-credit-subtle text-credit-text border border-credit/20">
                   <ShieldCheck className="w-3 h-3" /> {t('active')}
                 </span>
               )}
@@ -227,7 +227,7 @@ export default function PreferencesSection() {
             aria-checked={isAppLock}
             onClick={toggleAppLock}
             className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-              isAppLock ? 'bg-sky-500' : 'bg-slate-600'
+              isAppLock ? 'bg-brand' : 'bg-surface-active'
             }`}
           >
             <span
@@ -242,7 +242,7 @@ export default function PreferencesSection() {
         <div className="p-4 sm:p-5 flex items-center justify-between gap-3 flex-wrap bg-surface-subtle/50">
           <div className="space-y-0.5">
             <h4 className="text-xs sm:text-sm font-semibold text-content-primary flex items-center gap-1.5">
-              <Fingerprint className="w-4 h-4 text-sky-500" />
+              <Fingerprint className="w-4 h-4 text-brand" />
               {t('fingerprintSecurityKeys')}
             </h4>
             <p className="text-xs text-content-muted">
@@ -262,7 +262,7 @@ export default function PreferencesSection() {
 
             <a
               href={`/${currentLocale}/settings/biometrics`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 text-xs font-semibold transition-colors border border-sky-500/20"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand/10 hover:bg-brand-hover/20 text-brand text-xs font-semibold transition-colors border border-brand/20"
             >
               <Fingerprint className="w-3.5 h-3.5" />
               {t('configureSensors')} →
@@ -277,7 +277,7 @@ export default function PreferencesSection() {
           <div className="w-full max-w-sm bg-surface border border-surface-border rounded-3xl p-6 shadow-2xl space-y-5 animate-scale-up">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5 text-content-primary font-bold text-base">
-                <div className="p-2 rounded-xl bg-sky-500/10 text-sky-500">
+                <div className="p-2 rounded-xl bg-brand/10 text-brand">
                   <KeyRound className="w-5 h-5" />
                 </div>
                 <h3>{hasPin ? t('changePinTitle') : t('setPinTitle')}</h3>
@@ -306,7 +306,7 @@ export default function PreferencesSection() {
                   value={newPin}
                   onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
                   placeholder="••••"
-                  className="w-full tracking-widest text-center text-xl font-bold py-2.5 px-3 rounded-xl bg-surface-subtle border border-surface-border text-content-primary focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full tracking-widest text-center text-xl font-bold py-2.5 px-3 rounded-xl bg-surface-subtle border border-surface-border text-content-primary focus:outline-none focus:ring-2 focus:ring-brand"
                   required
                 />
               </div>
@@ -321,13 +321,13 @@ export default function PreferencesSection() {
                   value={confirmPin}
                   onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ''))}
                   placeholder="••••"
-                  className="w-full tracking-widest text-center text-xl font-bold py-2.5 px-3 rounded-xl bg-surface-subtle border border-surface-border text-content-primary focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full tracking-widest text-center text-xl font-bold py-2.5 px-3 rounded-xl bg-surface-subtle border border-surface-border text-content-primary focus:outline-none focus:ring-2 focus:ring-brand"
                   required
                 />
               </div>
 
               {pinModalError && (
-                <p className="text-xs text-rose-500 font-semibold">{pinModalError}</p>
+                <p className="text-xs text-debit-text font-semibold">{pinModalError}</p>
               )}
 
               <div className="flex items-center justify-end gap-2 pt-2">
@@ -341,7 +341,7 @@ export default function PreferencesSection() {
                 <button
                   type="submit"
                   disabled={savingPin || newPin.length < 4}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white text-xs font-bold shadow-md cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand hover:bg-brand-hover disabled:opacity-50 text-brand-foreground text-xs font-bold shadow-md cursor-pointer"
                 >
                   {savingPin ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                   {t('saveEnableLock')}

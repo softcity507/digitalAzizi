@@ -17,12 +17,12 @@ export default function DeleteConfirmModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-surface border border-surface-border rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4 text-center">
-        <div className="w-14 h-14 mx-auto rounded-2xl bg-[#f87171]/15 text-[#f87171] border border-[#f87171]/30 flex items-center justify-center text-2xl">
+        <div className="w-14 h-14 mx-auto rounded-2xl bg-debit-subtle text-debit border border-debit/30 flex items-center justify-center text-2xl">
           🗑️
         </div>
 
         <h3 className="text-lg font-bold text-white">{t('deleteConfirmTitle')}</h3>
-        <p className="text-xs text-slate-300">
+        <p className="text-xs text-content-secondary">
           {t('deleteConfirmDesc')}
         </p>
 
@@ -30,14 +30,14 @@ export default function DeleteConfirmModal() {
           <button
             type="button"
             onClick={closeModal}
-            className="w-1/2 h-11 rounded-xl bg-surface hover:bg-surface-hover border border-surface-border text-slate-300 font-semibold text-sm transition-colors cursor-pointer"
+            className="w-1/2 h-11 rounded-xl bg-surface hover:bg-surface-hover border border-surface-border text-content-secondary font-semibold text-sm transition-colors cursor-pointer"
           >
             {t('cancel')}
           </button>
           <button
             type="button"
             onClick={handleConfirm}
-            className="w-1/2 h-11 rounded-xl bg-[#f87171] hover:bg-red-600 text-white font-bold text-sm transition-all shadow-glow-debit cursor-pointer"
+            className="w-1/2 h-11 rounded-xl bg-debit-btn hover:bg-debit-hover text-debit-foreground font-bold text-sm transition-all shadow-glow-debit cursor-pointer"
           >
             {t('delete')}
           </button>
