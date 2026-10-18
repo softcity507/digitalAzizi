@@ -56,9 +56,9 @@ export default function LanguageSelector({ compact = false }: LanguageSelectorPr
       <button
         onClick={() => setIsOpen(prev => !prev)}
         disabled={isPending}
-        className={`flex items-center gap-2 rounded-full md:rounded-xl bg-surface-subtle hover:bg-surface-hover text-content-primary border border-surface-border transition-all duration-200 active:scale-95 shadow-sm ${
+        className={`flex items-center gap-2 rounded bg-surface-subtle hover:bg-surface-hover text-content-primary border border-surface-border transition-all duration-200 active:scale-95 shadow-sm ${
           compact
-            ? 'w-10 h-10 md:w-auto md:px-3 md:py-2 justify-center'
+            ? 'w-10 h-10 md:w-auto md:h-11 md:px-3 md:py-2 justify-center'
             : 'px-3 py-2 text-xs md:text-sm font-medium'
         }`}
       >
@@ -82,7 +82,7 @@ export default function LanguageSelector({ compact = false }: LanguageSelectorPr
       </button>
 
       {isOpen && (
-        <div className="absolute ltr:right-0 rtl:left-0 mt-3 w-56 sm:w-64 max-h-80 overflow-y-auto rounded-2xl bg-surface border border-surface-border shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute ltr:right-0 rtl:left-0 mt-3 w-56 sm:w-64 max-h-80 overflow-y-auto rounded bg-surface border border-surface-border shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
           <div className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-content-muted border-b border-surface-border mb-1">
             Select Language ({LANGUAGES.length})
           </div>
@@ -93,7 +93,7 @@ export default function LanguageSelector({ compact = false }: LanguageSelectorPr
                 <button
                   key={lang.code}
                   onClick={() => handleSelect(lang.code)}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded text-xs font-medium transition-all ${
                     isSelected
                       ? 'bg-brand text-black font-bold shadow-sm'
                       : 'text-content-primary hover:bg-surface-hover hover:text-brand'

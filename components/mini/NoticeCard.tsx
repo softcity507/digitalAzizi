@@ -13,7 +13,7 @@ export default function NoticeCard({
 }: NoticeCardProps) {
   return (
     <div
-      className={`w-full rounded-2xl bg-surface-subtle/80 border border-surface-border p-4 transition-all duration-200 ${className}`}
+      className={`w-full rounded bg-surface-subtle/80 border border-surface-border p-4 transition-all duration-200 ${className}`}
     >
       <div className="flex items-start gap-2.5">
         <div className="flex-shrink-0 mt-0.5 text-amber-400">

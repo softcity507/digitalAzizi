@@ -149,9 +149,9 @@ export default function GoogleLogin({
           onClick={handleSignInClick}
           disabled={isLoading || Boolean(retryAt)}
           aria-label={buttonLabel}
-          className={`group relative w-full flex items-center justify-center gap-3.5 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#ea4335] via-[#e53929] to-[#d93025] hover:from-[#f05144] hover:to-[#e13b2d] active:scale-[0.99] text-white font-bold text-sm sm:text-base shadow-lg shadow-red-500/20 hover:shadow-red-500/35 border border-red-400/30 transition-all duration-200 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed ${className}`}
+          className={`group relative w-full flex items-center justify-center gap-3.5 px-6 py-3.5 rounded bg-gradient-to-r from-[#ea4335] via-[#e53929] to-[#d93025] hover:from-[#f05144] hover:to-[#e13b2d] active:scale-[0.99] text-white font-bold text-sm sm:text-base shadow-lg shadow-red-500/20 hover:shadow-red-500/35 border border-red-400/30 transition-all duration-200 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed ${className}`}
         >
-          <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-white shadow-sm flex-shrink-0 transition-transform duration-200 group-hover:scale-105">
+          <div className="flex items-center justify-center w-7 h-7 rounded bg-white shadow-sm flex-shrink-0 transition-transform duration-200 group-hover:scale-105">
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
@@ -192,7 +192,7 @@ export default function GoogleLogin({
       {/* Google Account Selector Dialog */}
       {showAccountModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-modal-overlay backdrop-blur-sm animate-fadeIn">
-          <div className="relative w-full max-w-md p-6 rounded-3xl bg-surface border border-surface-border shadow-2xl space-y-5 text-content-primary">
+          <div className="relative w-full max-w-md p-6 rounded bg-surface border border-surface-border shadow-2xl space-y-5 text-content-primary">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-surface-border pb-3">
               <div className="flex items-center gap-2.5">
@@ -223,7 +223,7 @@ export default function GoogleLogin({
                 type="button"
                 onClick={() => executeLoginWithEmail(DEFAULT_ADMIN)}
                 disabled={Boolean(retryAt)}
-                className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-surface-subtle hover:bg-surface-hover border border-surface-border text-left transition-all"
+                className="w-full flex items-center justify-between p-3.5 rounded bg-surface-subtle hover:bg-surface-hover border border-surface-border text-left transition-all"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-brand/10 text-brand flex items-center justify-center font-bold text-sm">
@@ -250,13 +250,13 @@ export default function GoogleLogin({
                   value={customEmail}
                   onChange={(e) => setCustomEmail(e.target.value)}
                   placeholder="your.email@gmail.com"
-                  className="flex-1 px-3.5 py-2.5 rounded-xl bg-surface-input border border-surface-border text-xs focus:outline-hidden focus:border-brand"
+                  className="flex-1 px-3.5 py-2.5 rounded bg-surface-input border border-surface-border text-xs focus:outline-hidden focus:border-brand"
                 />
                 <button
                   type="button"
                   onClick={() => executeLoginWithEmail(customEmail)}
                   disabled={!customEmail.includes('@') || Boolean(retryAt)}
-                  className="px-4 py-2.5 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand-hover disabled:opacity-50"
+                  className="px-4 py-2.5 rounded bg-brand text-white text-xs font-bold hover:bg-brand-hover disabled:opacity-50"
                 >
                   {t('continue')}
                 </button>

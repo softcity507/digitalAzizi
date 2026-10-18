@@ -19,7 +19,7 @@ export default function LandingFooter({ className = '' }: LandingFooterProps) {
       {/* Explore Demo CTA Button */}
       <Link
         href={`/${locale}/cash-book`}
-        className="group inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand hover:text-brand-300 transition-colors py-1 px-3 rounded-xl hover:bg-brand/10 select-none"
+        className="group inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand hover:text-brand-300 transition-colors py-1 px-3 rounded hover:bg-brand/10 select-none"
       >
         <span>{t('exploreDemo')}</span>
         <svg

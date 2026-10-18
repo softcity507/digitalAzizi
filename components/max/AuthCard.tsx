@@ -14,7 +14,7 @@ export default function AuthCard({ className = '', onSuccess }: AuthCardProps) {
 
   return (
     <div
-      className={`w-full max-w-xl mx-auto rounded-3xl bg-surface border border-surface-border p-5 sm:p-7 shadow-xl shadow-black/20 space-y-5 transition-all duration-200 ${className}`}
+      className={`w-full max-w-xl mx-auto rounded bg-surface border border-surface-border p-5 sm:p-7 shadow-xl shadow-black/20 space-y-5 transition-all duration-200 ${className}`}
     >
       {/* Title and Subtitle */}
       <div className="text-center space-y-1">

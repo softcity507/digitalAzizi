@@ -13,7 +13,7 @@ export default function StatusBadge({
 }: StatusBadgeProps) {
   return (
     <div
-      className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-950/40 text-emerald-400 border border-emerald-500/30 shadow-sm backdrop-blur-sm select-none transition-all hover:bg-emerald-950/60 ${className}`}
+      className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded text-xs font-semibold bg-emerald-950/40 text-emerald-400 border border-emerald-500/30 shadow-sm backdrop-blur-sm select-none transition-all hover:bg-emerald-950/60 ${className}`}
     >
       {/* Pulse dot */}
       <span className="relative flex h-2 w-2">

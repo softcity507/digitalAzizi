@@ -50,6 +50,13 @@
   /* Explicit #000 & #fff definitions */
   --color-black: #000000;
   --color-white: #ffffff;
+
+  --font-century-gothic: "Century Gothic", CenturyGothic, AppleGothic, "URW Gothic", sans-serif;
+}
+
+/* Century Gothic — applied only to the main content container */
+.font-century-gothic {
+  font-family: var(--font-century-gothic);
 }
 
 .dark,

@@ -11,7 +11,7 @@ export default function SecurityPill({
 }: SecurityPillProps) {
   return (
     <div
-      className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-brand-950/40 text-brand-300 border border-brand-500/30 shadow-sm backdrop-blur-sm select-none transition-all hover:border-brand-400 hover:bg-brand-950/60 ${className}`}
+      className={`inline-flex items-center gap-2 px-4 py-1.5 rounded text-xs font-semibold bg-brand-950/40 text-brand-300 border border-brand-500/30 shadow-sm backdrop-blur-sm select-none transition-all hover:border-brand-400 hover:bg-brand-950/60 ${className}`}
     >
       <svg
         className="w-4 h-4 text-brand-400 flex-shrink-0"

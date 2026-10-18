@@ -105,7 +105,7 @@ export default function ThemeToggle() {
       onClick={toggleTheme}
       aria-label={isDark ? t('lightMode') : t('darkMode')}
       title={isDark ? t('lightMode') : t('darkMode')}
-      className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-full bg-surface-subtle hover:bg-surface-hover text-content-primary border border-surface-border transition-all duration-200 active:scale-95 shadow-sm"
+      className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded bg-surface-subtle hover:bg-surface-hover text-content-primary border border-surface-border transition-all duration-200 active:scale-95 shadow-sm"
     >
       {!isDark ? (
         // Moon Icon for switching to dark mode

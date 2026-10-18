@@ -26,7 +26,7 @@ export default function LandingHeader({
 
       {/* Right side: Status Badge + Theme/Language Controls */}
       <div className="flex items-center gap-2">
-        <StatusBadge label={t('cloudSyncActive')} />
+        <StatusBadge label={t('cloudSyncActive')} className="h-10 md:h-11" />
         {showControls && (
           <div className="hidden sm:flex items-center gap-1.5 ml-1">
             <LanguageSelector compact />
