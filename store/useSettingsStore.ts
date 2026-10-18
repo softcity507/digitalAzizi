@@ -276,7 +276,9 @@ interface SettingsState {
     roleTag?: string,
     openingBalances?: Partial<Record<CurrencyCode, number>>,
     descriptionLocale?: SupportedLocale,
-    notes?: string
+    notes?: string,
+    phone?: string,
+    address?: string
   ) => Promise<void>;
   updateUser: (
     id: string,
@@ -593,7 +595,9 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     roleTag = 'Customer',
     openingBalances = {},
     descriptionLocale = 'en',
-    notes = ''
+    notes = '',
+    phone,
+    address
   ) => {
     await getSignedInUser();
 
@@ -616,8 +620,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
     const parts = subtitle.split('•').map((p) => p.trim());
     const descriptionText = parts[0] || notes;
-    const phoneText = parts.find((p) => p.startsWith('+') || /^\d[\d\s-]*$/.test(p)) || null;
-    const addressText = parts.length > 2 ? parts[2] : null;
+    const phoneText = phone?.trim() || parts.find((p) => p.startsWith('+') || /^\d[\d\s-]*$/.test(p)) || null;
+    const addressText = address?.trim() || (parts.length > 2 ? parts[2] : null);
 
     const customerPayload = {
       business_id: currentBizId,
@@ -693,6 +697,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
           name,
           subtitle,
           descriptionLocale,
+          phone: phoneText ?? undefined,
           businessId: activeBiz.id,
           balances: [
             ...validCurrencies.map((currency) => ({

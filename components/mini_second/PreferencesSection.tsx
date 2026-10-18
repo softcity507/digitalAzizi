@@ -104,11 +104,11 @@ export default function PreferencesSection() {
     setPinModalError('');
 
     if (newPin.length < 4) {
-      setPinModalError('PIN must be at least 4 digits');
+      setPinModalError(t('pinMinLength'));
       return;
     }
     if (newPin !== confirmPin) {
-      setPinModalError('PINs do not match');
+      setPinModalError(t('pinsDoNotMatch'));
       return;
     }
 
@@ -130,10 +130,10 @@ export default function PreferencesSection() {
         setNewPin('');
         setConfirmPin('');
       } else {
-        setPinModalError(data.error || 'Failed to save PIN');
+        setPinModalError(data.error || t('pinSaveFailed'));
       }
     } catch {
-      setPinModalError('Network error while saving PIN');
+      setPinModalError(t('pinNetworkError'));
     } finally {
       setSavingPin(false);
     }
@@ -208,16 +208,16 @@ export default function PreferencesSection() {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <h4 className="text-xs sm:text-sm font-bold text-content-primary">
-                App Lock (Biometrics & PIN)
+                {t('appLock')}
               </h4>
               {isAppLock && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                  <ShieldCheck className="w-3 h-3" /> Active
+                  <ShieldCheck className="w-3 h-3" /> {t('active')}
                 </span>
               )}
             </div>
             <p className="text-xs text-content-muted">
-              Auto-locks when you leave the app. Unlock with a registered authenticator or optional PIN.
+              {t('appLockSubtitle')}
             </p>
           </div>
 
@@ -243,10 +243,10 @@ export default function PreferencesSection() {
           <div className="space-y-0.5">
             <h4 className="text-xs sm:text-sm font-semibold text-content-primary flex items-center gap-1.5">
               <Fingerprint className="w-4 h-4 text-sky-500" />
-              Fingerprint & Security Keys
+              {t('fingerprintSecurityKeys')}
             </h4>
             <p className="text-xs text-content-muted">
-              {hasPin ? 'PIN code is configured.' : 'No PIN code configured yet.'}
+              {hasPin ? t('pinConfigured') : t('pinNotConfigured')}
             </p>
           </div>
 
@@ -257,7 +257,7 @@ export default function PreferencesSection() {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface hover:bg-surface-border text-content-primary text-xs font-semibold transition-colors border border-surface-border cursor-pointer shadow-sm"
             >
               <KeyRound className="w-3.5 h-3.5" />
-              {hasPin ? 'Change PIN' : 'Set PIN'}
+              {hasPin ? t('changePin') : t('setPin')}
             </button>
 
             <a
@@ -265,7 +265,7 @@ export default function PreferencesSection() {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 text-xs font-semibold transition-colors border border-sky-500/20"
             >
               <Fingerprint className="w-3.5 h-3.5" />
-              Configure Sensors →
+              {t('configureSensors')} →
             </a>
           </div>
         </div>
@@ -280,7 +280,7 @@ export default function PreferencesSection() {
                 <div className="p-2 rounded-xl bg-sky-500/10 text-sky-500">
                   <KeyRound className="w-5 h-5" />
                 </div>
-                <h3>{hasPin ? 'Change 4-Digit PIN' : 'Set 4-Digit Security PIN'}</h3>
+                <h3>{hasPin ? t('changePinTitle') : t('setPinTitle')}</h3>
               </div>
               <button
                 type="button"
@@ -292,12 +292,12 @@ export default function PreferencesSection() {
             </div>
 
             <p className="text-xs text-content-muted">
-              This PIN allows you to unlock Digital Azizi when biometric scanning is unavailable or when returning to the app.
+              {t('pinDescription')}
             </p>
 
             <form onSubmit={handleSavePin} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-content-primary">New PIN (4 digits)</label>
+                <label className="text-xs font-bold text-content-primary">{t('newPin')}</label>
                 <input
                   type="password"
                   maxLength={6}
@@ -312,7 +312,7 @@ export default function PreferencesSection() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-content-primary">Confirm PIN</label>
+                <label className="text-xs font-bold text-content-primary">{t('confirmPin')}</label>
                 <input
                   type="password"
                   maxLength={6}
@@ -336,7 +336,7 @@ export default function PreferencesSection() {
                   onClick={() => setShowPinModal(false)}
                   className="px-4 py-2 rounded-xl text-xs font-bold text-content-muted hover:bg-surface-subtle"
                 >
-                  Cancel
+                  {t('cancel')}
                 </button>
                 <button
                   type="submit"
@@ -344,7 +344,7 @@ export default function PreferencesSection() {
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white text-xs font-bold shadow-md cursor-pointer"
                 >
                   {savingPin ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-                  Save & Enable Lock
+                  {t('saveEnableLock')}
                 </button>
               </div>
             </form>

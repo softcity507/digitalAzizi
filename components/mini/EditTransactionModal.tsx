@@ -17,7 +17,7 @@ export default function EditTransactionModal() {
   const availableCurrencies: CurrencyCode[] = activeBusiness?.supportedCurrencies ?? [];
 
   // Initialize state directly from editingTransaction using fallback values
-  const [customerName, setCustomerName] = useState(() => editingTransaction?.customerName || '');
+    const [customerName, setCustomerName] = useState(() => editingTransaction?.customerName || '');
   const [fromCustomer, setFromCustomer] = useState(() => editingTransaction?.fromCustomer || '');
   const [toCustomer, setToCustomer] = useState(() => editingTransaction?.toCustomer || '');
   const [amount, setAmount] = useState(() => editingTransaction?.amount?.toString() || '');
