@@ -449,43 +449,45 @@ export default function RegisterBiometric() {
           </h3>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            <button
-              type="button"
-              onClick={handleRegister}
-              disabled={registering || !currentUser || loading}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white font-medium text-sm transition-all shadow-md active:scale-98 cursor-pointer"
-            >
-              {registering ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Scanning & Registering to user_credentials...
-                </>
-              ) : (
-                <>
-                  <Fingerprint className="w-4 h-4" />
-                  Register Phone / Fingerprint Scanner
-                </>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleTestVerification}
-              disabled={testing || !currentUser || loading}
-              className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-surface-subtle hover:bg-surface-border text-content-primary border border-surface-border font-medium text-sm transition-all active:scale-98 cursor-pointer"
-            >
-              {testing ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin text-sky-500" />
-                  Testing...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="w-4 h-4" />
-                  Test Verification
-                </>
-              )}
-            </button>
+            {hasCredentials ? (
+              <button
+                type="button"
+                onClick={handleTestVerification}
+                disabled={testing || !currentUser || loading}
+                className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-surface-subtle hover:bg-surface-border text-content-primary border border-surface-border font-medium text-sm transition-all active:scale-98 cursor-pointer"
+              >
+                {testing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-sky-500" />
+                    Testing...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="w-4 h-4" />
+                    Test Verification
+                  </>
+                )}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleRegister}
+                disabled={registering || !currentUser || loading}
+                className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white font-medium text-sm transition-all shadow-md active:scale-98 cursor-pointer"
+              >
+                {registering ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Registering Fingerprint...
+                  </>
+                ) : (
+                  <>
+                    <Fingerprint className="w-4 h-4" />
+                    Add Fingerprint
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </div>
 
