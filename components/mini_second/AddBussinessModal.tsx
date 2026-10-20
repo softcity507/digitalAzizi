@@ -45,7 +45,7 @@ export default function AddBussinessModal() {
     }
 
     const normalizedPhone = formData.phone.replace(/\D/g, '');
-    if (normalizedPhone.length < 7 || normalizedPhone.length > 15) {
+    if (normalizedPhone && (normalizedPhone.length < 7 || normalizedPhone.length > 15)) {
       setSaveError('Enter a valid phone number with 7 to 15 digits.');
       return;
     }
@@ -64,23 +64,24 @@ export default function AddBussinessModal() {
       formData.address.trim(),
     ].filter(Boolean).join(' • ') || 'Business Account';
 
-    const numAmount = Number(formData.amount);
-    if (!formData.amount.trim() || !Number.isFinite(numAmount) || numAmount <= 0) {
-      setSaveError('Initial balance must be greater than 0.');
+    const amountText = formData.amount.trim();
+    const numAmount = amountText ? Number(amountText) : 0;
+    if (amountText && (!Number.isFinite(numAmount) || numAmount <= 0)) {
+      setSaveError('Initial balance must be greater than 0 when provided.');
       return;
     }
-    if (!selectedAmountCurrency) {
-      setSaveError('Select a business with supported currencies before adding a customer.');
+    if (amountText && !selectedAmountCurrency) {
+      setSaveError('Select a business with supported currencies before adding an opening balance.');
       return;
     }
 
     // Persist an explicit value for every supported currency so currencies with
     // zero opening balances are not lost when the customer is loaded again.
     const initialBalances: Partial<Record<CurrencyCode, number>> = Object.fromEntries(
-      businessCurrencies.map((currency) => [currency, currency === selectedAmountCurrency ? numAmount : 0])
+      businessCurrencies.map((currency) => [currency, amountText && currency === selectedAmountCurrency ? numAmount : 0])
     );
 
-    const trimmedNotes = formData.amountDescription.trim() || 'Opening balance';
+    const trimmedNotes = formData.amountDescription.trim();
 
     try {
       await addUser(
@@ -105,7 +106,7 @@ export default function AddBussinessModal() {
       <div className="bg-surface border border-surface-border rounded p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-2 border-b border-surface-border">
-          <h3 className="text-base font-bold text-content-primary">{t('addNewBusiness')}</h3>
+          <h3 className="text-base font-bold text-content-primary"> {t('addNewCustomer')}</h3>
           <button
             type="button"
             onClick={handleClose}
@@ -153,7 +154,6 @@ export default function AddBussinessModal() {
                 value={formData.phone}
                 onChange={(e) => setFormData((current) => ({ ...current, phone: e.target.value.replace(/\D/g, '') }))}
                 placeholder="e.g. 93700000000"
-                required
                 autoComplete="tel"
                 className="w-full px-3 py-2 rounded bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
               />
@@ -186,7 +186,6 @@ export default function AddBussinessModal() {
                   value={formData.amount}
                   onChange={(e) => setFormData((current) => ({ ...current, amount: e.target.value }))}
                   placeholder="0.00"
-                  required
                   className="w-full px-3 py-2 rounded bg-surface border border-surface-border text-sm font-mono text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>

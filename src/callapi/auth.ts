@@ -26,11 +26,23 @@ export const authApi = {
         const nonceHash = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(nonce));
         const googleNonce = Array.from(new Uint8Array(nonceHash), (byte) => byte.toString(16).padStart(2, '0')).join('');
         const { idToken } = await NativeGoogleSignIn.getIdToken({ serverClientId, nonce: googleNonce });
-        const { error } = await supabaseClient.auth.signInWithIdToken({ provider: 'google', token: idToken, nonce });
+        const { data, error } = await supabaseClient.auth.signInWithIdToken({ provider: 'google', token: idToken, nonce });
         if (error) return { success: false, error: error.message };
 
+        // Keep the native WebView on the current page until Supabase has
+        // persisted the session. Navigating immediately can race the storage
+        // write, causing AppLockGuard to see an anonymous user on the target.
+        if (!data.session) return { success: false, error: 'Google sign-in did not return a session.' };
+        const { error: sessionError } = await supabaseClient.auth.setSession({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+        });
+        if (sessionError) return { success: false, error: sessionError.message };
+
         const safeRedirect = redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/en/cash-book';
-        window.location.replace(safeRedirect);
+        // Use the app's existing WebView so the Android build resolves its
+        // exported route locally and retains the just-created auth session.
+        window.location.assign(safeRedirect.endsWith('/') ? safeRedirect : `${safeRedirect}/`);
         return { success: true };
       }
 

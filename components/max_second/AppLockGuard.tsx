@@ -15,6 +15,8 @@ import { authApi } from '@/callapi/auth'
 import { getSecurityStatus, verifySecurityPin } from '@/callapi/security'
 import { useRouter } from 'next/navigation'
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/i18n/languages'
+import { supabaseClient } from '@/lib/supabaseClient'
+import type { AuthChangeEvent } from '@supabase/supabase-js'
 
 export const APP_LOCK_KEY = 'digitalazizi_app_lock_enabled'
 export const IS_LOCKED_KEY = 'digitalazizi_session_locked'
@@ -34,6 +36,23 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
   const [shake, setShake] = useState(false)
   const router = useRouter()
   const isBiometricAttempting = useRef(false)
+
+  // Native Google sign-in completes inside the current WebView. The initial
+  // session check may already have run while the user was signed out, so also
+  // react to Supabase's sign-in event and take the user straight to cashbook.
+  useEffect(() => {
+    const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((event: AuthChangeEvent) => {
+      if (event !== 'SIGNED_IN') return
+
+      const segments = window.location.pathname.split('/').filter(Boolean)
+      const locale = SUPPORTED_LOCALES.includes(segments[0] as (typeof SUPPORTED_LOCALES)[number])
+        ? segments[0]
+        : DEFAULT_LOCALE
+      router.replace(`/${locale}/cash-book/`)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [router])
 
   // Mark session unlocked and reset 1-hour timer
   const markUnlocked = useCallback(() => {
