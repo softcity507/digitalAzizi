@@ -48,6 +48,13 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
       const locale = SUPPORTED_LOCALES.includes(segments[0] as (typeof SUPPORTED_LOCALES)[number])
         ? segments[0]
         : DEFAULT_LOCALE
+      const routeSegments = locale === segments[0] ? segments.slice(1) : segments
+
+      // Supabase can emit SIGNED_IN again when a tab becomes active. Only
+      // redirect from the landing/sign-in route; preserve the current route
+      // when the user returns to an already-open page such as Cash Book.
+      if (routeSegments.length > 0) return
+
       router.replace(`/${locale}/cash-book/`)
     })
 

@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import { APP_LOCK_KEY } from '@/components/max_second/AppLockGuard'
 import { authApi } from '@/callapi/auth'
-import { getSecurityStatus, invokeWebAuthn, setSecurityPin } from '@/callapi/security'
+import { getSecurityStatus, getWebAuthnErrorMessage, invokeWebAuthn, setSecurityPin } from '@/callapi/security'
 
 export default function RegisterBiometric() {
   const [currentUser, setCurrentUser] = useState<{ id: string; email?: string; name?: string } | null>(null)
@@ -184,7 +184,7 @@ export default function RegisterBiometric() {
       } else {
         setMessage({
           type: 'error',
-          text: errorObj?.message || 'An unexpected error occurred during biometric setup.',
+          text: getWebAuthnErrorMessage(errorObj),
         })
       }
     } finally {
