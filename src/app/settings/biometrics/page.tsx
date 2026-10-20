@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { startRegistration, browserSupportsWebAuthn } from '@simplewebauthn/browser'
+import { startRegistration, browserSupportsWebAuthn, type PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/browser'
 import verifyAndAuthorizeAction from '@/components/max_second/verifyAndAuthorizeAction'
 import Link from 'next/link'
 import {
@@ -17,6 +17,8 @@ import {
   Check,
 } from 'lucide-react'
 import { APP_LOCK_KEY } from '@/components/max_second/AppLockGuard'
+import { authApi } from '@/callapi/auth'
+import { getSecurityStatus, invokeWebAuthn, setSecurityPin } from '@/callapi/security'
 
 export default function RegisterBiometric() {
   const [currentUser, setCurrentUser] = useState<{ id: string; email?: string; name?: string } | null>(null)
@@ -47,8 +49,7 @@ export default function RegisterBiometric() {
         // Use the same canonical app user ID as AppLockGuard and the OAuth session.
         // Supabase Auth UUIDs can differ from the public.users ID used by security APIs.
         let userObj: { id: string; email?: string; name?: string } | null = null
-        const res = await fetch('/api/auth/me')
-        const data = await res.json()
+        const data = await authApi.getSession()
         if (data.success && data.user) {
           userObj = { id: data.user.id, email: data.user.email, name: data.user.name }
         }
@@ -57,12 +58,7 @@ export default function RegisterBiometric() {
           setCurrentUser(userObj)
 
           // Fetch security status
-          const pinRes = await fetch('/api/auth/security/pin', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'status', userId: userObj.id }),
-          })
-          const pinData = await pinRes.json()
+          const pinData = await getSecurityStatus()
           if (pinData?.status) {
             setHasPin(Boolean(pinData.status.hasPin))
             setHasCredentials(Boolean(pinData.status.hasCredentials))
@@ -110,17 +106,7 @@ export default function RegisterBiometric() {
 
     setSavingPin(true)
     try {
-      const res = await fetch('/api/auth/security/pin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'set',
-          pin: pinInput,
-          userId: currentUser.id,
-        }),
-      })
-
-      const data = await res.json()
+      const data = await setSecurityPin(pinInput)
       if (data.success) {
         setHasPin(true)
         setShowPinInput(false)
@@ -164,33 +150,16 @@ export default function RegisterBiometric() {
 
     try {
       // Step A: Request registration challenge options from server
-      const res = await fetch('/api/auth/webauthn/register-options', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.id, email: currentUser.email }),
-      })
-
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}))
-        throw new Error(errJson.error || 'Failed to retrieve registration options from server')
-      }
-
-      const opts = await res.json()
-      if (opts.error) {
+      const opts = await invokeWebAuthn<Record<string, unknown>>('register-options')
+      if (typeof opts.error === 'string') {
         throw new Error(opts.error)
       }
 
       // Step B: Prompt browser / Touch ID / Face ID / Windows Hello / Fingerprint scanner
-      const attResp = await startRegistration(opts)
+      const attResp = await startRegistration({ optionsJSON: opts as unknown as PublicKeyCredentialCreationOptionsJSON })
 
       // Step C: Verify registration response on server and store in user_credentials table
-      const verificationRes = await fetch('/api/auth/webauthn/register-verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.id, attResp }),
-      })
-
-      const verification = await verificationRes.json()
+      const verification = await invokeWebAuthn<{ verified: boolean; error?: string }>('register-verify', { attResp })
 
       if (verification.verified) {
         setHasCredentials(true)

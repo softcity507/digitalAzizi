@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import Header from '@/components/max/Header';
 import Footer from '@/components/max_second/Footer';
 import AppInitializer from '@/components/max/AppInitializer';
-import AppLockGuard from '@/components/max_second/AppLockGuard';
 import { SUPPORTED_LOCALES, type SupportedLocale } from '@/i18n/request';
 
 type Props = Readonly<{
@@ -27,13 +26,11 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <NextIntlClientProvider formats={{}} locale={locale} messages={messages} timeZone="UTC">
       <AppInitializer />
-      <AppLockGuard>
-        <div className="min-h-screen flex flex-col">
-          <Header />
-          <main className="flex-1 font-century-gothic">{children}</main>
-          <Footer />
-        </div>
-      </AppLockGuard>
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            <main className="flex-1 font-century-gothic">{children}</main>
+            <Footer />
+          </div>
     </NextIntlClientProvider>
   );
 }

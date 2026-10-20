@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import { authApi } from '@/callapi/auth';
+import { getSecurityStatus } from '@/callapi/security';
 import { SYSTEM_DEFAULT_BUSINESS_SUBTITLE } from '@/types/settings';
 import { Pencil, Trash2, Check, X, ArrowRightLeft, AlertTriangle, Plus, Loader2 } from 'lucide-react';
 import { CurrencyCode } from '@/types/customer';
@@ -98,18 +100,12 @@ export default function BusinessProfilesSection() {
   const requestVerification = async (action: 'edit' | 'save' | 'delete', id: string) => {
     setDatabaseError(null);
     try {
-      const userRes = await fetch('/api/auth/me');
-      const userData = await userRes.json();
-      if (!userRes.ok || !userData.success || !userData.user?.id) {
+      const userData = await authApi.getSession();
+      if (!userData.success || !userData.user?.id) {
         throw new Error('Please sign in again to verify this action.');
       }
-      const statusRes = await fetch('/api/auth/security/pin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'status', userId: userData.user.id }),
-      });
-      const statusData = await statusRes.json();
-      if (!statusRes.ok || !statusData.success) throw new Error(statusData.error || 'Could not load verification methods.');
+      const statusData = await getSecurityStatus();
+      if (!statusData.success) throw new Error(statusData.error || 'Could not load verification methods.');
       const pinConfigured = Boolean(statusData.status?.hasPin);
       const authenticatorConfigured = Boolean(statusData.status?.hasCredentials);
       if (!pinConfigured && !authenticatorConfigured) {

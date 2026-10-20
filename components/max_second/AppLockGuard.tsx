@@ -12,7 +12,9 @@ import {
 } from 'lucide-react'
 import verifyAndAuthorizeAction from './verifyAndAuthorizeAction'
 import { authApi } from '@/callapi/auth'
+import { getSecurityStatus, verifySecurityPin } from '@/callapi/security'
 import { useRouter } from 'next/navigation'
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/i18n/languages'
 
 export const APP_LOCK_KEY = 'digitalazizi_app_lock_enabled'
 export const IS_LOCKED_KEY = 'digitalazizi_session_locked'
@@ -51,17 +53,31 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
         const enabled = localStorage.getItem(APP_LOCK_KEY) === 'true'
         setIsLockEnabled(enabled)
 
-        const res = await fetch('/api/auth/me')
-        const data = await res.json()
+        const segments = window.location.pathname.split('/').filter(Boolean)
+        const locale = SUPPORTED_LOCALES.includes(segments[0] as (typeof SUPPORTED_LOCALES)[number])
+          ? segments[0]
+          : DEFAULT_LOCALE
+        const routeSegments = locale === segments[0] ? segments.slice(1) : segments
+        const isLanding = routeSegments.length === 0
+        const isPublic = window.location.pathname.includes('/about')
+        if (isPublic) return
+
+        const data = await authApi.getSession()
+        if (!data.success || !data.user) {
+          if (!isLanding && mounted) {
+            const redirect = encodeURIComponent(`${window.location.pathname}${window.location.search}`)
+            router.replace(`/${locale}?auth_error=${encodeURIComponent(data.error || 'Please sign in to continue.')}&redirect=${redirect}`)
+          }
+          return
+        }
+        if (isLanding && mounted) {
+          router.replace(`/${locale}/cash-book`)
+          return
+        }
         if (data.success && data.user && mounted) {
           setCurrentUser(data.user)
 
-          const securityRes = await fetch('/api/auth/security/pin', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'status', userId: data.user.id }),
-          })
-          const securityData = await securityRes.json()
+          const securityData = await getSecurityStatus()
           if (securityData.success && mounted) {
             setHasPin(Boolean(securityData.status?.hasPin))
             setHasCredentials(Boolean(securityData.status?.hasCredentials))
@@ -103,7 +119,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
       window.removeEventListener('app_lock_setting_changed', handleLockSettingChange)
       window.removeEventListener('storage', handleLockSettingChange)
     }
-  }, [])
+  }, [router])
 
   // 2. Lock application when user goes outside (visibilitychange / pagehide)
   useEffect(() => {
@@ -203,17 +219,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
     setPinError('')
 
     try {
-      const res = await fetch('/api/auth/security/pin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'verify',
-          pin: pinToVerify,
-          userId: currentUser.id,
-        }),
-      })
-
-      const data = await res.json()
+      const data = await verifySecurityPin(pinToVerify)
       if (data.verified) {
         markUnlocked()
       } else {

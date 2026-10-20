@@ -3,6 +3,7 @@
 import { useState, useEffect, useSyncExternalStore, useTransition } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
+import { getSecurityStatus, setSecurityPin } from '@/callapi/security';
 import { LANGUAGES, SupportedLocale } from '@/i18n/languages';
 import { Fingerprint, KeyRound, ShieldCheck, X, Loader2, Check } from 'lucide-react';
 import { APP_LOCK_KEY } from '@/components/max_second/AppLockGuard';
@@ -52,12 +53,7 @@ export default function PreferencesSection() {
 
   useEffect(() => {
     // Fetch user security status
-    fetch('/api/auth/security/pin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'status' }),
-    })
-      .then((res) => res.json())
+    getSecurityStatus()
       .then((data) => {
         if (data.success && data.status) {
           setHasPin(Boolean(data.status.hasPin));
@@ -114,13 +110,7 @@ export default function PreferencesSection() {
 
     setSavingPin(true);
     try {
-      const res = await fetch('/api/auth/security/pin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'set', pin: newPin }),
-      });
-
-      const data = await res.json();
+      const data = await setSecurityPin(newPin);
       if (data.success) {
         setHasPin(true);
         localStorage.setItem(APP_LOCK_KEY, 'true');

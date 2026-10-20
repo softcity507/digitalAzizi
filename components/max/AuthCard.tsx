@@ -6,10 +6,9 @@ import { useTranslations } from 'next-intl';
 
 interface AuthCardProps {
   className?: string;
-  onSuccess?: () => void;
 }
 
-export default function AuthCard({ className = '', onSuccess }: AuthCardProps) {
+export default function AuthCard({ className = '' }: AuthCardProps) {
   const t = useTranslations('Landing');
 
   return (
@@ -30,7 +29,6 @@ export default function AuthCard({ className = '', onSuccess }: AuthCardProps) {
       <div className="w-full pt-1">
         <GoogleLogin
           label={t('signInGoogle') || 'Sign In with Google (Gmail)'}
-          onSuccess={onSuccess}
           redirectTo="/cash-book"
         />
       </div>

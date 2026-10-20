@@ -1,43 +1,15 @@
 'use client'
 
-import { startAuthentication } from '@simplewebauthn/browser'
+import { startAuthentication, type PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/browser'
+import { invokeWebAuthn, verifySecurityPin } from '@/callapi/security'
 
-/**
- * Prompts user for biometric verification (Touch ID, Face ID, Windows Hello, Phone scanner)
- * and verifies cryptographic signature against registered credentials.
- */
-export async function verifyAndAuthorizeAction(userId: string): Promise<boolean> {
+/** Requests a challenge and verifies the signed passkey response in authz-api. */
+export async function verifyAndAuthorizeAction(_userId: string): Promise<boolean> {
   try {
-    // 1. Request authentication challenge
-    const res = await fetch('/api/auth/webauthn/auth-options', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId }),
-    })
-
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}))
-      console.warn('Biometric auth-options error:', errData.error || 'Server error')
-      return false
-    }
-
-    const opts = await res.json()
-    if (!opts || opts.error) {
-      console.warn('Biometric auth options error:', opts?.error)
-      return false
-    }
-
-    // 2. Prompt phone/device fingerprint scanner
-    const authResp = await startAuthentication(opts)
-
-    // 3. Verify signature on the server
-    const verifyRes = await fetch('/api/auth/webauthn/auth-verify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, authResp }),
-    })
-
-    const result = await verifyRes.json().catch(() => ({ verified: false }))
+    const options = await invokeWebAuthn<Record<string, unknown>>('auth-options')
+    if (options.error) throw new Error(String(options.error))
+    const assertion = await startAuthentication({ optionsJSON: options as unknown as PublicKeyCredentialRequestOptionsJSON })
+    const result = await invokeWebAuthn<{ verified: boolean; error?: string }>('auth-verify', { authResp: assertion })
     return Boolean(result.verified)
   } catch (error) {
     console.error('Biometric verification cancelled or failed:', error)
@@ -45,18 +17,10 @@ export async function verifyAndAuthorizeAction(userId: string): Promise<boolean>
   }
 }
 
-/**
- * Verifies user 4-digit PIN code against server.
- */
-export async function verifyPinAction(userId: string, pin: string): Promise<boolean> {
+export async function verifyPinAction(_userId: string, pin: string): Promise<boolean> {
   try {
-    const res = await fetch('/api/auth/security/pin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'verify', pin, userId }),
-    })
-    const data = await res.json().catch(() => ({ verified: false }))
-    return Boolean(data.verified)
+    const result = await verifySecurityPin(pin)
+    return Boolean(result.verified)
   } catch (error) {
     console.error('PIN verification error:', error)
     return false

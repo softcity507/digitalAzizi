@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import type { AppUser } from '@/types/auth';
+import { authApi } from '@/callapi/auth';
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
@@ -14,24 +15,16 @@ export default function Notification() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const refreshSubscription = () => {
-    void fetch('/api/auth/me')
-      .then(async (response) => {
-        const result = await response.json();
-        return result?.user ? result.user as AppUser : null;
-      })
-      .then(setUser)
+    void authApi.getSession()
+      .then((result) => setUser(result.user ? result.user as AppUser : null))
       .catch(() => setUser(null));
   };
 
   useEffect(() => {
     let cancelled = false;
-    void fetch('/api/auth/me')
-      .then(async (response) => {
-        const result = await response.json();
-        return result?.user ? result.user as AppUser : null;
-      })
-      .then((currentUser) => {
-        if (!cancelled) setUser(currentUser);
+    void authApi.getSession()
+      .then((result) => {
+        if (!cancelled) setUser(result.user ? result.user as AppUser : null);
       })
       .catch(() => {
         if (!cancelled) setUser(null);

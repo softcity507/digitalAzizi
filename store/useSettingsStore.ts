@@ -6,6 +6,7 @@ import { useExchangeDeskStore } from './useExchangeDeskStore';
 import { useCashBookStore } from './useCashBookStore';
 import type { SupportedLocale } from '@/i18n/languages';
 import { supabaseClient } from '@/lib/supabaseClient';
+import { authApi } from '@/callapi/auth';
 import { FREE_TRIAL_LIMITS } from '@/lib/planLimits';
 
 interface BusinessRow {
@@ -214,16 +215,14 @@ const getSignedInUser = async (): Promise<{ id: string; email: string }> => {
     }
   }
 
-  // Fallback to backend session endpoint /api/auth/me if needed
+  // Fallback to the authenticated Supabase Edge Function if the local auth client needs refresh.
   if (!authUserId || !email) {
     try {
-      const res = await fetch('/api/auth/me');
-      if (res.ok) {
-        const body = await res.json();
-        if (body?.user?.id && body?.user?.email) {
-          authUserId = body.user.id;
-          email = body.user.email.trim().toLowerCase();
-        }
+      const response = await authApi.getSession();
+      if (response.success && response.user?.email) {
+        const { data: authData } = await supabaseClient.auth.getUser();
+        authUserId = authData.user?.id || null;
+        email = response.user.email.trim().toLowerCase();
       }
     } catch {
       // Fetch session error fallback

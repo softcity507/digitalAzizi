@@ -6,6 +6,8 @@ import { useState } from 'react';
 import { CustomerAccount } from '@/types/customer';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import { authApi } from '@/callapi/auth';
+import { getSecurityStatus } from '@/callapi/security';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
 import { AlertTriangle } from 'lucide-react';
 import verifyAndAuthorizeAction, { verifyPinAction } from '@/components/max_second/verifyAndAuthorizeAction';
@@ -31,18 +33,12 @@ export default function CustomerCard({
   const requestDeleteVerification = async () => {
     setDeleteError(null);
     try {
-      const userRes = await fetch('/api/auth/me');
-      const userData = await userRes.json();
-      if (!userRes.ok || !userData.success || !userData.user?.id) {
+      const userData = await authApi.getSession();
+      if (!userData.success || !userData.user?.id) {
         throw new Error('Please sign in again to verify this action.');
       }
-      const statusRes = await fetch('/api/auth/security/pin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'status', userId: userData.user.id }),
-      });
-      const statusData = await statusRes.json();
-      if (!statusRes.ok || !statusData.success) {
+      const statusData = await getSecurityStatus();
+      if (!statusData.success) {
         throw new Error(statusData.error || 'Could not load verification methods.');
       }
       const hasPin = Boolean(statusData.status?.hasPin);

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">DigitalAzizi</string>
+    <string name="title_activity_main">DigitalAzizi</string>
+    <string name="package_name">com.digitalazizi.app</string>
+    <string name="custom_url_scheme">com.digitalazizi.app</string>
+</resources>
