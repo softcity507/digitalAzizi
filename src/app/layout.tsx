@@ -6,7 +6,6 @@ import { Analytics } from "@vercel/analytics/next"
 import { DEFAULT_LOCALE, LANGUAGES_MAP } from '@/i18n/request';
 import DynamicToast from '@/components/max_second/DynamicToast';
 import AppLockGuard from '@/components/max_second/AppLockGuard';
-import NativeAuthCallback from '@/components/max/NativeAuthCallback';
 
 type Props = {
   children: React.ReactNode;
@@ -59,7 +58,6 @@ export default function RootLayout({ children }: Props) {
           messages={messages}
           timeZone="UTC"
         >
-          <NativeAuthCallback />
           <AppLockGuard>{children}</AppLockGuard>
           <DynamicToast />
         </NextIntlClientProvider>
