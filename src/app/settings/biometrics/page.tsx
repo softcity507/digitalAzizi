@@ -19,6 +19,8 @@ import {
 import { APP_LOCK_KEY } from '@/components/max_second/AppLockGuard'
 import { authApi } from '@/callapi/auth'
 import { getSecurityStatus, getWebAuthnErrorMessage, invokeWebAuthn, setSecurityPin } from '@/callapi/security'
+import { supabaseClient } from '@/lib/supabaseClient'
+import { withWebAuthnPrompt } from '@/lib/webAuthnPrompt'
 
 export default function RegisterBiometric() {
   const [currentUser, setCurrentUser] = useState<{ id: string; email?: string; name?: string } | null>(null)
@@ -52,6 +54,20 @@ export default function RegisterBiometric() {
         const data = await authApi.getSession()
         if (data.success && data.user) {
           userObj = { id: data.user.id, email: data.user.email, name: data.user.name }
+        } else {
+          // Keep the page usable when the Edge profile endpoint is temporarily
+          // unavailable; the WebAuthn Edge Function identifies this session itself.
+          const { data: authData } = await supabaseClient.auth.getUser()
+          const { data: sessionData } = await supabaseClient.auth.getSession()
+          const signedInUser = authData.user || sessionData.session?.user
+          if (signedInUser?.email) {
+            const metadata = signedInUser.user_metadata || {}
+            userObj = {
+              id: signedInUser.id,
+              email: signedInUser.email,
+              name: String(metadata.full_name || metadata.name || signedInUser.email),
+            }
+          }
         }
 
         if (userObj && mounted) {
@@ -156,7 +172,9 @@ export default function RegisterBiometric() {
       }
 
       // Step B: Prompt browser / Touch ID / Face ID / Windows Hello / Fingerprint scanner
-      const attResp = await startRegistration({ optionsJSON: opts as unknown as PublicKeyCredentialCreationOptionsJSON })
+      const attResp = await withWebAuthnPrompt(() =>
+        startRegistration({ optionsJSON: opts as unknown as PublicKeyCredentialCreationOptionsJSON })
+      )
 
       // Step C: Verify registration response on server and store in user_credentials table
       const verification = await invokeWebAuthn<{ verified: boolean; error?: string }>('register-verify', { attResp })

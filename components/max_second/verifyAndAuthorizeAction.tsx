@@ -2,13 +2,16 @@
 
 import { startAuthentication, type PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/browser'
 import { invokeWebAuthn, verifySecurityPin } from '@/callapi/security'
+import { withWebAuthnPrompt } from '@/lib/webAuthnPrompt'
 
 /** Requests a challenge and verifies the signed passkey response in authz-api. */
 export async function verifyAndAuthorizeAction(_userId: string): Promise<boolean> {
   try {
     const options = await invokeWebAuthn<Record<string, unknown>>('auth-options')
     if (options.error) throw new Error(String(options.error))
-    const assertion = await startAuthentication({ optionsJSON: options as unknown as PublicKeyCredentialRequestOptionsJSON })
+    const assertion = await withWebAuthnPrompt(() =>
+      startAuthentication({ optionsJSON: options as unknown as PublicKeyCredentialRequestOptionsJSON })
+    )
     const result = await invokeWebAuthn<{ verified: boolean; error?: string }>('auth-verify', { authResp: assertion })
     return Boolean(result.verified)
   } catch (error) {

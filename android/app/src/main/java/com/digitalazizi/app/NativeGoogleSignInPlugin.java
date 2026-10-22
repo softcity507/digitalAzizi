@@ -2,7 +2,6 @@ package com.digitalazizi.app;
 
 import androidx.credentials.Credential;
 import androidx.credentials.CredentialManager;
-import androidx.credentials.CredentialManagerCallback;
 import androidx.credentials.CustomCredential;
 import androidx.credentials.GetCredentialRequest;
 import androidx.credentials.GetCredentialResponse;
@@ -19,27 +18,26 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
 
 @CapacitorPlugin(name = "NativeGoogleSignIn")
 public class NativeGoogleSignInPlugin extends Plugin {
-    // Keep the bridge method name aligned with the JS call.
     @PluginMethod
     public void getIdToken(PluginCall call) {
         String serverClientId = call.getString("serverClientId");
+        String nonce = call.getString("nonce");
         if (serverClientId == null || serverClientId.trim().isEmpty()) {
-            call.reject("Google server client ID is required.");
+            call.reject("serverClientId is required.");
             return;
         }
-        String nonce = call.getString("nonce");
         if (nonce == null || nonce.trim().isEmpty()) {
-            call.reject("A sign-in nonce is required.");
+            call.reject("nonce is required.");
             return;
         }
 
-        GetGoogleIdOption googleIdOption = new GetGoogleIdOption.Builder()
+        GetGoogleIdOption googleOption = new GetGoogleIdOption.Builder()
                 .setServerClientId(serverClientId)
                 .setNonce(nonce)
                 .setFilterByAuthorizedAccounts(false)
                 .build();
         GetCredentialRequest request = new GetCredentialRequest.Builder()
-                .addCredentialOption(googleIdOption)
+                .addCredentialOption(googleOption)
                 .build();
 
         CredentialManager credentialManager = CredentialManager.create(getContext());
@@ -49,32 +47,33 @@ public class NativeGoogleSignInPlugin extends Plugin {
                 request,
                 null,
                 ContextCompat.getMainExecutor(getContext()),
-                new CredentialManagerCallback<GetCredentialResponse, GetCredentialException>() {
+                new androidx.credentials.CredentialManagerCallback<GetCredentialResponse, GetCredentialException>() {
                     @Override
                     public void onResult(GetCredentialResponse response) {
                         try {
                             Credential credential = response.getCredential();
                             if (!(credential instanceof CustomCredential)
                                     || !GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL.equals(credential.getType())) {
-                                call.reject("Google returned an unsupported sign-in credential.");
+                                call.reject("Google did not return an ID token credential.");
                                 return;
                             }
-
-                            GoogleIdTokenCredential googleCredential = GoogleIdTokenCredential
-                                    .createFrom(((CustomCredential) credential).getData());
+                            GoogleIdTokenCredential googleCredential = GoogleIdTokenCredential.createFrom(
+                                    ((CustomCredential) credential).getData());
                             JSObject result = new JSObject();
                             result.put("idToken", googleCredential.getIdToken());
                             call.resolve(result);
                         } catch (Exception exception) {
-                            call.reject("Could not read the Google sign-in credential.", exception);
+                            call.reject("Could not read the Google ID token.", exception);
                         }
                     }
 
                     @Override
                     public void onError(GetCredentialException exception) {
-                        call.reject("Google sign-in failed: " + exception.getMessage(), exception);
+                        String message = exception.getMessage();
+                        call.reject(message == null || message.isEmpty()
+                                ? "Google sign-in was cancelled or could not be completed."
+                                : message, exception);
                     }
-                }
-        );
+                });
     }
 }

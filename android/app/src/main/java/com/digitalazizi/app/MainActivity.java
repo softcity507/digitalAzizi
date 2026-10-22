@@ -1,7 +1,6 @@
 package com.digitalazizi.app;
 
 import com.getcapacitor.BridgeActivity;
-import com.digitalazizi.app.NativeGoogleSignInPlugin;
 
 public class MainActivity extends BridgeActivity {
     @Override

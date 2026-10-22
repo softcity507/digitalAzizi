@@ -13,9 +13,8 @@ export function getWebAuthnErrorMessage(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
   if (message.includes(WEBAUTHN_CONFIG_ERROR)) {
     return [
-      'Passkey registration is not configured on the Supabase project yet.',
-      'In Supabase Dashboard > Edge Functions > Secrets, set WEBAUTHN_ORIGINS to http://localhost:3000,https://www.digitalazizi.com,https://digitalazizi.com and WEBAUTHN_RP_ID to http://localhost:3000=localhost,https://www.digitalazizi.com=digitalazizi.com,https://digitalazizi.com=digitalazizi.com.',
-      'Then retry Add Fingerprint.',
+      'The deployed authz-api function is older than this app and still requires WebAuthn secrets.',
+      'Redeploy supabase/functions/authz-api/index.ts, or configure WEBAUTHN_ORIGINS and WEBAUTHN_RP_ID in Supabase Edge Function secrets (include https://localhost=localhost for Android).',
     ].join(' ');
   }
   return message || 'An unexpected error occurred during biometric setup.';

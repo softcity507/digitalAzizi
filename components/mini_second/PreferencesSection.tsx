@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useSyncExternalStore, useTransition } from 'react';
+import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { getSecurityStatus, setSecurityPin } from '@/callapi/security';
@@ -250,13 +251,13 @@ export default function PreferencesSection() {
               {hasPin ? t('changePin') : t('setPin')}
             </button>
 
-            <a
+            <Link
               href={`/${currentLocale}/settings/biometrics`}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-brand/10 hover:bg-brand-hover/20 text-brand text-xs font-semibold transition-colors border border-brand/20"
             >
               <Fingerprint className="w-3.5 h-3.5" />
               {t('configureSensors')} →
-            </a>
+            </Link>
           </div>
         </div>
       </div>

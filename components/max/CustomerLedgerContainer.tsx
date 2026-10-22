@@ -7,8 +7,7 @@ import { useCashBookStore } from '@/store/useCashBookStore';
 import { useCustomerDetailsStore } from '@/store/useCustomerDetailsStore';
 import CurrencySummaryGrid from '@/components/max/CurrencySummaryGrid';
 import CustomerSearch from '@/components/mini/CustomerSearch';
-import DeskMirrorSection from '@/components/max/DeskMirrorSection';
-import AccountFilterTabs from '@/components/mini/AccountFilterTabs';
+ import AccountFilterTabs from '@/components/mini/AccountFilterTabs';
 import CustomerList from '@/components/max/CustomerList';
 // import AddCustomerButton from '@/components/mini/AddCustomerButton';
 import CustomerPdfExport from '../max_second/CustomerPdfExport';
@@ -93,7 +92,7 @@ export default function CustomerLedgerContainer() {
     return ledgerTransactions.filter((transaction) => customerIds.has(transaction.customerId));
   }, [activeBusinessCustomers, ledgerTransactions]);
 
-  const { currencySummaries, doubleEntryBooks } = useMemo(() => {
+  const { currencySummaries } = useMemo(() => {
     const totalsByCurrency = new Map<CurrencyCode, { credit: number; debit: number }>(
       currencies.map((currency) => [currency, { credit: 0, debit: 0 }]),
     );
@@ -175,28 +174,20 @@ export default function CustomerLedgerContainer() {
       <CurrencySummaryGrid summaries={currencySummaries} />
 
       {/* 2. Responsive 12-Column Dashboard Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
-        {/* Left Column: Desk Mirror Position & Filter Tabs (Sticky on Laptop/Desktop) */}
-        <div className="lg:col-span-5 xl:col-span-4  space-y-4 lg:sticky lg:top-20">
-          {/* Desk Mirror Position & Double-Entry Section */}
-          <DeskMirrorSection books={doubleEntryBooks} />
+      <div className="grid grid-cols-1  gap-5 lg:gap-8 items-start">
+        
 
-          {/* Account Filter Pills (All Accounts, Receivable, Payable) */}
+         <div className="lg:col-span-7 xl:col-span-8 space-y-4">
           <div className="p-3.5 rounded bg-surface border border-surface-border shadow-sm space-y-2">
-            <span className="block text-[10px] font-black tracking-wider uppercase text-slate-500 dark:text-slate-400 px-1">
-              {t('allAccounts')}
-            </span>
+             
             <AccountFilterTabs
               currentFilter={activeFilter}
               onSelect={setActiveFilter}
               totalAccounts={activeBusinessCustomers.length}
             />
           </div>
-        </div>
-
-        {/* Right Column: Search, PDF Export & Customer Accounts Feed */}
-        <div className="lg:col-span-7 xl:col-span-8 space-y-4">
           <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+            
             {/* Customer & Phone Search Bar */}
             <div className="w-full flex-1">
               <CustomerSearch value={searchQuery} onChange={setSearchQuery} />

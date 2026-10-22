@@ -12,11 +12,11 @@ export const authApi = {
     try {
       const isNative = Capacitor.isNativePlatform();
       if (isNative && Capacitor.getPlatform() === 'android') {
-        const serverClientId = process.env.NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+        const serverClientId = process.env.NEXT_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
         if (!serverClientId) {
           return {
             success: false,
-            error: 'Native Google sign-in needs NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID. Set it to the Web/server OAuth client ID used by Supabase, then rebuild the Android app. The Android OAuth client ID is not the token audience.',
+            error: 'Native Google sign-in needs NEXT_PUBLIC_GOOGLE_ANDROID_CLIENT_ID. Set it to the Web/server OAuth client ID used by Supabase, then rebuild the Android app. The Android OAuth client ID is not the token audience.',
           };
         }
 

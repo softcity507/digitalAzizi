@@ -38,7 +38,11 @@ export default function GoogleLogin({ className = '', label, redirectTo = '/cash
     if (isLoading) return;
     setIsLoading(true);
     setErrorMsg(null);
-    const result = await authApi.signInWithGoogleOAuth(`/${locale}${redirectTo}`);
+    const requestedPath = new URLSearchParams(window.location.search).get('redirect');
+    const safeRequestedPath = requestedPath?.startsWith('/') && !requestedPath.startsWith('//')
+      ? requestedPath
+      : `/${locale}${redirectTo}`;
+    const result = await authApi.signInWithGoogleOAuth(safeRequestedPath);
     if (!result.success) {
       setErrorMsg(result.error || 'Google sign-in could not be started.');
       setIsLoading(false);

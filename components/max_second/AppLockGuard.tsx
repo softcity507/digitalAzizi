@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef, useCallback } from 'react'
+import { Capacitor } from '@capacitor/core'
 import {
   Fingerprint,
   Lock,
@@ -16,11 +17,13 @@ import { getSecurityStatus, verifySecurityPin } from '@/callapi/security'
 import { useRouter } from 'next/navigation'
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/i18n/languages'
 import { supabaseClient } from '@/lib/supabaseClient'
+import { isWebAuthnPromptActive } from '@/lib/webAuthnPrompt'
 import type { AuthChangeEvent } from '@supabase/supabase-js'
 
 export const APP_LOCK_KEY = 'digitalazizi_app_lock_enabled'
 export const IS_LOCKED_KEY = 'digitalazizi_session_locked'
 export const LAST_AUTH_TIME_KEY = 'digitalazizi_last_auth_time'
+const ANDROID_RETURN_PATH_KEY = 'digitalazizi_android_return_path'
 export const ONE_HOUR_MS = 60 * 60 * 1000 // 1 hour in milliseconds
 
 export default function AppLockGuard({ children }: { children?: React.ReactNode }) {
@@ -55,7 +58,11 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
       // when the user returns to an already-open page such as Cash Book.
       if (routeSegments.length > 0) return
 
-      router.replace(`/${locale}/cash-book/`)
+      const requestedPath = new URLSearchParams(window.location.search).get('redirect')
+      const safeRequestedPath = requestedPath?.startsWith('/') && !requestedPath.startsWith('//')
+        ? requestedPath
+        : null
+      router.replace(safeRequestedPath || `/${locale}/cash-book/`)
     })
 
     return () => subscription.unsubscribe()
@@ -68,7 +75,15 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
     setIsLocked(false)
     setPinInput('')
     setPinError('')
-  }, [])
+
+    if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
+      const returnPath = localStorage.getItem(ANDROID_RETURN_PATH_KEY)
+      if (returnPath?.startsWith('/') && !returnPath.startsWith('//')) {
+        localStorage.removeItem(ANDROID_RETURN_PATH_KEY)
+        if (window.location.pathname !== returnPath) router.replace(returnPath)
+      }
+    }
+  }, [router])
 
   // 1. Check user session & lock setting on mount
   useEffect(() => {
@@ -84,15 +99,43 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
           ? segments[0]
           : DEFAULT_LOCALE
         const routeSegments = locale === segments[0] ? segments.slice(1) : segments
-        const isLanding = routeSegments.length === 0
+        const isLandingRoute = routeSegments.length === 0
+        const savedAndroidPath = enabled
+          && sessionStorage.getItem(IS_LOCKED_KEY) === 'true'
+          && Capacitor.isNativePlatform()
+          && Capacitor.getPlatform() === 'android'
+          ? localStorage.getItem(ANDROID_RETURN_PATH_KEY)
+          : null
+        const isLanding = isLandingRoute && !savedAndroidPath
         const isPublic = window.location.pathname.includes('/about')
         if (isPublic) return
 
-        const data = await authApi.getSession()
-        if (!data.success || !data.user) {
+        // Check Supabase Auth separately from the profile Edge Function. A
+        // temporary Edge Function failure must not navigate away from the
+        // page the user is opening (for example, Biometrics in the Android app).
+        const { data: sessionData } = await supabaseClient.auth.getSession()
+        const { data: authData, error: authError } = await supabaseClient.auth.getUser()
+        const signedInUser = authData.user || sessionData.session?.user || null
+        if (!signedInUser) {
           if (!isLanding && mounted) {
             const redirect = encodeURIComponent(`${window.location.pathname}${window.location.search}`)
+            router.replace(`/${locale}?auth_error=${encodeURIComponent(authError?.message || 'Please sign in to continue.')}&redirect=${redirect}`)
+          }
+          return
+        }
+
+        const data = await authApi.getSession()
+        if (!data.success || !data.user) {
+          if (data.user && mounted) {
+            const redirect = encodeURIComponent(`${window.location.pathname}${window.location.search}`)
             router.replace(`/${locale}?auth_error=${encodeURIComponent(data.error || 'Please sign in to continue.')}&redirect=${redirect}`)
+          } else if (mounted) {
+            const metadata = signedInUser.user_metadata || {}
+            setCurrentUser({
+              id: signedInUser.id,
+              email: signedInUser.email,
+              name: String(metadata.full_name || metadata.name || signedInUser.email || ''),
+            })
           }
           return
         }
@@ -151,14 +194,25 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
   useEffect(() => {
     if (!isLockEnabled || !currentUser) return
 
+    const rememberAndroidRoute = () => {
+      if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'android') return
+      const path = `${window.location.pathname}${window.location.search}${window.location.hash}`
+      const segments = window.location.pathname.split('/').filter(Boolean)
+      if (segments.length > 1) localStorage.setItem(ANDROID_RETURN_PATH_KEY, path)
+    }
+
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') {
+        if (isWebAuthnPromptActive()) return
+        rememberAndroidRoute()
         sessionStorage.setItem(IS_LOCKED_KEY, 'true')
         setIsLocked(true)
       }
     }
 
     const handlePageHide = () => {
+      if (isWebAuthnPromptActive()) return
+      rememberAndroidRoute()
       sessionStorage.setItem(IS_LOCKED_KEY, 'true')
       setIsLocked(true)
     }
@@ -207,7 +261,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
   }, [isLockEnabled, currentUser])
 
   // 4. Unlock with Biometrics
-  const triggerBiometricUnlock = useCallback(async () => {
+  const triggerBiometricUnlock = useCallback(async (showFailureMessage = true) => {
     if (!currentUser || !hasCredentials || isBiometricAttempting.current) return
     isBiometricAttempting.current = true
     setVerifyingBiometric(true)
@@ -217,11 +271,13 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
       const success = await verifyAndAuthorizeAction(currentUser.id)
       if (success) {
         markUnlocked()
-      } else {
+      } else if (showFailureMessage && !(Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android')) {
         setPinError('Biometric verification failed. Please enter your PIN.')
       }
     } catch {
-      setPinError('Biometric scan cancelled. Please use your PIN.')
+      if (showFailureMessage && !(Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android')) {
+        setPinError('Biometric scan cancelled. Please use your PIN.')
+      }
     } finally {
       setVerifyingBiometric(false)
       isBiometricAttempting.current = false
@@ -232,7 +288,9 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
   useEffect(() => {
     if (isLocked && currentUser) {
       const timer = setTimeout(() => {
-        triggerBiometricUnlock()
+        // Android WebView can report a cancelled/unsupported prompt as a
+        // failed assertion. Keep the PIN screen clean and ready as fallback.
+        triggerBiometricUnlock(false)
       }, 300)
       return () => clearTimeout(timer)
     }
@@ -280,6 +338,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
   // 5. Emergency Sign Out
   const handleSignOut = async () => {
     sessionStorage.removeItem(IS_LOCKED_KEY)
+    localStorage.removeItem(ANDROID_RETURN_PATH_KEY)
     await authApi.logout()
     router.push('/')
   }
@@ -325,7 +384,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
             {/* Biometric Quick Button */}
             {hasCredentials && <button
               type="button"
-              onClick={triggerBiometricUnlock}
+              onClick={() => triggerBiometricUnlock()}
               disabled={verifyingBiometric}
               className="w-full inline-flex items-center justify-center gap-3 py-3.5 px-4 rounded-2xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white font-semibold text-sm transition-all shadow-lg active:scale-98 cursor-pointer"
             >

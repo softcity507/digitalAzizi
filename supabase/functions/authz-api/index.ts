@@ -210,16 +210,33 @@ async function verifyPinHash(pin: string, saved: string) {
   return difference === 0;
 }
 
+const DEFAULT_WEBAUTHN_RP_IDS = new Map<string, string>([
+  ['http://localhost:3000', 'localhost'],
+  ['https://localhost', 'localhost'],
+  ['https://www.digitalazizi.com', 'digitalazizi.com'],
+  ['https://digitalazizi.com', 'digitalazizi.com'],
+]);
+
 function webAuthnConfig(requestOrigin: string | null) {
   const rpIDSetting = Deno.env.get('WEBAUTHN_RP_ID')?.trim();
-  const origins = (Deno.env.get('WEBAUTHN_ORIGINS') || Deno.env.get('WEBAUTHN_ORIGIN') || '')
+  const originsSetting = (Deno.env.get('WEBAUTHN_ORIGINS') || Deno.env.get('WEBAUTHN_ORIGIN') || '').trim();
+  const origins = (originsSetting || [...DEFAULT_WEBAUTHN_RP_IDS.keys()].join(','))
     .split(',').map(value => value.trim()).filter(Boolean);
-  if (!rpIDSetting || origins.length === 0) {
-    throw new Error('Configure WEBAUTHN_RP_ID and WEBAUTHN_ORIGINS in the Edge Function secrets before using passkeys.');
+  if (!requestOrigin || !origins.includes(requestOrigin)) {
+    throw new Error(`App origin "${requestOrigin || '(missing)'}" is not listed in WEBAUTHN_ORIGINS or the built-in origin allowlist.`);
   }
 
-  if (!requestOrigin || !origins.includes(requestOrigin)) {
-    throw new Error('This app origin is not listed in the WEBAUTHN_ORIGINS Edge Function secret.');
+  // Safe built-in defaults support web and Capacitor Android without putting
+  // deploy-specific secrets in frontend code. Explicit Edge Function secrets
+  // override these values when the deployment uses different domains.
+  if (!rpIDSetting && !originsSetting) {
+    const rpID = DEFAULT_WEBAUTHN_RP_IDS.get(requestOrigin);
+    if (!rpID) throw new Error(`No WebAuthn RP ID is configured for ${requestOrigin}.`);
+    return { rpID, origins: [requestOrigin] };
+  }
+
+  if (!rpIDSetting) {
+    throw new Error('WEBAUTHN_RP_ID must be configured when WEBAUTHN_ORIGINS is overridden.');
   }
 
   // For multiple sites, set WEBAUTHN_RP_ID as origin=RP-ID pairs, for example:
