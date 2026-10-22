@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { Capacitor } from '@capacitor/core';
 import MiniLoader from '@/components/mini_second/MiniLoader';
 import { authApi } from '@/callapi/auth';
 
@@ -13,6 +15,7 @@ interface GoogleLoginProps {
 
 export default function GoogleLogin({ className = '', label, redirectTo = '/cash-book' }: GoogleLoginProps) {
   const locale = useLocale();
+  const router = useRouter();
   const t = useTranslations('Landing');
   const buttonLabel = label || t('signInGoogle');
   const [isLoading, setIsLoading] = useState(false);
@@ -46,6 +49,14 @@ export default function GoogleLogin({ className = '', label, redirectTo = '/cash
     if (!result.success) {
       setErrorMsg(result.error || 'Google sign-in could not be started.');
       setIsLoading(false);
+      return;
+    }
+
+    // In Android, sign-in completes in this WebView. Navigate through Next's
+    // router so the static Capacitor app keeps its in-memory route handling
+    // and the Supabase session already saved by authApi.
+    if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
+      router.replace(safeRequestedPath);
     }
   };
 

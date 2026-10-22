@@ -34,6 +34,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
   const [pinError, setPinError] = useState('')
   const [hasPin, setHasPin] = useState(false)
   const [hasCredentials, setHasCredentials] = useState(false)
+  const [authorizationError, setAuthorizationError] = useState('')
   const [verifyingPin, setVerifyingPin] = useState(false)
   const [verifyingBiometric, setVerifyingBiometric] = useState(false)
   const [shake, setShake] = useState(false)
@@ -126,19 +127,21 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
 
         const data = await authApi.getSession()
         if (!data.success || !data.user) {
-          if (data.user && mounted) {
-            const redirect = encodeURIComponent(`${window.location.pathname}${window.location.search}`)
-            router.replace(`/${locale}?auth_error=${encodeURIComponent(data.error || 'Please sign in to continue.')}&redirect=${redirect}`)
-          } else if (mounted) {
+          if (mounted) {
             const metadata = signedInUser.user_metadata || {}
             setCurrentUser({
               id: signedInUser.id,
               email: signedInUser.email,
               name: String(metadata.full_name || metadata.name || signedInUser.email || ''),
             })
+            // A valid Supabase session with a rejected/missing app profile is
+            // an authorization problem, not a sign-in problem. Sending this
+            // user back to Google sign-in creates a Cash Book -> landing loop.
+            setAuthorizationError(data.error || 'Your account could not be authorized. Sign out and sign in again.')
           }
           return
         }
+        setAuthorizationError('')
         if (isLanding && mounted) {
           router.replace(`/${locale}/cash-book`)
           return
@@ -489,6 +492,26 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
                 Sign Out
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {authorizationError && !isLocked && (
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[999998] flex items-center justify-center bg-black/85 backdrop-blur-xl p-4"
+        >
+          <div className="w-full max-w-sm rounded-2xl border border-surface-border bg-surface p-6 text-center shadow-2xl">
+            <h2 className="text-lg font-bold text-content-primary">Account access unavailable</h2>
+            <p className="mt-3 text-sm text-content-secondary">{authorizationError}</p>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="mt-5 rounded bg-brand px-5 py-2.5 text-sm font-semibold text-black"
+            >
+              Sign out and return to sign in
+            </button>
           </div>
         </div>
       )}

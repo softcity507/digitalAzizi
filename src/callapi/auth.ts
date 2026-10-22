@@ -12,11 +12,12 @@ export const authApi = {
     try {
       const isNative = Capacitor.isNativePlatform();
       if (isNative && Capacitor.getPlatform() === 'android') {
+
         const serverClientId = process.env.NEXT_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
         if (!serverClientId) {
           return {
             success: false,
-            error: 'Native Google sign-in needs NEXT_PUBLIC_GOOGLE_ANDROID_CLIENT_ID. Set it to the Web/server OAuth client ID used by Supabase, then rebuild the Android app. The Android OAuth client ID is not the token audience.',
+            error: 'Native Google sign-in needs NEXT_PUBLIC_GOOGLE, the Web/server OAuth client ID configured for Google in Supabase. The Android OAuth client ID is not the token audience.',
           };
         }
 
@@ -28,21 +29,8 @@ export const authApi = {
         const { idToken } = await NativeGoogleSignIn.getIdToken({ serverClientId, nonce: googleNonce });
         const { data, error } = await supabaseClient.auth.signInWithIdToken({ provider: 'google', token: idToken, nonce });
         if (error) return { success: false, error: error.message };
-
-        // Keep the native WebView on the current page until Supabase has
-        // persisted the session. Navigating immediately can race the storage
-        // write, causing AppLockGuard to see an anonymous user on the target.
         if (!data.session) return { success: false, error: 'Google sign-in did not return a session.' };
-        const { error: sessionError } = await supabaseClient.auth.setSession({
-          access_token: data.session.access_token,
-          refresh_token: data.session.refresh_token,
-        });
-        if (sessionError) return { success: false, error: sessionError.message };
 
-        const safeRedirect = redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/en/cash-book';
-        // Use the app's existing WebView so the Android build resolves its
-        // exported route locally and retains the just-created auth session.
-        window.location.assign(safeRedirect.endsWith('/') ? safeRedirect : `${safeRedirect}/`);
         return { success: true };
       }
 
@@ -84,10 +72,17 @@ export const authApi = {
   },
 
   async logout(): Promise<{ success: boolean; message?: string }> {
-    const { error } = await supabaseClient.auth.signOut();
-    return error
-      ? { success: false, message: error.message }
-      : { success: true, message: 'Logged out successfully.' };
+    try {
+      const { error } = await supabaseClient.auth.signOut();
+      return error
+        ? { success: false, message: error.message }
+        : { success: true, message: 'Logged out successfully.' };
+    } catch (error) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Could not sign out. Please try again.',
+      };
+    }
   },
 };
 
