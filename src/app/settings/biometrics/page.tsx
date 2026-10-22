@@ -21,6 +21,7 @@ import { authApi } from '@/callapi/auth'
 import { getSecurityStatus, getWebAuthnErrorMessage, invokeWebAuthn, setSecurityPin } from '@/callapi/security'
 import { supabaseClient } from '@/lib/supabaseClient'
 import { withWebAuthnPrompt } from '@/lib/webAuthnPrompt'
+import { Capacitor } from '@capacitor/core'
 
 export default function RegisterBiometric() {
   const [currentUser, setCurrentUser] = useState<{ id: string; email?: string; name?: string } | null>(null)
@@ -34,6 +35,7 @@ export default function RegisterBiometric() {
   const [isAppLock, setIsAppLock] = useState(false)
   const [hasPin, setHasPin] = useState(false)
   const [hasCredentials, setHasCredentials] = useState(false)
+  const [credentialCount, setCredentialCount] = useState(0)
   const [pinInput, setPinInput] = useState('')
   const [pinConfirm, setPinConfirm] = useState('')
   const [savingPin, setSavingPin] = useState(false)
@@ -45,7 +47,11 @@ export default function RegisterBiometric() {
 
     async function loadData() {
       try {
-        setSupported(browserSupportsWebAuthn())
+        // Android WebView exposes WebAuthn after MainActivity enables the
+        // platform Web Authentication feature. Some WebView versions report
+        // browserSupportsWebAuthn() as false during initial page evaluation,
+        // so use the native platform as the fallback capability signal.
+        setSupported(browserSupportsWebAuthn() || (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android'))
         setIsAppLock(localStorage.getItem(APP_LOCK_KEY) === 'true')
 
         // Use the same canonical app user ID as AppLockGuard and the OAuth session.
@@ -78,6 +84,7 @@ export default function RegisterBiometric() {
           if (pinData?.status) {
             setHasPin(Boolean(pinData.status.hasPin))
             setHasCredentials(Boolean(pinData.status.hasCredentials))
+            setCredentialCount(Number(pinData.status.credentialCount) || 0)
           }
         }
       } catch (err) {
@@ -154,7 +161,7 @@ export default function RegisterBiometric() {
       return
     }
 
-    if (!browserSupportsWebAuthn()) {
+    if (!browserSupportsWebAuthn() && !(Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android')) {
       setMessage({
         type: 'error',
         text: 'Your current browser or device does not support WebAuthn biometric sensors.',
@@ -181,6 +188,7 @@ export default function RegisterBiometric() {
 
       if (verification.verified) {
         setHasCredentials(true)
+        setCredentialCount((count) => count + 1)
         setMessage({
           type: 'success',
           text: 'Biometric authenticator (Fingerprint / Face ID / Windows Hello) was successfully saved',
@@ -273,7 +281,7 @@ export default function RegisterBiometric() {
             <div>
               <p className="font-semibold">Hardware or Browser Not Supported</p>
               <p className="text-xs mt-0.5 opacity-90">
-                This browser or device does not support WebAuth biometrics. You can still use your 4-digit PIN code for lock security.
+                This browser or device does not support WebAuthn biometrics. You can still use your 4-digit PIN code for lock security.
               </p>
             </div>
           </div>
@@ -434,13 +442,34 @@ export default function RegisterBiometric() {
             <Fingerprint className="w-4 h-4 text-sky-500" />
             WebAuthn Biometric Authenticator
           </h3>
+          <p className="text-xs text-content-muted">
+            Your device opens its own fingerprint, Face ID, or screen lock prompt. Browsers do not expose a list of enrolled biometrics; registered authenticators are shown by count below.
+          </p>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            {hasCredentials ? (
+            <button
+              type="button"
+              onClick={handleRegister}
+              disabled={registering || testing || !currentUser || loading}
+              className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white font-medium text-sm transition-all shadow-md active:scale-98 cursor-pointer"
+            >
+              {registering ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Registering Fingerprint...
+                </>
+              ) : (
+                <>
+                  <Fingerprint className="w-4 h-4" />
+                  {hasCredentials ? 'Add Another Authenticator' : 'Add Fingerprint'}
+                </>
+              )}
+            </button>
+            {hasCredentials && (
               <button
                 type="button"
                 onClick={handleTestVerification}
-                disabled={testing || !currentUser || loading}
+                disabled={testing || registering || !currentUser || loading}
                 className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-surface-subtle hover:bg-surface-border text-content-primary border border-surface-border font-medium text-sm transition-all active:scale-98 cursor-pointer"
               >
                 {testing ? (
@@ -455,47 +484,16 @@ export default function RegisterBiometric() {
                   </>
                 )}
               </button>
-            ) : (
-              <button
-                type="button"
-                onClick={handleRegister}
-                disabled={registering || !currentUser || loading}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white font-medium text-sm transition-all shadow-md active:scale-98 cursor-pointer"
-              >
-                {registering ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Registering Fingerprint...
-                  </>
-                ) : (
-                  <>
-                    <Fingerprint className="w-4 h-4" />
-                    Add Fingerprint
-                  </>
-                )}
-              </button>
             )}
           </div>
+          {hasCredentials && (
+            <p className="text-xs text-content-muted">
+              {credentialCount} authenticator{credentialCount === 1 ? '' : 's'} registered. Add another device or test an existing one.
+            </p>
+          )}
         </div>
 
-        {/* Security Info Card */}
-        <div className="pt-4 border-t border-surface-border space-y-3">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-content-muted flex items-center gap-2">
-            <Lock className="w-3.5 h-3.5" />
-            How the App Lock System Operates
-          </h4>
-          <ul className="text-xs text-content-muted space-y-1.5 list-disc list-inside">
-            <li>
-              When <strong>App Lock</strong> is switched ON, switching browser tabs, minimizing the browser, or locking your phone automatically locks the application.
-            </li>
-            <li>
-              To unlock, you can either tap the <strong>Fingerprint / Face ID</strong> sensor or enter your <strong>4-digit PIN</strong>.
-            </li>
-            <li>
-              Biometric credentials are securely stored in your Postgres table <code className="bg-surface-subtle px-1.5 py-0.5 rounded text-content-primary">public.user_credentials</code> and PINs in <code className="bg-surface-subtle px-1.5 py-0.5 rounded text-content-primary">public.users.pin_code</code>.
-            </li>
-          </ul>
-        </div>
+        
       </div>
     </div>
   )

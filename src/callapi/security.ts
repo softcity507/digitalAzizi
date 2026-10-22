@@ -14,7 +14,7 @@ export function getWebAuthnErrorMessage(error: unknown): string {
   if (message.includes(WEBAUTHN_CONFIG_ERROR)) {
     return [
       'The deployed authz-api function is older than this app and still requires WebAuthn secrets.',
-      'Redeploy supabase/functions/authz-api/index.ts, or configure WEBAUTHN_ORIGINS and WEBAUTHN_RP_ID in Supabase Edge Function secrets (include https://localhost=localhost for Android).',
+      'Redeploy supabase/functions/authz-api/index.ts, or configure WEBAUTHN_ORIGINS and WEBAUTHN_RP_ID in Supabase Edge Function secrets for https://www.digitalazizi.com.',
     ].join(' ');
   }
   return message || 'An unexpected error occurred during biometric setup.';

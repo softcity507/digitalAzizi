@@ -388,7 +388,14 @@ async function handleAction(action: string, body: JsonRecord, db: SupabaseClient
         userDisplayName: String(profile.name || email.split('@')[0]),
         attestationType: 'none',
         excludeCredentials: credentials.map(item => ({ id: item.id, transports: item.transports })),
-        authenticatorSelection: { residentKey: 'preferred', userVerification: 'preferred' },
+        // Request a device-bound authenticator and require local user
+        // verification so enrollment actually uses the device's biometric or
+        // secure screen-lock prompt on web and Android WebView.
+        authenticatorSelection: {
+          authenticatorAttachment: 'platform',
+          residentKey: 'preferred',
+          userVerification: 'required',
+        },
       });
       await saveChallenge(db, String(profile.id), 'registration', options.challenge);
       return options as unknown as JsonRecord;
@@ -398,7 +405,7 @@ async function handleAction(action: string, body: JsonRecord, db: SupabaseClient
       if (!attResp) return { verified: false, error: 'Missing authenticator response.' };
       const expectedChallenge = await takeChallenge(db, String(profile.id), 'registration');
       if (!expectedChallenge) return { verified: false, error: 'Challenge expired. Try again.' };
-      const verification = await verifyRegistrationResponse({ response: attResp, expectedChallenge, expectedOrigin: origins, expectedRPID: rpID, requireUserVerification: false });
+      const verification = await verifyRegistrationResponse({ response: attResp, expectedChallenge, expectedOrigin: origins, expectedRPID: rpID, requireUserVerification: true });
       if (!verification.verified || !verification.registrationInfo) return { verified: false, error: 'Registration verification failed.' };
       const credential = verification.registrationInfo.credential;
       const bytea = `\\x${Array.from(credential.publicKey, value => value.toString(16).padStart(2, '0')).join('')}`;
@@ -417,7 +424,7 @@ async function handleAction(action: string, body: JsonRecord, db: SupabaseClient
       const options = await generateAuthenticationOptions({
         rpID,
         allowCredentials: credentials.map(item => ({ id: item.id, transports: item.transports })),
-        userVerification: 'preferred',
+        userVerification: 'required',
       });
       await saveChallenge(db, String(profile.id), 'authentication', options.challenge);
       return options as unknown as JsonRecord;
@@ -436,7 +443,7 @@ async function handleAction(action: string, body: JsonRecord, db: SupabaseClient
         expectedOrigin: origins,
         expectedRPID: rpID,
         credential: { id: matched.id, publicKey: isoBase64URL.toBuffer(matched.publicKey), counter: matched.counter },
-        requireUserVerification: false,
+        requireUserVerification: true,
       });
       if (!verification.verified || !verification.authenticationInfo) return { verified: false, error: 'Passkey verification failed.' };
       const { error } = await db.from('user_credentials').update({ counter: verification.authenticationInfo.newCounter }).eq('user_id', profile.id).eq('credential_id', matched.id);
