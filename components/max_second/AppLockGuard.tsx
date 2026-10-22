@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Capacitor } from '@capacitor/core'
+import { App } from '@capacitor/app'
 import {
   Fingerprint,
   Lock,
@@ -223,9 +224,55 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
     document.addEventListener('visibilitychange', handleVisibilityChange)
     window.addEventListener('pagehide', handlePageHide)
 
+    // Android WebView does not consistently deliver page visibility events
+    // when the native activity is backgrounded. Use Capacitor's lifecycle
+    // event as the authoritative fallback so returning from another app
+    // always shows the lock overlay.
+    let removeAppStateListener: (() => void) | undefined
+    if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
+      let disposed = false
+      void App.addListener('appStateChange', ({ isActive }) => {
+        if (!isActive) {
+          if (isWebAuthnPromptActive()) return
+          rememberAndroidRoute()
+          sessionStorage.setItem(IS_LOCKED_KEY, 'true')
+          setIsLocked(true)
+          return
+        }
+
+        if (sessionStorage.getItem(IS_LOCKED_KEY) === 'true') {
+          setIsLocked(true)
+        }
+        // Refresh security capabilities on return. Android can resume the
+        // WebView after a cold restore before the initial status request has
+        // completed, which otherwise leaves the PIN keypad hidden.
+        void getSecurityStatus().then((securityData) => {
+          if (!securityData.success) return
+          setHasPin(Boolean(securityData.status?.hasPin))
+          setHasCredentials(Boolean(securityData.status?.hasCredentials))
+        }).catch((error: unknown) => {
+          console.warn('Could not refresh Android security status:', error)
+        })
+      }).then((listener) => {
+        if (disposed) void listener.remove()
+        else removeAppStateListener = () => { void listener.remove() }
+      }).catch((error: unknown) => {
+        console.warn('Could not register Android app lifecycle listener:', error)
+      })
+      const markDisposed = () => { disposed = true }
+
+      return () => {
+        markDisposed()
+        removeAppStateListener?.()
+        document.removeEventListener('visibilitychange', handleVisibilityChange)
+        window.removeEventListener('pagehide', handlePageHide)
+      }
+    }
+
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('pagehide', handlePageHide)
+      removeAppStateListener?.()
     }
   }, [isLockEnabled, currentUser])
 
@@ -274,11 +321,11 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
       const success = await verifyAndAuthorizeAction(currentUser.id)
       if (success) {
         markUnlocked()
-      } else if (showFailureMessage && !(Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android')) {
+      } else if (showFailureMessage) {
         setPinError('Biometric verification failed. Please enter your PIN.')
       }
     } catch {
-      if (showFailureMessage && !(Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android')) {
+      if (showFailureMessage) {
         setPinError('Biometric scan cancelled. Please use your PIN.')
       }
     } finally {
@@ -286,18 +333,6 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
       isBiometricAttempting.current = false
     }
   }, [currentUser, hasCredentials, markUnlocked])
-
-  // Auto trigger biometrics once when lock screen opens
-  useEffect(() => {
-    if (isLocked && currentUser) {
-      const timer = setTimeout(() => {
-        // Android WebView can report a cancelled/unsupported prompt as a
-        // failed assertion. Keep the PIN screen clean and ready as fallback.
-        triggerBiometricUnlock(false)
-      }, 300)
-      return () => clearTimeout(timer)
-    }
-  }, [isLocked, currentUser, triggerBiometricUnlock])
 
   // 5. Submit PIN verification
   const handleVerifyPin = async (pinToVerify: string) => {
@@ -380,36 +415,11 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
               <h2 className="text-xl font-bold text-content-primary">Application Locked</h2>
               <p className="text-xs sm:text-sm text-content-muted">
                 {currentUser?.name ? `Welcome back, ${currentUser.name}.` : 'Secure Session'}{' '}
-                Unlock with your registered device authenticator{hasPin ? ' or optional PIN' : ''}.
+                {hasPin
+                  ? 'Enter your PIN to unlock, or use your registered biometric.'
+                  : 'Use your registered device biometric to unlock.'}
               </p>
             </div>
-
-            {/* Biometric Quick Button */}
-            {hasCredentials && <button
-              type="button"
-              onClick={() => triggerBiometricUnlock()}
-              disabled={verifyingBiometric}
-              className="w-full inline-flex items-center justify-center gap-3 py-3.5 px-4 rounded-2xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white font-semibold text-sm transition-all shadow-lg active:scale-98 cursor-pointer"
-            >
-              {verifyingBiometric ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Verifying Fingerprint / Face ID...
-                </>
-              ) : (
-                <>
-                  <Fingerprint className="w-5 h-5" />
-                  Tap to Verify Biometric Sensor
-                </>
-              )}
-            </button>}
-
-            {/* Divider */}
-            {hasPin && <div className="w-full flex items-center gap-3 text-xs uppercase tracking-wider text-content-muted font-bold">
-              <div className="flex-1 h-px bg-surface-border" />
-              <span>Or Enter PIN Code</span>
-              <div className="flex-1 h-px bg-surface-border" />
-            </div>}
 
             {/* PIN Code Dots Display */}
             {hasPin && <div className="flex items-center justify-center gap-3 py-1">
@@ -479,6 +489,32 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
                 <Delete className="w-5 h-5" />
               </button>
             </div>}
+
+            {/* Biometric option: explicit tap keeps Android WebAuthn inside a
+                user gesture and avoids an automatic prompt being cancelled. */}
+            {hasPin && hasCredentials && <div className="w-full flex items-center gap-3 text-xs uppercase tracking-wider text-content-muted font-bold">
+              <div className="flex-1 h-px bg-surface-border" />
+              <span>Or Use Biometrics</span>
+              <div className="flex-1 h-px bg-surface-border" />
+            </div>}
+            {hasCredentials && <button
+              type="button"
+              onClick={() => triggerBiometricUnlock()}
+              disabled={verifyingBiometric}
+              className="w-full inline-flex items-center justify-center gap-3 py-3.5 px-4 rounded-2xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white font-semibold text-sm transition-all shadow-lg active:scale-98 cursor-pointer"
+            >
+              {verifyingBiometric ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Verifying Fingerprint / Face ID...
+                </>
+              ) : (
+                <>
+                  <Fingerprint className="w-5 h-5" />
+                  Use Fingerprint / Face ID
+                </>
+              )}
+            </button>}
 
             {/* Bottom Actions: Sign Out */}
             <div className="pt-2 w-full border-t border-surface-border flex items-center justify-between text-xs text-content-muted">

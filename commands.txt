@@ -1,5 +1,9 @@
 npx.cmd supabase functions deploy authz-api
 
+
+cd android
+gradlew --stop
+cd ..
 npm run cap:sync
 npx cap run android
 

@@ -40,6 +40,10 @@ export default function RegisterBiometric() {
   const [pinConfirm, setPinConfirm] = useState('')
   const [savingPin, setSavingPin] = useState(false)
   const [showPinInput, setShowPinInput] = useState(false)
+  // Fetch the WebAuthn challenge before the user taps. Android WebView can
+  // otherwise lose the short lived user gesture while waiting on the API,
+  // causing the system biometric prompt to report NotAllowedError.
+  const [registrationOptions, setRegistrationOptions] = useState<Record<string, unknown> | null>(null)
 
   // 1. Fetch user session and security status on mount
   useEffect(() => {
@@ -78,6 +82,14 @@ export default function RegisterBiometric() {
 
         if (userObj && mounted) {
           setCurrentUser(userObj)
+
+          void invokeWebAuthn<Record<string, unknown>>('register-options')
+            .then((options) => {
+              if (mounted && typeof options.error !== 'string') setRegistrationOptions(options)
+            })
+            .catch((error: unknown) => {
+              console.warn('Could not prepare biometric registration:', error)
+            })
 
           // Fetch security status
           const pinData = await getSecurityStatus()
@@ -173,7 +185,8 @@ export default function RegisterBiometric() {
 
     try {
       // Step A: Request registration challenge options from server
-      const opts = await invokeWebAuthn<Record<string, unknown>>('register-options')
+      const opts = registrationOptions || await invokeWebAuthn<Record<string, unknown>>('register-options')
+      setRegistrationOptions(null)
       if (typeof opts.error === 'string') {
         throw new Error(opts.error)
       }
@@ -193,6 +206,10 @@ export default function RegisterBiometric() {
           type: 'success',
           text: 'Biometric authenticator (Fingerprint / Face ID / Windows Hello) was successfully saved',
         })
+        // Keep a fresh challenge ready for the next enrollment attempt.
+        void invokeWebAuthn<Record<string, unknown>>('register-options')
+          .then(setRegistrationOptions)
+          .catch(() => setRegistrationOptions(null))
       } else {
         setMessage({
           type: 'error',
@@ -205,7 +222,9 @@ export default function RegisterBiometric() {
       if (errorObj?.name === 'NotAllowedError') {
         setMessage({
           type: 'info',
-          text: 'Biometric prompt was cancelled or timed out. Please try again.',
+          text: Capacitor.isNativePlatform()
+            ? 'Android cancelled the biometric prompt. Unlock your phone once with its screen lock, then retry. If it still fails, update Android System WebView and confirm this app domain is associated with the Android app.'
+            : 'Biometric prompt was cancelled or timed out. Please try again.',
         })
       } else {
         setMessage({
