@@ -10,9 +10,9 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   icons: {
-    icon: '/img/Browser_tabs.jpeg',
-    shortcut: '/img/Browser_tabs.jpeg',
-    apple: '/img/headerlogo.jpeg',
+    icon: '/img/Browser_tabs.png',
+    shortcut: '/img/Browser_tabs.png',
+      apple: '/img/headerlogo.png',
   },
 };
 

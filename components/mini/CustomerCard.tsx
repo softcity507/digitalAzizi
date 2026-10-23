@@ -9,21 +9,28 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 import { authApi } from '@/callapi/auth';
 import { getSecurityStatus } from '@/callapi/security';
 import { useExchangeDeskStore } from '@/store/useExchangeDeskStore';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Pencil } from 'lucide-react';
 import verifyAndAuthorizeAction, { verifyPinAction } from '@/components/max_second/verifyAndAuthorizeAction';
+
+export type CustomerCardLayout = 'default' | 'compact' | 'detailed';
 
 interface CustomerCardProps {
   customer: CustomerAccount;
   className?: string;
+  layout?: CustomerCardLayout;
 }
 
 export default function CustomerCard({
   customer,
   className = '',
+  layout = 'default',
 }: CustomerCardProps) {
   const locale = useLocale();
   const deleteUser = useSettingsStore((state) => state.deleteUser);
+  const openEditCustomer = useSettingsStore((state) => state.openEditCustomer);
   const canManage = !customer.isSystemDefault;
+  const isCompact = layout === 'compact';
+  const isDetailed = layout === 'detailed';
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [verification, setVerification] = useState<{ userId: string; hasPin: boolean; hasCredentials: boolean } | null>(null);
   const [verificationPin, setVerificationPin] = useState('');
@@ -104,41 +111,46 @@ export default function CustomerCard({
   };
 
   return (
-    <div className={`group relative flex items-center justify-between p-4 sm:p-5 rounded bg-surface border border-surface-border shadow-sm hover:border-brand/40 hover:bg-surface-hover/50 transition-all duration-200 ${className}`}>
+    <div className={`group flex flex-col ${isCompact ? 'gap-2 p-2.5 sm:p-3' : 'gap-3 p-3 sm:p-4'} rounded border border-surface-border bg-surface shadow-sm transition-all duration-200 hover:border-brand/40 hover:bg-surface-hover/50 md:flex-row md:items-center ${className}`}>
       {/* Clickable Link area for Customer Details */}
       <Link
         href={`/${locale}/details?id=${customer.id}`}
         onClick={handleCardClick}
-        className="flex min-w-0 flex-1 items-center justify-between cursor-pointer pr-12"
+        className={`flex min-w-0 flex-1 flex-col ${isCompact ? 'gap-2' : 'gap-3'} cursor-pointer sm:flex-row sm:items-center sm:justify-between`}
       >
         {/* Left Column: Customer Details */}
-        <div className="flex flex-col items-start gap-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-sm sm:text-base font-bold text-content-primary group-hover:text-brand transition-colors">
+        <div className="flex min-w-0 flex-col items-start gap-1 sm:flex-1">
+          <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
+            <h3 className={`min-w-0 max-w-full break-words font-bold text-content-primary transition-colors group-hover:text-brand ${isCompact ? 'text-xs sm:text-sm' : 'text-sm sm:text-base'}`}>
               {customer.name}
             </h3>
             {customer.badge && (
-              <span className="px-2 py-0.5 text-[10px] font-semibold rounded bg-brand/15 text-brand border border-brand/30">
+              <span className="max-w-full break-words rounded border border-brand/30 bg-brand/15 px-2 py-0.5 text-[10px] font-semibold text-brand">
                 {customer.badge}
               </span>
             )}
           </div>
-
           {customer.phone && (
-            <span className="text-[11px] font-mono text-content-muted">
+            <span className="max-w-full break-all text-[11px] font-mono text-content-muted">
               {customer.phone}
             </span>
+          )}
+          {isDetailed && (customer.address || customer.description) && (
+            <div className="mt-1 flex max-w-full flex-col gap-0.5 text-xs text-content-muted">
+              {customer.description && <span className="break-words">{customer.description}</span>}
+              {customer.address && <span className="break-words">{customer.address}</span>}
+            </div>
           )}
         </div>
 
         {/* Right Column: Currency Balances */}
-        <div className="flex flex-col items-end gap-0.5 text-right font-mono flex-shrink-0">
+        <div className={`flex  gap-4`}>
           {customer.balances.map((bal, idx) => (
-            <div key={idx} className="flex items-center gap-1.5 text-xs sm:text-sm font-bold">
-              <span className="text-[10px] text-content-muted font-normal uppercase">
+            <div key={idx} className={`flex flex-col  min-w-0 items-center  font-bold ${isCompact ? 'text-[11px] sm:text-xs' : 'text-xs sm:text-sm'}`}>
+              <span className="text-[10px] font-normal uppercase text-content-muted">
                 {bal.currency}
               </span>
-              <span className={bal.isCredit ? 'text-credit' : 'text-debit'}>
+              <span className={`break-all ${bal.isCredit ? 'text-credit' : 'text-debit'}`}>
                 {bal.amount}
               </span>
             </div>
@@ -146,12 +158,25 @@ export default function CustomerCard({
         </div>
       </Link>
 
-      {/* Delete Button positioned absolutely outside the Link wrapper */}
+      {/* Keep card actions in the layout so they remain reachable on touch screens. */}
       {canManage && (
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center">
+        <div className="flex shrink-0 items-center justify-end gap-1 border-t border-surface-border pt-2 md:border-t-0 md:pt-0">
           <button
             type="button"
-            className="rounded text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors p-2"
+            className="rounded p-2.5 text-content-muted transition-colors hover:bg-surface-subtle hover:text-brand"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              openEditCustomer(customer);
+            }}
+            aria-label="Edit customer"
+            title="Edit customer"
+          >
+            <Pencil className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            className="rounded p-2.5 text-red-600 transition-colors hover:bg-red-50"
             onClick={(e) => {
               e.stopPropagation(); // Stop event from bubbling up to the Link
               e.preventDefault();  // Prevent default link action

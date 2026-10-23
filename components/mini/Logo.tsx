@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLocale } from 'next-intl';
 
 interface LogoProps {
@@ -22,13 +23,13 @@ export default function Logo({
       href={`/${locale}/customers`}
       className={`group flex items-center select-none transition-transform duration-200 hover:opacity-95 ${className}`}
     >
-      <span
-        className={`font-black tracking-tight text-content-primary ${
-          size === 'lg' ? 'text-xl sm:text-2xl' : size === 'sm' ? 'text-sm sm:text-base' : 'text-base sm:text-lg'
-        }`}
-      >
-        DigitalAzizi
-      </span>
+      <Image
+        src="/img/headerlogo.png"
+        alt="DigitalAzizi Logo"
+        width={100}
+        height={80}
+        className={`object-contain ${size === 'lg' ? 'w-16 h-16' : size === 'sm' ? 'w-8 h-8' : 'w-25   h-20'}`}
+      />
     </Link>
   );
 }

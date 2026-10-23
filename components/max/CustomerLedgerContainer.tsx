@@ -11,6 +11,7 @@ import CustomerSearch from '@/components/mini/CustomerSearch';
 import CustomerList from '@/components/max/CustomerList';
 // import AddCustomerButton from '@/components/mini/AddCustomerButton';
 import CustomerPdfExport from '../max_second/CustomerPdfExport';
+import AddBussinessModal from '@/components/mini_second/AddBussinessModal';
 import { useSettingsStore } from '@/store/useSettingsStore';
 
 const DEFAULT_CURRENCIES: CurrencyCode[] = ['AFN', 'USD', 'PKR'];
@@ -221,6 +222,7 @@ export default function CustomerLedgerContainer() {
         </div>
       </div>
 
+      <AddBussinessModal />
     </div>
   );
 }

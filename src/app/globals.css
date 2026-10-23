@@ -132,6 +132,23 @@ body {
   color: var(--whatsapp-icon);
 }
 
+.whatsapp-toggle-track {
+  background-color: var(--surface-active);
+}
+
+.whatsapp-toggle-track[data-enabled="true"] {
+  background-color: var(--whatsapp-icon);
+}
+
+.whatsapp-toggle-knob {
+  background-color: var(--surface);
+  border: 1px solid var(--surface-border);
+}
+
+.whatsapp-toggle-label[data-enabled="true"] {
+  color: var(--whatsapp-text);
+}
+
 /* react-toastify skin follows the app theme; per-toast inline colors can override it. */
 .dynamic-toast {
   border: 1px solid var(--surface-border);

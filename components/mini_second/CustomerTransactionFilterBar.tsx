@@ -8,10 +8,6 @@ export default function CustomerTransactionFilterBar() {
   const {
     searchQuery,
     setSearchQuery,
-    dateFilter,
-    setDateFilter,
-    sortAscending,
-    toggleSortOrder,
   } = useCustomerDetailsStore();
 
   return (

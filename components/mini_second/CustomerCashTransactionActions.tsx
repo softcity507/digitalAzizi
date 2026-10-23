@@ -37,6 +37,11 @@ export default function CustomerCashTransactionActions() {
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!type || !customer || !business || !currency || Number(amount) <= 0) return;
+    const whatsappPhone = customer.phone?.replace(/\D/g, '').replace(/^00/, '') ?? '';
+    if (customer.whatsAppToggle && (whatsappPhone.length < 7 || whatsappPhone.length > 15)) {
+      setError('Add a valid international phone number before recording a transaction with WhatsApp enabled.');
+      return;
+    }
     setSaving(true);
     setError('');
     try {
@@ -51,6 +56,17 @@ export default function CustomerCashTransactionActions() {
       setType(null);
       setAmount('');
       setMemo('');
+      if (customer.whatsAppToggle) {
+        const formattedAmount = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(Number(amount));
+        const transactionLabel = type === 'cash_in' ? 'Cash in' : 'Cash out';
+        const message = [
+          `Hello ${customer.name}, your ${transactionLabel.toLowerCase()} transaction was recorded.`,
+          `Amount: ${formattedAmount} ${currency}`,
+          `Date: ${date}`,
+          memo.trim() ? `Memo: ${memo.trim()}` : '',
+        ].filter(Boolean).join('\n');
+        window.location.assign(`https://wa.me/${whatsappPhone}?text=${encodeURIComponent(message)}`);
+      }
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : String(saveError));
     } finally {

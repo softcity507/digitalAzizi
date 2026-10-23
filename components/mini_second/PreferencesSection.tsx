@@ -7,7 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { getSecurityStatus, setSecurityPin } from '@/callapi/security';
 import { LANGUAGES, SupportedLocale } from '@/i18n/languages';
 import { Fingerprint, KeyRound, ShieldCheck, X, Loader2, Check } from 'lucide-react';
-import { APP_LOCK_KEY } from '@/components/max_second/AppLockGuard';
+import { getAppLockEnabled, setAppLockEnabled } from '@/components/max_second/AppLockGuard';
 
 const getThemeSnapshot = () => {
   if (typeof window === 'undefined') return true;
@@ -28,6 +28,17 @@ const subscribeToTheme = (callback: () => void) => {
   };
 };
 
+const subscribeToAppLock = (callback: () => void) => {
+  if (typeof window === 'undefined') return () => {};
+  window.addEventListener('app_lock_setting_changed', callback);
+  window.addEventListener('storage', callback);
+  return () => {
+    window.removeEventListener('app_lock_setting_changed', callback);
+    window.removeEventListener('storage', callback);
+  };
+};
+const getAppLockSnapshot = () => getAppLockEnabled();
+
 export default function PreferencesSection() {
   const t = useTranslations('Settings');
   const currentLocale = useLocale() as SupportedLocale;
@@ -38,14 +49,8 @@ export default function PreferencesSection() {
   const isDark = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, () => true);
 
   // App Lock & Biometrics State
-  const [isAppLock, setIsAppLock] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem(APP_LOCK_KEY) === 'true';
-    }
-    return false;
-  });
+  const isAppLock = useSyncExternalStore(subscribeToAppLock, getAppLockSnapshot, () => false);
   const [hasPin, setHasPin] = useState(false);
-  const [hasCredentials, setHasCredentials] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
@@ -58,7 +63,6 @@ export default function PreferencesSection() {
       .then((data) => {
         if (data.success && data.status) {
           setHasPin(Boolean(data.status.hasPin));
-          setHasCredentials(Boolean(data.status.hasCredentials));
         }
       })
       .catch(() => {});
@@ -80,19 +84,14 @@ export default function PreferencesSection() {
 
   const toggleAppLock = () => {
     if (!isAppLock) {
-      // Either a fallback PIN or a registered device authenticator is sufficient.
-      if (!hasPin && !hasCredentials) {
+      if (!hasPin) {
         router.push(`/${currentLocale}/settings/biometrics`);
         return;
       }
-      localStorage.setItem(APP_LOCK_KEY, 'true');
-      setIsAppLock(true);
-      window.dispatchEvent(new Event('app_lock_setting_changed'));
+      setAppLockEnabled(true);
     } else {
       // Turning OFF
-      localStorage.setItem(APP_LOCK_KEY, 'false');
-      setIsAppLock(false);
-      window.dispatchEvent(new Event('app_lock_setting_changed'));
+      setAppLockEnabled(false);
     }
   };
 
@@ -114,9 +113,6 @@ export default function PreferencesSection() {
       const data = await setSecurityPin(newPin);
       if (data.success) {
         setHasPin(true);
-        localStorage.setItem(APP_LOCK_KEY, 'true');
-        setIsAppLock(true);
-        window.dispatchEvent(new Event('app_lock_setting_changed'));
         setShowPinModal(false);
         setNewPin('');
         setConfirmPin('');
@@ -194,39 +190,50 @@ export default function PreferencesSection() {
           </select>
         </div>
 
-        {/* Biometric & PIN App Lock Toggle */}
+        {/* Before the first PIN, offer PIN setup in place of the App Lock switch. */}
         <div className="p-4 sm:p-5 flex items-center justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <h4 className="text-xs sm:text-sm font-bold text-content-primary">
-                {t('appLock')}
+                {hasPin ? t('appLock') : t('setPin')}
               </h4>
-              {isAppLock && (
+              {hasPin && isAppLock && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-credit-subtle text-credit-text border border-credit/20">
                   <ShieldCheck className="w-3 h-3" /> {t('active')}
                 </span>
               )}
             </div>
             <p className="text-xs text-content-muted">
-              {t('appLockSubtitle')}
+              {hasPin ? t('appLockSubtitle') : t('pinNotConfigured')}
             </p>
           </div>
 
-          <button
-            type="button"
-            role="switch"
-            aria-checked={isAppLock}
-            onClick={toggleAppLock}
-            className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-              isAppLock ? 'bg-brand' : 'bg-surface-active'
-            }`}
-          >
-            <span
-              className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
-                isAppLock ? 'translate-x-5' : 'translate-x-0'
+          {hasPin ? (
+            <button
+              type="button"
+              role="switch"
+              aria-checked={isAppLock}
+              onClick={toggleAppLock}
+              className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                isAppLock ? 'bg-brand' : 'bg-surface-active'
               }`}
-            />
-          </button>
+            >
+              <span
+                className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                  isAppLock ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowPinModal(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface hover:bg-surface-border text-content-primary text-xs font-semibold transition-colors border border-surface-border cursor-pointer shadow-sm"
+            >
+              <KeyRound className="w-3.5 h-3.5" />
+              {t('setPin')}
+            </button>
+          )}
         </div>
 
         {/* Biometric & PIN Management Links */}

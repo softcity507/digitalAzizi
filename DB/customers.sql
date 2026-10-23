@@ -7,14 +7,9 @@ create table public.customers (
   firstpayment jsonb null,
   description text null,
   business_id bigint null,
-  deleted_at timestamp with time zone null,
   recycle boolean not null default false,
   delete_date date null,
+  whatsapptoggle boolean null default false,
   constraint customers_pkey primary key (id),
   constraint customers_business_id_fkey foreign KEY (business_id) references businesses (id) on delete CASCADE
 ) TABLESPACE pg_default;
-
-create trigger customers_recycle_bin
-after
-update OF deleted_at on customers for EACH row
-execute FUNCTION record_recycle_bin_item ();

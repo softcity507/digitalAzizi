@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSettingsStore } from '@/store/useSettingsStore';
-import { CurrencyCode } from '@/types/customer';
+import type { CurrencyCode, CustomerAccount } from '@/types/customer';
 
 const INITIAL_FORM_STATE = {
   firstName: '',
@@ -16,21 +16,39 @@ const INITIAL_FORM_STATE = {
 };
 
 export default function AddBussinessModal() {
+  const activeModal = useSettingsStore((state) => state.activeModal);
+  const editingCustomer = useSettingsStore((state) => state.editingCustomer);
+
+  if (activeModal !== 'add_customer') return null;
+
+  return <AddBussinessForm key={editingCustomer?.id ?? 'new-customer'} editingCustomer={editingCustomer} />;
+}
+
+function AddBussinessForm({ editingCustomer }: { editingCustomer: CustomerAccount | null }) {
   const t = useTranslations('Settings');
-  const { activeModal, closeModal, addUser, businesses, customers } = useSettingsStore();
+  const { closeModal, addUser, updateUser, businesses, customers } = useSettingsStore();
   const [saveError, setSaveError] = useState<string | null>(null);
-  const activeBusiness = businesses.find((business) => business.isActive) || businesses[0];
+  const activeBusiness = businesses.find((business) => business.id === editingCustomer?.businessId)
+    || businesses.find((business) => business.isActive)
+    || businesses[0];
   const businessCurrencies = activeBusiness?.supportedCurrencies ?? [];
-  const [formData, setFormData] = useState({ ...INITIAL_FORM_STATE });
+  const [formData, setFormData] = useState(() => {
+    if (!editingCustomer) return { ...INITIAL_FORM_STATE };
+    const [firstName = '', ...lastNameParts] = editingCustomer.name.trim().split(/\s+/);
+    return {
+      ...INITIAL_FORM_STATE,
+      firstName,
+      lastName: lastNameParts.join(' '),
+      phone: editingCustomer.phone ?? '',
+      address: editingCustomer.address ?? '',
+      amountDescription: editingCustomer.description ?? '',
+    };
+  });
   const selectedAmountCurrency = businessCurrencies.includes(formData.amountCurrency)
     ? formData.amountCurrency
     : businessCurrencies[0];
 
-  if (activeModal !== 'add_customer') return null;
-
   const handleClose = () => {
-    setFormData({ ...INITIAL_FORM_STATE });
-    setSaveError(null);
     closeModal();
   };
 
@@ -53,7 +71,9 @@ export default function AddBussinessModal() {
     const fullName = [trimmedFirst, trimmedLast].filter(Boolean).join(' ');
     const normalizedName = fullName.toLowerCase();
     if (customers.some((customer) =>
-      customer.businessId === activeBusiness?.id && customer.name.trim().toLowerCase() === normalizedName
+      customer.id !== editingCustomer?.id
+      && customer.businessId === activeBusiness?.id
+      && customer.name.trim().toLowerCase() === normalizedName
     )) {
       setSaveError('A customer with this name already exists in this business.');
       return;
@@ -84,6 +104,18 @@ export default function AddBussinessModal() {
     const trimmedNotes = formData.amountDescription.trim();
 
     try {
+      if (editingCustomer) {
+        await updateUser(
+          editingCustomer.id,
+          fullName,
+          normalizedPhone,
+          formData.address.trim(),
+          trimmedNotes
+        );
+        handleClose();
+        return;
+      }
+
       await addUser(
         fullName,
         fullSubtitle,
@@ -106,7 +138,7 @@ export default function AddBussinessModal() {
       <div className="bg-surface border border-surface-border rounded p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-2 border-b border-surface-border">
-          <h3 className="text-base font-bold text-content-primary"> {t('addNewCustomer')}</h3>
+          <h3 className="text-base font-bold text-content-primary">{editingCustomer ? 'Edit customer' : t('addNewCustomer')}</h3>
           <button
             type="button"
             onClick={handleClose}
@@ -170,8 +202,8 @@ export default function AddBussinessModal() {
             </div>
           </div>
 
-          {/* 3. Initial Amount & Currency Selection */}
-          <div className="p-3.5 rounded bg-surface-subtle/50 border border-surface-border space-y-2.5">
+          {/* 3. Initial Amount & Currency Selection (new customers only) */}
+          {!editingCustomer && <div className="p-3.5 rounded bg-surface-subtle/50 border border-surface-border space-y-2.5">
             <span className="block text-xs font-bold uppercase tracking-wider text-content-primary">
               {t('openingBalance')}
             </span>
@@ -216,7 +248,18 @@ export default function AddBussinessModal() {
                 className="w-full px-3 py-2 rounded bg-surface border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
-          </div>
+          </div>}
+          {editingCustomer && (
+            <div>
+              <label className="block text-xs font-semibold text-content-muted mb-1">{t('amountDesc')}</label>
+              <input
+                type="text"
+                value={formData.amountDescription}
+                onChange={(e) => setFormData((current) => ({ ...current, amountDescription: e.target.value }))}
+                className="w-full px-3 py-2 rounded bg-surface-subtle border border-surface-border text-sm text-content-primary focus:outline-none focus:ring-1 focus:ring-brand"
+              />
+            </div>
+          )}
 
           {/* Modal Buttons */}
           <div className="flex items-center gap-3 pt-2">
@@ -231,7 +274,7 @@ export default function AddBussinessModal() {
               type="submit"
               className="w-1/2 h-10 rounded bg-sky-400 hover:bg-sky-500 text-slate-950 font-bold text-xs cursor-pointer shadow-sm transition-all"
             >
-              {t('save')}
+              {editingCustomer ? 'Save changes' : t('save')}
             </button>
           </div>
         </form>

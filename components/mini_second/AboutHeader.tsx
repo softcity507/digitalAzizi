@@ -1,13 +1,9 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { BadgeCheck, Lock } from 'lucide-react';
 
 export default function AboutHeader() {
   const t = useTranslations('about');
-  const scoreLabel = t('protectionScore');
-  const score = Math.min(100, Number(scoreLabel.match(/\d+/)?.[0] ?? 90));
-
   return (
     <header className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-end">
       {/* Title Block */}

@@ -27,6 +27,30 @@ export const LAST_AUTH_TIME_KEY = 'digitalazizi_last_auth_time'
 const ANDROID_RETURN_PATH_KEY = 'digitalazizi_android_return_path'
 export const ONE_HOUR_MS = 60 * 60 * 1000 // 1 hour in milliseconds
 
+const getExecutionContext = () => {
+  if (Capacitor.isNativePlatform()) return 'native'
+  const isInstalledPwa = window.matchMedia?.('(display-mode: standalone)').matches
+    || (navigator as Navigator & { standalone?: boolean }).standalone === true
+  return isInstalledPwa ? 'pwa' : 'browser'
+}
+
+const getScopedStorageKey = (key: string) => `${key}:${getExecutionContext()}`
+
+export const getAppLockEnabled = () => {
+  if (typeof window === 'undefined') return false
+  const scopedKey = getScopedStorageKey(APP_LOCK_KEY)
+  const scopedValue = localStorage.getItem(scopedKey)
+  if (scopedValue !== null) return scopedValue === 'true'
+
+  // Preserve an existing native app lock when upgrading from the old shared key.
+  return Capacitor.isNativePlatform() && localStorage.getItem(APP_LOCK_KEY) === 'true'
+}
+
+export const setAppLockEnabled = (enabled: boolean) => {
+  localStorage.setItem(getScopedStorageKey(APP_LOCK_KEY), String(enabled))
+  window.dispatchEvent(new Event('app_lock_setting_changed'))
+}
+
 export default function AppLockGuard({ children }: { children?: React.ReactNode }) {
   const [isLockEnabled, setIsLockEnabled] = useState(false)
   const [isLocked, setIsLocked] = useState(false)
@@ -72,8 +96,8 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
 
   // Mark session unlocked and reset 1-hour timer
   const markUnlocked = useCallback(() => {
-    sessionStorage.removeItem(IS_LOCKED_KEY)
-    localStorage.setItem(LAST_AUTH_TIME_KEY, Date.now().toString())
+    sessionStorage.removeItem(getScopedStorageKey(IS_LOCKED_KEY))
+    localStorage.setItem(getScopedStorageKey(LAST_AUTH_TIME_KEY), Date.now().toString())
     setIsLocked(false)
     setPinInput('')
     setPinError('')
@@ -93,7 +117,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
 
     async function init() {
       try {
-        const enabled = localStorage.getItem(APP_LOCK_KEY) === 'true'
+        const enabled = getAppLockEnabled()
         setIsLockEnabled(enabled)
 
         const segments = window.location.pathname.split('/').filter(Boolean)
@@ -103,7 +127,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
         const routeSegments = locale === segments[0] ? segments.slice(1) : segments
         const isLandingRoute = routeSegments.length === 0
         const savedAndroidPath = enabled
-          && sessionStorage.getItem(IS_LOCKED_KEY) === 'true'
+          && sessionStorage.getItem(getScopedStorageKey(IS_LOCKED_KEY)) === 'true'
           && Capacitor.isNativePlatform()
           && Capacitor.getPlatform() === 'android'
           ? localStorage.getItem(ANDROID_RETURN_PATH_KEY)
@@ -157,14 +181,14 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
           }
 
           // Check if session was previously locked or if 1 hour has elapsed
-          const lastAuth = localStorage.getItem(LAST_AUTH_TIME_KEY)
+          const lastAuth = localStorage.getItem(getScopedStorageKey(LAST_AUTH_TIME_KEY))
           const isTimeout = lastAuth ? Date.now() - parseInt(lastAuth, 10) >= ONE_HOUR_MS : false
 
-          if (enabled && (sessionStorage.getItem(IS_LOCKED_KEY) === 'true' || isTimeout)) {
-            sessionStorage.setItem(IS_LOCKED_KEY, 'true')
+          if (enabled && (sessionStorage.getItem(getScopedStorageKey(IS_LOCKED_KEY)) === 'true' || isTimeout)) {
+            sessionStorage.setItem(getScopedStorageKey(IS_LOCKED_KEY), 'true')
             setIsLocked(true)
           } else if (!lastAuth) {
-            localStorage.setItem(LAST_AUTH_TIME_KEY, Date.now().toString())
+            localStorage.setItem(getScopedStorageKey(LAST_AUTH_TIME_KEY), Date.now().toString())
           }
         }
       } catch (err) {
@@ -176,10 +200,10 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
 
     // Listen to lock setting changes from settings toggle
     const handleLockSettingChange = () => {
-      const enabled = localStorage.getItem(APP_LOCK_KEY) === 'true'
+      const enabled = getAppLockEnabled()
       setIsLockEnabled(enabled)
       if (!enabled) {
-        sessionStorage.removeItem(IS_LOCKED_KEY)
+        sessionStorage.removeItem(getScopedStorageKey(IS_LOCKED_KEY))
         setIsLocked(false)
       }
     }
@@ -209,7 +233,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
       if (document.visibilityState === 'hidden') {
         if (isWebAuthnPromptActive()) return
         rememberAndroidRoute()
-        sessionStorage.setItem(IS_LOCKED_KEY, 'true')
+        sessionStorage.setItem(getScopedStorageKey(IS_LOCKED_KEY), 'true')
         setIsLocked(true)
       }
     }
@@ -217,7 +241,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
     const handlePageHide = () => {
       if (isWebAuthnPromptActive()) return
       rememberAndroidRoute()
-      sessionStorage.setItem(IS_LOCKED_KEY, 'true')
+      sessionStorage.setItem(getScopedStorageKey(IS_LOCKED_KEY), 'true')
       setIsLocked(true)
     }
 
@@ -235,12 +259,12 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
         if (!isActive) {
           if (isWebAuthnPromptActive()) return
           rememberAndroidRoute()
-          sessionStorage.setItem(IS_LOCKED_KEY, 'true')
+          sessionStorage.setItem(getScopedStorageKey(IS_LOCKED_KEY), 'true')
           setIsLocked(true)
           return
         }
 
-        if (sessionStorage.getItem(IS_LOCKED_KEY) === 'true') {
+        if (sessionStorage.getItem(getScopedStorageKey(IS_LOCKED_KEY)) === 'true') {
           setIsLocked(true)
         }
         // Refresh security capabilities on return. Android can resume the
@@ -281,15 +305,15 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
     if (!isLockEnabled || !currentUser) return
 
     const checkOneHourTimeout = () => {
-      const lastAuthStr = localStorage.getItem(LAST_AUTH_TIME_KEY)
+      const lastAuthStr = localStorage.getItem(getScopedStorageKey(LAST_AUTH_TIME_KEY))
       if (lastAuthStr) {
         const lastAuth = parseInt(lastAuthStr, 10)
         if (Date.now() - lastAuth >= ONE_HOUR_MS) {
-          sessionStorage.setItem(IS_LOCKED_KEY, 'true')
+          sessionStorage.setItem(getScopedStorageKey(IS_LOCKED_KEY), 'true')
           setIsLocked(true)
         }
       } else {
-        localStorage.setItem(LAST_AUTH_TIME_KEY, Date.now().toString())
+        localStorage.setItem(getScopedStorageKey(LAST_AUTH_TIME_KEY), Date.now().toString())
       }
     }
 
@@ -375,7 +399,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
 
   // 5. Emergency Sign Out
   const handleSignOut = async () => {
-    sessionStorage.removeItem(IS_LOCKED_KEY)
+    sessionStorage.removeItem(getScopedStorageKey(IS_LOCKED_KEY))
     localStorage.removeItem(ANDROID_RETURN_PATH_KEY)
     await authApi.logout()
     router.push('/')

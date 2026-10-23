@@ -13,10 +13,9 @@ import {
   ArrowLeft,
   KeyRound,
   RefreshCw,
-  Lock,
   Check,
 } from 'lucide-react'
-import { APP_LOCK_KEY } from '@/components/max_second/AppLockGuard'
+import { getAppLockEnabled, setAppLockEnabled } from '@/components/max_second/AppLockGuard'
 import { authApi } from '@/callapi/auth'
 import { getSecurityStatus, getWebAuthnErrorMessage, invokeWebAuthn, setSecurityPin } from '@/callapi/security'
 import { supabaseClient } from '@/lib/supabaseClient'
@@ -51,12 +50,13 @@ export default function RegisterBiometric() {
 
     async function loadData() {
       try {
+        const nativeApp = Capacitor.isNativePlatform()
         // Android WebView exposes WebAuthn after MainActivity enables the
         // platform Web Authentication feature. Some WebView versions report
         // browserSupportsWebAuthn() as false during initial page evaluation,
         // so use the native platform as the fallback capability signal.
-        setSupported(browserSupportsWebAuthn() || (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android'))
-        setIsAppLock(localStorage.getItem(APP_LOCK_KEY) === 'true')
+        setSupported(browserSupportsWebAuthn() || (nativeApp && Capacitor.getPlatform() === 'android'))
+        setIsAppLock(getAppLockEnabled())
 
         // Use the same canonical app user ID as AppLockGuard and the OAuth session.
         // Supabase Auth UUIDs can differ from the public.users ID used by security APIs.
@@ -115,13 +115,12 @@ export default function RegisterBiometric() {
   // Toggle App Lock
   const handleToggleAppLock = () => {
     const nextVal = !isAppLock
-    if (nextVal && !hasPin && !hasCredentials) {
-      setMessage({ type: 'info', text: 'Set a PIN or register a device authenticator before enabling App Lock.' })
+    if (nextVal && !hasPin) {
+      setMessage({ type: 'info', text: 'Set a PIN before enabling App Lock.' })
       return
     }
     setIsAppLock(nextVal)
-    localStorage.setItem(APP_LOCK_KEY, nextVal ? 'true' : 'false')
-    window.dispatchEvent(new Event('app_lock_setting_changed'))
+    setAppLockEnabled(nextVal)
   }
 
   // Save PIN code
@@ -147,12 +146,9 @@ export default function RegisterBiometric() {
         setShowPinInput(false)
         setPinInput('')
         setPinConfirm('')
-        setIsAppLock(true)
-        localStorage.setItem(APP_LOCK_KEY, 'true')
-        window.dispatchEvent(new Event('app_lock_setting_changed'))
         setMessage({
           type: 'success',
-          text: '4-digit PIN code saved and App Lock enabled!',
+          text: '4-digit PIN code saved. You can now enable App Lock below.',
         })
       } else {
         setMessage({ type: 'error', text: data.error || 'Failed to save PIN code.' })
@@ -288,7 +284,7 @@ export default function RegisterBiometric() {
               Biometric & App Lock Security
             </h1>
             <p className="text-sm text-content-muted">
-              Configure fingerprint / Face ID sensors and fallback PIN code. Automatically locks the app when you switch tabs or leave.
+              Configure fingerprint / Face ID sensors and fallback PIN code. When enabled, the app locks after you switch away or leave.
             </p>
           </div>
         </div>
@@ -300,7 +296,7 @@ export default function RegisterBiometric() {
             <div>
               <p className="font-semibold">Hardware or Browser Not Supported</p>
               <p className="text-xs mt-0.5 opacity-90">
-                This browser or device does not support WebAuthn biometrics. You can still use your 4-digit PIN code for lock security.
+                This browser or device does not support WebAuthn biometrics. You can still use your 4-digit PIN code for app lock security.
               </p>
             </div>
           </div>
@@ -327,8 +323,8 @@ export default function RegisterBiometric() {
            
         </div>
 
-        {/* SECTION 1: App Lock Toggle */}
-        <div className="p-4 sm:p-5 rounded-xl bg-surface-subtle border border-surface-border flex items-center justify-between gap-4">
+        {/* Show App Lock only after a PIN has been configured. */}
+        {hasPin && <div className="p-4 sm:p-5 rounded-xl bg-surface-subtle border border-surface-border flex items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-bold text-content-primary">
@@ -360,7 +356,7 @@ export default function RegisterBiometric() {
               }`}
             />
           </button>
-        </div>
+        </div>}
 
         {/* SECTION 2: 4-Digit PIN Code Management */}
         <div className="p-4 sm:p-5 rounded-xl bg-surface-subtle border border-surface-border space-y-3">

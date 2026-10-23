@@ -31,6 +31,9 @@ export interface CustomerAccount {
   subtitle?: string;
   descriptionLocale?: SupportedLocale;
   phone?: string;
+  address?: string;
+  description?: string;
+  whatsAppToggle?: boolean;
   badge?: string;
   isSystemDefault?: boolean;
   businessId?: string;

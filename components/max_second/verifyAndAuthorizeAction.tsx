@@ -6,6 +6,7 @@ import { withWebAuthnPrompt } from '@/lib/webAuthnPrompt'
 
 /** Requests a challenge and verifies the signed passkey response in authz-api. */
 export async function verifyAndAuthorizeAction(_userId: string): Promise<boolean> {
+  void _userId;
   try {
     const options = await invokeWebAuthn<Record<string, unknown>>('auth-options')
     if (options.error) throw new Error(String(options.error))
@@ -21,6 +22,7 @@ export async function verifyAndAuthorizeAction(_userId: string): Promise<boolean
 }
 
 export async function verifyPinAction(_userId: string, pin: string): Promise<boolean> {
+  void _userId;
   try {
     const result = await verifySecurityPin(pin)
     return Boolean(result.verified)

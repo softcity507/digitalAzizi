@@ -32,6 +32,7 @@ interface CustomerRow {
   business_id: number | string | null;
   recycle?: boolean | null;
   delete_date?: string | null;
+  whatsapptoggle?: boolean | null;
 }
 
 interface BusinessNameRow {
@@ -84,6 +85,9 @@ const mapCustomerRow = (row: CustomerRow): { user: RegisteredUser; customer: Cus
     name: row.name,
     subtitle,
     phone: row.phone || undefined,
+    whatsAppToggle: Boolean(row.whatsapptoggle),
+    address: row.address || undefined,
+    description: row.description || undefined,
     businessId: row.business_id ? String(row.business_id) : undefined,
     recycle: Boolean(row.recycle),
     deleteDate: row.delete_date ?? null,
@@ -255,6 +259,7 @@ interface SettingsState {
   lastSynced: string;
   activeModal: SettingsModalType;
   editingBusiness: BusinessProfile | null;
+  editingCustomer: CustomerAccount | null;
 
   setAdmin: (admin: AppAdminProfile) => void;
   fetchBusinesses: () => Promise<void>;
@@ -286,6 +291,7 @@ interface SettingsState {
     address?: string,
     description?: string
   ) => Promise<void>;
+  setCustomerWhatsAppToggle: (id: string, enabled: boolean) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
   updateBusiness: (
     id: string,
@@ -300,6 +306,7 @@ interface SettingsState {
   triggerBackup: () => void;
   triggerRestore: () => void;
   openModal: (type: SettingsModalType) => void;
+  openEditCustomer: (customer: CustomerAccount) => void;
   closeModal: () => void;
 }
 
@@ -320,6 +327,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   lastSynced: '',
   activeModal: null,
   editingBusiness: null,
+  editingCustomer: null,
 
   setAdmin: (admin) => set({ admin }),
 
@@ -697,6 +705,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
           subtitle,
           descriptionLocale,
           phone: phoneText ?? undefined,
+          address: addressText ?? undefined,
+          description: descriptionText || undefined,
           businessId: activeBiz.id,
           balances: [
             ...validCurrencies.map((currency) => ({
@@ -741,8 +751,33 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     set((s) => ({
       users: s.users.map((u) => (u.id === id ? { ...u, name: name.trim(), subtitle } : u)),
       customers: s.customers.map((c) =>
-        c.id === id ? { ...c, name: name.trim(), subtitle, phone: phone || c.phone } : c
+        c.id === id ? {
+          ...c,
+          name: name.trim(),
+          subtitle,
+          phone: phone?.trim() || undefined,
+          address: address?.trim() || undefined,
+          description: description?.trim() || undefined,
+        } : c
       ),
+    }));
+  },
+
+  setCustomerWhatsAppToggle: async (id, enabled) => {
+    await getSignedInUser();
+    const customer = get().customers.find((item) => item.id === id);
+    if (!customer) throw new Error('Customer not found.');
+    if (enabled && !customer.phone?.trim()) throw new Error('Add a customer phone number before enabling WhatsApp messages.');
+
+    const numericId = Number(id);
+    const { error } = await supabaseClient
+      .from('customers')
+      .update({ whatsapptoggle: enabled })
+      .eq('id', Number.isSafeInteger(numericId) ? numericId : id);
+
+    if (error) throw new Error(error.message);
+    set((state) => ({
+      customers: state.customers.map((item) => item.id === id ? { ...item, whatsAppToggle: enabled } : item),
     }));
   },
 
@@ -918,6 +953,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       activeModal: 'restore_success',
     }),
 
-  openModal: (activeModal) => set({ activeModal, editingBusiness: activeModal === 'add_customer' ? null : undefined }),
-  closeModal: () => set({ activeModal: null, editingBusiness: null }),
+  openModal: (activeModal) => set({ activeModal, editingBusiness: activeModal === 'add_customer' ? null : undefined, editingCustomer: null }),
+  openEditCustomer: (editingCustomer) => set({ activeModal: 'add_customer', editingBusiness: null, editingCustomer }),
+  closeModal: () => set({ activeModal: null, editingBusiness: null, editingCustomer: null }),
 }));

@@ -39,7 +39,7 @@ export const authApi = {
         ? origin
         : WEB_AUTH_ORIGIN;
       const target = new URL(redirectTo, webOrigin).toString();
-      const { data, error } = await supabaseClient.auth.signInWithOAuth({
+      const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: target,

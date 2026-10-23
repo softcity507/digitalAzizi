@@ -2,16 +2,18 @@
 
 import { useTranslations } from 'next-intl';
 import { CustomerAccount } from '@/types/customer';
-import CustomerCard from '@/components/mini/CustomerCard';
+import CustomerCard, { type CustomerCardLayout } from '@/components/mini/CustomerCard';
 
 interface CustomerListProps {
   customers: CustomerAccount[];
   className?: string;
+  layout?: CustomerCardLayout;
 }
 
 export default function CustomerList({
   customers,
   className = '',
+  layout = 'default',
 }: CustomerListProps) {
   const t = useTranslations('CustomerBook');
 
@@ -26,7 +28,7 @@ export default function CustomerList({
   return (
     <section className={`flex flex-col gap-2.5 sm:gap-3 w-full ${className}`}>
       {customers.map(customer => (
-        <CustomerCard key={customer.id} customer={customer} />
+        <CustomerCard key={customer.id} customer={customer} layout={layout} />
       ))}
     </section>
   );
