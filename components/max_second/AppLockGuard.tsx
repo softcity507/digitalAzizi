@@ -19,6 +19,7 @@ import { useRouter } from 'next/navigation'
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/i18n/languages'
 import { supabaseClient } from '@/lib/supabaseClient'
 import { isWebAuthnPromptActive } from '@/lib/webAuthnPrompt'
+import { getNativeBiometricEnabled, isAndroidNativeApp, verifyNativeBiometric } from '@/lib/nativeBiometric'
 import type { AuthChangeEvent } from '@supabase/supabase-js'
 
 export const APP_LOCK_KEY = 'digitalazizi_app_lock_enabled'
@@ -59,6 +60,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
   const [pinError, setPinError] = useState('')
   const [hasPin, setHasPin] = useState(false)
   const [hasCredentials, setHasCredentials] = useState(false)
+  const [hasNativeBiometric, setHasNativeBiometric] = useState(false)
   const [authorizationError, setAuthorizationError] = useState('')
   const [verifyingPin, setVerifyingPin] = useState(false)
   const [verifyingBiometric, setVerifyingBiometric] = useState(false)
@@ -173,6 +175,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
         }
         if (data.success && data.user && mounted) {
           setCurrentUser(data.user)
+          if (isAndroidNativeApp()) setHasNativeBiometric(getNativeBiometricEnabled(data.user.id))
 
           const securityData = await getSecurityStatus()
           if (securityData.success && mounted) {
@@ -336,13 +339,16 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
 
   // 4. Unlock with Biometrics
   const triggerBiometricUnlock = useCallback(async (showFailureMessage = true) => {
-    if (!currentUser || !hasCredentials || isBiometricAttempting.current) return
+    const useNativeBiometric = isAndroidNativeApp()
+    if (!currentUser || (useNativeBiometric ? !hasNativeBiometric : !hasCredentials) || isBiometricAttempting.current) return
     isBiometricAttempting.current = true
     setVerifyingBiometric(true)
     setPinError('')
 
     try {
-      const success = await verifyAndAuthorizeAction(currentUser.id)
+      const success = useNativeBiometric
+        ? await verifyNativeBiometric('Unlock DigitalAzizi')
+        : await verifyAndAuthorizeAction(currentUser.id)
       if (success) {
         markUnlocked()
       } else if (showFailureMessage) {
@@ -356,7 +362,7 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
       setVerifyingBiometric(false)
       isBiometricAttempting.current = false
     }
-  }, [currentUser, hasCredentials, markUnlocked])
+  }, [currentUser, hasCredentials, hasNativeBiometric, markUnlocked])
 
   // 5. Submit PIN verification
   const handleVerifyPin = async (pinToVerify: string) => {
@@ -514,14 +520,13 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
               </button>
             </div>}
 
-            {/* Biometric option: explicit tap keeps Android WebAuthn inside a
-                user gesture and avoids an automatic prompt being cancelled. */}
-            {hasPin && hasCredentials && <div className="w-full flex items-center gap-3 text-xs uppercase tracking-wider text-content-muted font-bold">
+            {/* Keep the native prompt behind an explicit tap. */}
+            {hasPin && (isAndroidNativeApp() ? hasNativeBiometric : hasCredentials) && <div className="w-full flex items-center gap-3 text-xs uppercase tracking-wider text-content-muted font-bold">
               <div className="flex-1 h-px bg-surface-border" />
               <span>Or Use Biometrics</span>
               <div className="flex-1 h-px bg-surface-border" />
             </div>}
-            {hasCredentials && <button
+            {(isAndroidNativeApp() ? hasNativeBiometric : hasCredentials) && <button
               type="button"
               onClick={() => triggerBiometricUnlock()}
               disabled={verifyingBiometric}
@@ -530,12 +535,12 @@ export default function AppLockGuard({ children }: { children?: React.ReactNode 
               {verifyingBiometric ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Verifying Fingerprint / Face ID...
+                  Verifying biometrics...
                 </>
               ) : (
                 <>
                   <Fingerprint className="w-5 h-5" />
-                  Use Fingerprint / Face ID
+                  Use biometrics to unlock
                 </>
               )}
             </button>}

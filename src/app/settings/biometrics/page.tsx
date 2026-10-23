@@ -21,6 +21,7 @@ import { getSecurityStatus, getWebAuthnErrorMessage, invokeWebAuthn, setSecurity
 import { supabaseClient } from '@/lib/supabaseClient'
 import { withWebAuthnPrompt } from '@/lib/webAuthnPrompt'
 import { Capacitor } from '@capacitor/core'
+import { getNativeBiometricEnabled, isAndroidNativeApp, isNativeBiometricAvailable, setNativeBiometricEnabled, verifyNativeBiometric } from '@/lib/nativeBiometric'
 
 export default function RegisterBiometric() {
   const [currentUser, setCurrentUser] = useState<{ id: string; email?: string; name?: string } | null>(null)
@@ -35,6 +36,7 @@ export default function RegisterBiometric() {
   const [hasPin, setHasPin] = useState(false)
   const [hasCredentials, setHasCredentials] = useState(false)
   const [credentialCount, setCredentialCount] = useState(0)
+  const [nativeBiometricEnabled, setNativeBiometricEnabledState] = useState(false)
   const [pinInput, setPinInput] = useState('')
   const [pinConfirm, setPinConfirm] = useState('')
   const [savingPin, setSavingPin] = useState(false)
@@ -55,7 +57,9 @@ export default function RegisterBiometric() {
         // platform Web Authentication feature. Some WebView versions report
         // browserSupportsWebAuthn() as false during initial page evaluation,
         // so use the native platform as the fallback capability signal.
-        setSupported(browserSupportsWebAuthn() || (nativeApp && Capacitor.getPlatform() === 'android'))
+        setSupported(nativeApp && Capacitor.getPlatform() === 'android'
+          ? await isNativeBiometricAvailable()
+          : browserSupportsWebAuthn())
         setIsAppLock(getAppLockEnabled())
 
         // Use the same canonical app user ID as AppLockGuard and the OAuth session.
@@ -83,13 +87,17 @@ export default function RegisterBiometric() {
         if (userObj && mounted) {
           setCurrentUser(userObj)
 
-          void invokeWebAuthn<Record<string, unknown>>('register-options')
-            .then((options) => {
-              if (mounted && typeof options.error !== 'string') setRegistrationOptions(options)
-            })
-            .catch((error: unknown) => {
-              console.warn('Could not prepare biometric registration:', error)
-            })
+          if (nativeApp && Capacitor.getPlatform() === 'android') {
+            setNativeBiometricEnabledState(getNativeBiometricEnabled(userObj.id))
+          } else {
+            void invokeWebAuthn<Record<string, unknown>>('register-options')
+              .then((options) => {
+                if (mounted && typeof options.error !== 'string') setRegistrationOptions(options)
+              })
+              .catch((error: unknown) => {
+                console.warn('Could not prepare biometric registration:', error)
+              })
+          }
 
           // Fetch security status
           const pinData = await getSecurityStatus()
@@ -180,6 +188,18 @@ export default function RegisterBiometric() {
     setRegistering(true)
 
     try {
+      if (isAndroidNativeApp()) {
+        if (!(await isNativeBiometricAvailable())) {
+          throw new Error('Set up a fingerprint or face unlock in Android settings before enabling biometrics.')
+        }
+        const verified = await verifyNativeBiometric('Enable biometric unlock for DigitalAzizi')
+        if (!verified) throw new Error('Biometric check was cancelled or unsuccessful.')
+        setNativeBiometricEnabled(currentUser.id, true)
+        setNativeBiometricEnabledState(true)
+        setMessage({ type: 'success', text: 'Android biometric unlock is enabled for this device.' })
+        return
+      }
+
       // Step A: Request registration challenge options from server
       const opts = registrationOptions || await invokeWebAuthn<Record<string, unknown>>('register-options')
       setRegistrationOptions(null)
@@ -240,6 +260,13 @@ export default function RegisterBiometric() {
     setMessage(null)
 
     try {
+      if (isAndroidNativeApp()) {
+        const verified = await verifyNativeBiometric('Verify your identity for DigitalAzizi')
+        setMessage(verified
+          ? { type: 'success', text: 'Android biometric verification successful.' }
+          : { type: 'error', text: 'Biometric verification was cancelled or unsuccessful.' })
+        return
+      }
       const verified = await verifyAndAuthorizeAction(currentUser.id)
       if (verified) {
         setMessage({
@@ -296,7 +323,9 @@ export default function RegisterBiometric() {
             <div>
               <p className="font-semibold">Hardware or Browser Not Supported</p>
               <p className="text-xs mt-0.5 opacity-90">
-                This browser or device does not support WebAuthn biometrics. You can still use your 4-digit PIN code for app lock security.
+                {isAndroidNativeApp()
+                  ? 'No Android biometric is enrolled on this device. Set up fingerprint or face unlock in Android settings, or use your 4-digit PIN.'
+                  : 'This browser or device does not support WebAuthn biometrics. You can still use your 4-digit PIN code for app lock security.'}
               </p>
             </div>
           </div>
@@ -455,10 +484,12 @@ export default function RegisterBiometric() {
         <div className="space-y-3 pt-2">
           <h3 className="text-xs uppercase tracking-wider text-content-muted font-bold flex items-center gap-1.5">
             <Fingerprint className="w-4 h-4 text-sky-500" />
-            WebAuthn Biometric Authenticator
+            {isAndroidNativeApp() ? 'Android Device Biometrics' : 'WebAuthn Biometric Authenticator'}
           </h3>
           <p className="text-xs text-content-muted">
-            Your device opens its own fingerprint, Face ID, or screen lock prompt. Browsers do not expose a list of enrolled biometrics; registered authenticators are shown by count below.
+            {isAndroidNativeApp()
+              ? 'Use Android fingerprint or face authentication to unlock this app on this device.'
+              : 'Your device opens its own fingerprint, Face ID, or screen lock prompt. Browsers do not expose a list of enrolled biometrics; registered authenticators are shown by count below.'}
           </p>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -476,11 +507,13 @@ export default function RegisterBiometric() {
               ) : (
                 <>
                   <Fingerprint className="w-4 h-4" />
-                  {hasCredentials ? 'Add Another Authenticator' : 'Add Fingerprint'}
+                  {isAndroidNativeApp()
+                    ? nativeBiometricEnabled ? 'Refresh Android Biometric' : 'Enable Android Biometric'
+                    : hasCredentials ? 'Add Another Authenticator' : 'Add Fingerprint'}
                 </>
               )}
             </button>
-            {hasCredentials && (
+            {!isAndroidNativeApp() && hasCredentials && (
               <button
                 type="button"
                 onClick={handleTestVerification}
@@ -501,10 +534,13 @@ export default function RegisterBiometric() {
               </button>
             )}
           </div>
-          {hasCredentials && (
+          {!isAndroidNativeApp() && hasCredentials && (
             <p className="text-xs text-content-muted">
               {credentialCount} authenticator{credentialCount === 1 ? '' : 's'} registered. Add another device or test an existing one.
             </p>
+          )}
+          {isAndroidNativeApp() && nativeBiometricEnabled && (
+            <p className="text-xs text-content-muted">Android biometric unlock is enabled on this device.</p>
           )}
         </div>
 

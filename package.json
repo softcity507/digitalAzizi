@@ -20,6 +20,7 @@
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.3",
     "@vercel/analytics": "^2.0.1",
+    "capacitor-native-biometric": "^4.2.2",
     "cross-env": "^10.1.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
