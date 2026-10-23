@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     namespace = "com.digitalazizi.app"
     compileSdk = rootProject.ext.compileSdkVersion
+
     defaultConfig {
         applicationId "com.digitalazizi.app"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -16,7 +17,15 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
-    buildTypes {
+    signingConfigs{
+        debug{
+            storeFile file("myrealease.jks")
+            storePassword "bscs507"
+            keyAlias "myrealease"
+            keyPassword "bscs507"
+        }
+    }
+     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

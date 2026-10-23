@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.get_login_creds"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.digitalazizi.app",
+      "sha256_cert_fingerprints": [
+        "DF:B8:C6:ED:09:A7:47:D3:34:13:0C:41:DF:76:5D:9E:FB:00:ED:6A"
+      ]
+    }
+  }
+]

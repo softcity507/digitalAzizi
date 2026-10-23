@@ -6,6 +6,15 @@ import { Analytics } from "@vercel/analytics/next"
 import { DEFAULT_LOCALE, LANGUAGES_MAP } from '@/i18n/request';
 import DynamicToast from '@/components/max_second/DynamicToast';
 import AppLockGuard from '@/components/max_second/AppLockGuard';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  icons: {
+    icon: '/img/Browser_tabs.jpeg',
+    shortcut: '/img/Browser_tabs.jpeg',
+    apple: '/img/headerlogo.jpeg',
+  },
+};
 
 type Props = {
   children: React.ReactNode;
